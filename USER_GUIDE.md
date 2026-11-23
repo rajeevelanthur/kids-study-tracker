@@ -45,7 +45,7 @@ The application runs in your web browser and synchronizes across all devices in 
 ## 3. First-Time Setup & Family Profile
 
 ### Understanding Your Family Code
-When you first open the app and set up your family workspace, a unique **Family Code** (e.g., `KIDS-101`) is generated.
+When you first open the app and set up your family workspace, a unique **Family Code** (e.g., `KIDS101` or `KIDS485`) is generated. Note that hyphens or spaces are completely optional—kids can type `kids101` or `KIDS-101` and it will automatically work.
 * **What is it for?** The Family Code links all your family's devices (mom's phone, dad's phone, child's tablet or phone) to the same private cloud workspace.
 * **Where to find it?** The Family Code is always displayed at the top of the Parent Dashboard topbar and in the *Curriculum & Settings* tab.
 * **Security:** Keep this code within your family. Anyone with your Family Code and a PIN can sign in.
@@ -99,7 +99,7 @@ When children sign in, they see a colorful, gamified dashboard without adult adm
 
 ### How a Student Uses the App
 1. **Sign In:**
-   * Enter the **Family Code** (e.g., `KIDS-101`).
+   * Enter the **Family Code** (e.g., `KIDS101`).
    * Enter their personal **4-Digit Student PIN**.
 2. **Reviewing Today's Tasks:**
    * Today's assignments are shown with subject icons and point badges.

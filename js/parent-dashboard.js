@@ -1142,7 +1142,7 @@ function renderParentSettingsTab() {
         </div>
         <div class="settings-family-code-box">
           <span style="font-size: 11px; font-weight: 700; color: #6d28d9; display: block;">FAMILY CODE</span>
-          <span style="font-size: 22px; font-weight: 900; color: #5b21b6; letter-spacing: 1.5px;">${currentFamily ? currentFamily.code : 'KIDS-101'}</span>
+          <span style="font-size: 22px; font-weight: 900; color: #5b21b6; letter-spacing: 1.5px;">${currentFamily ? currentFamily.code : 'KIDS101'}</span>
         </div>
       </div>
     </div>
@@ -2093,7 +2093,7 @@ function handleDeleteRewardHistory(rewardId, prizeName) {
 // ==========================================
 function renderParentHelpTab() {
   const currentFamily = store.getCurrentFamily();
-  const familyCode = currentFamily ? currentFamily.code : 'KIDS-101';
+  const familyCode = currentFamily ? currentFamily.code : 'KIDS101';
 
   return `
     <!-- Help Hero Banner -->

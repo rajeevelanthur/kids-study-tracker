@@ -133,7 +133,7 @@ function renderSuperAdminView(container) {
             id="sa-search-input"
             class="form-input" 
             style="border: none; background: transparent; padding: 8px 4px; font-size: 14px; flex: 1; outline: none; box-shadow: none;" 
-            placeholder="Search families by Name or Family Code (e.g. KIDS-101, Rajeev)..." 
+            placeholder="Search families by Name or Family Code (e.g. KIDS101, Rajeev)..." 
             value="${escapeHtml(superAdminSearchQuery)}" 
             oninput="handleSuperAdminLiveSearch(this.value)" 
           />
@@ -296,10 +296,12 @@ function updateSuperAdminFamiliesList() {
   if (!container) return;
   const families = store.getFamilies();
   const cleanQ = superAdminSearchQuery.trim().toLowerCase();
+  const normQ = cleanQ.replace(/[-\s_]/g, '');
   const filtered = families.filter(f => {
     if (!cleanQ) return true;
     const matchName = (f.name || '').toLowerCase().includes(cleanQ);
-    const matchCode = (f.code || '').toLowerCase().includes(cleanQ);
+    const codeNorm = (f.code || '').replace(/[-\s_]/g, '').toLowerCase();
+    const matchCode = (f.code || '').toLowerCase().includes(cleanQ) || (normQ && codeNorm.includes(normQ));
     return matchName || matchCode;
   });
   container.innerHTML = renderSuperAdminFamiliesListHtml(filtered);
@@ -372,7 +374,7 @@ function openSuperAdminEditFamilyModal(familyId) {
           <div class="form-group">
             <label class="form-label">Family Code (Unique 6-8 chars)</label>
             <input type="text" name="code" class="form-input" style="text-transform: uppercase; font-weight: 700; letter-spacing: 1px;" value="${family.code}" required />
-            <small style="color: var(--text-muted); font-size: 11px;">Must be unique across all families (e.g. KIDS-101).</small>
+            <small style="color: var(--text-muted); font-size: 11px;">Must be unique across all families (e.g. KIDS101).</small>
           </div>
 
           <div style="display: flex; gap: 10px; margin-top: 20px;">

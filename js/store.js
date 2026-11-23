@@ -24,20 +24,20 @@ const SEED_FAMILIES = [
   {
     id: 'fam_101',
     name: "Rajeev's Family",
-    code: 'KIDS-101',
+    code: 'KIDS101',
     createdAt: new Date().toISOString()
   },
   {
     id: 'fam_202',
     name: "Anand's Family",
-    code: 'KIDS-202',
+    code: 'KIDS202',
     createdAt: new Date().toISOString()
   }
 ];
 
 // Default seed users with Family ID isolation
 const SEED_USERS = [
-  // Family 1 (Code: KIDS-101)
+  // Family 1 (Code: KIDS101)
   {
     id: 'user_parent',
     familyId: 'fam_101',
@@ -70,7 +70,7 @@ const SEED_USERS = [
     weeklyPoints: 50,
     totalPoints: 190
   },
-  // Family 2 (Code: KIDS-202)
+  // Family 2 (Code: KIDS202)
   {
     id: 'user_parent_2',
     familyId: 'fam_202',
@@ -105,7 +105,7 @@ const YESTERDAY_DATE = new Date(Date.now() - 86400000);
 const YESTERDAY_STR = getFormattedDate(YESTERDAY_DATE);
 
 const SEED_TASKS = [
-  // Family 1 Tasks (KIDS-101)
+  // Family 1 Tasks (KIDS101)
   {
     id: 't_1',
     familyId: 'fam_101',
@@ -184,7 +184,7 @@ const SEED_TASKS = [
     submittedAt: null,
     completedAt: null
   },
-  // Family 2 Tasks (KIDS-202)
+  // Family 2 Tasks (KIDS202)
   {
     id: 't_6',
     familyId: 'fam_202',
@@ -429,15 +429,16 @@ class DataStore {
 
   getFamilyByCode(code) {
     if (!code) return null;
-    const clean = code.trim().toUpperCase();
-    return this.getFamilies().find(f => f.code.toUpperCase() === clean) || null;
+    const normalize = str => (str || '').toString().replace(/[-\s_]/g, '').trim().toUpperCase();
+    const clean = normalize(code);
+    return this.getFamilies().find(f => normalize(f.code) === clean) || null;
   }
 
   createFamily({ name, parentName, pin, avatar }) {
     const families = this.getFamilies();
     const id = 'fam_' + Date.now();
     const codeNum = Math.floor(100 + Math.random() * 900);
-    const code = `KIDS-${codeNum}`;
+    const code = `KIDS${codeNum}`;
 
     const newFamily = {
       id,

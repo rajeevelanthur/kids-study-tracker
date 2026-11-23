@@ -150,7 +150,7 @@ function renderFamilyCodeEntryCard() {
             id="family-code-input-field" 
             class="form-input" 
             style="text-align: center; font-size: 20px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 12px; border: 2px solid var(--primary);" 
-            placeholder="${isDemo ? 'e.g. KIDS-101' : 'Enter Family Code'}" 
+            placeholder="${isDemo ? 'e.g. KIDS101' : 'Enter Family Code'}" 
             required 
             autofocus 
           />
@@ -164,8 +164,8 @@ function renderFamilyCodeEntryCard() {
       ${isDemo ? `
         <div style="margin-top: 20px; padding: 12px; background: #fffbeb; border-radius: var(--radius-sm); border: 1px dashed #f59e0b; font-size: 12px; color: #92400e; line-height: 1.5; text-align: left;">
           💡 <strong>Demo Codes for Testing:</strong><br/>
-          • Enter <strong>KIDS-101</strong> (Rajeev's Family - Arjun &amp; Ananya)<br/>
-          • Enter <strong>KIDS-202</strong> (Anand's Family - Rahul)
+          • Enter <strong>KIDS101</strong> (Rajeev's Family - Arjun &amp; Ananya)<br/>
+          • Enter <strong>KIDS202</strong> (Anand's Family - Rahul)
         </div>
       ` : ''}
 
@@ -366,9 +366,10 @@ function handleVerifyFamilyCode(e) {
   e.preventDefault();
   const input = document.getElementById('family-code-input-field');
   if (!input) return;
-  const enteredCode = input.value.trim().toUpperCase();
+  const rawCode = input.value.trim();
+  const cleanCode = rawCode.replace(/[-\s_]/g, '').toUpperCase();
 
-  const fam = store.getFamilyByCode(enteredCode);
+  const fam = store.getFamilyByCode(cleanCode);
   if (fam) {
     activeAuthFamilyCode = fam.code;
     setStoredDeviceFamilyCode(fam.code);
@@ -377,7 +378,7 @@ function handleVerifyFamilyCode(e) {
     showToast(`Welcome to ${fam.name}! 🏡`, 'success');
     renderApp();
   } else {
-    showToast(`Family code "${enteredCode}" not found. Please verify code or register.`, 'error');
+    showToast(`Family code "${rawCode}" not found. Please verify code or register.`, 'error');
   }
 }
 
