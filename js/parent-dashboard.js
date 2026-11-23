@@ -2098,21 +2098,11 @@ function renderParentHelpTab() {
   return `
     <!-- Help Hero Banner -->
     <div class="help-hero-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-        <div style="flex: 1; min-width: 240px;">
-          <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">Documentation &amp; User Manual</div>
-          <h2 style="font-size: 20px; font-weight: 800; margin: 4px 0 6px; color: #ffffff;">❓ Help &amp; Learning Center</h2>
-          <p style="font-size: 13px; margin: 0; opacity: 0.95; line-height: 1.4;">
-            Everything you need to know about setting up routines, awarding reward points, approving homework, and installing the app on your phones.
-          </p>
-        </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <a href="https://github.com/rajeevelanthur/kids-study-tracker/blob/main/USER_GUIDE.md" target="_blank" rel="noopener noreferrer" class="btn" style="background: rgba(255, 255, 255, 0.2); color: #ffffff; border: 1.5px solid rgba(255, 255, 255, 0.5); font-size: 12.5px; font-weight: 700; width: auto; padding: 7px 12px; display: inline-flex; align-items: center; gap: 6px;">
-            <span>📘 Full Guide on GitHub</span>
-            <span>↗</span>
-          </a>
-        </div>
-      </div>
+      <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">Documentation &amp; User Manual</div>
+      <h2 style="font-size: 20px; font-weight: 800; margin: 4px 0 6px; color: #ffffff;">❓ Help &amp; Learning Center</h2>
+      <p style="font-size: 13px; margin: 0; opacity: 0.95; line-height: 1.4;">
+        Everything you need to know about setting up routines, awarding reward points, approving homework, and installing the app on your phones.
+      </p>
     </div>
 
     <!-- Topic 1: Quick Start & Family Workspace -->
