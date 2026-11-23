@@ -46,12 +46,15 @@ function renderChildView(container) {
           </div>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
           <button class="btn-theme-pill" onclick="openThemeModal()" title="Change Color Theme">
             🎨 <span class="theme-btn-text">Theme</span>
           </button>
           <button class="btn-theme-pill" onclick="openChildTrophyModal()" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.12); color: #d97706; font-weight: 700;" title="View Won Trophies & Rewards">
             🏆 <span class="theme-btn-text">Trophies (${rewardHistory.length})</span>
+          </button>
+          <button class="btn-theme-pill" onclick="openChildHelpModal()" title="How Study Tracker Works">
+            ❓ <span class="theme-btn-text">Help</span>
           </button>
           <div style="display: flex; align-items: center; gap: 6px; background: var(--bg-surface-alt); border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 99px;">
             <span style="font-size: 18px;">${currentUser.avatar || '🧒'}</span>
@@ -256,6 +259,48 @@ function openChildTrophyModal() {
         <div style="display: flex; justify-content: flex-end; padding-top: 12px; border-top: 1px solid var(--border-color); margin-top: 8px;">
           <button type="button" class="btn btn-primary" onclick="closeModal('child-trophy-modal')" style="width: auto; padding: 8px 22px; font-size: 13px;">
             Done &amp; Keep Studying ✨
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  showModal(modalHtml);
+}
+
+// Student Help Dialog
+function openChildHelpModal() {
+  const modalHtml = `
+    <div class="modal-overlay" id="child-help-modal" onclick="closeModalOnOutsideClick(event, 'child-help-modal')">
+      <div class="modal-card" style="max-width: 440px;">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 24px;">⭐</span>
+            <h3 class="modal-title" style="margin: 0;">How Study Tracker Works!</h3>
+          </div>
+          <button class="modal-close" onclick="closeModal('child-help-modal')">✕</button>
+        </div>
+
+        <div style="font-size: 13.5px; line-height: 1.5; color: var(--text-main); display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+          <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px;">
+            <div style="font-weight: 800; color: var(--primary); margin-bottom: 4px;">1. Finish Your Daily Tasks 📚</div>
+            <div>Look at today's checklist on your dashboard. Read lessons, complete written homework, or revise topics your parents assigned.</div>
+          </div>
+
+          <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px;">
+            <div style="font-weight: 800; color: #16a34a; margin-bottom: 4px;">2. Submit for Approval 📬</div>
+            <div>When you finish an assignment, tap <strong>"Submit for Parent Approval"</strong>. Your parents will review your work!</div>
+          </div>
+
+          <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px;">
+            <div style="font-weight: 800; color: #d97706; margin-bottom: 4px;">3. Win Reward Stars &amp; Weekend Prizes 🏆</div>
+            <div>Parents award you stars and encouragement stickers. Reach your weekend target stars to unlock your special weekend reward!</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; text-align: center;">
+          <button type="button" class="btn btn-primary" onclick="closeModal('child-help-modal')" style="width: 100%; padding: 10px; font-size: 13.5px; font-weight: 700;">
+            🚀 Got It! Let's Study!
           </button>
         </div>
       </div>

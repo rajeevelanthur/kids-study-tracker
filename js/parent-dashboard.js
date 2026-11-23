@@ -16,6 +16,7 @@ function getPageHeading(tab) {
     case 'report': return 'Detailed Reports';
     case 'reward': return 'Weekend Prize & Goals';
     case 'settings': return 'Curriculum & Categories';
+    case 'help': return 'Help & User Guide';
     default: return 'Dashboard';
   }
 }
@@ -60,6 +61,8 @@ function renderParentView(container) {
     tabContent = renderParentRewardsTab(currentChild);
   } else if (activeTab === 'settings') {
     tabContent = renderParentSettingsTab();
+  } else if (activeTab === 'help') {
+    tabContent = renderParentHelpTab();
   }
 
   container.innerHTML = `
@@ -105,6 +108,13 @@ function renderParentView(container) {
           <button class="nav-item ${activeTab === 'settings' ? 'active' : ''}" onclick="switchTab('settings')">
             <span class="nav-item-icon">⚙️</span>
             <span>Curriculum &amp; Categories</span>
+          </button>
+
+          <div class="sidebar-section-title" style="margin-top: 14px;">Documentation &amp; Support</div>
+          
+          <button class="nav-item ${activeTab === 'help' ? 'active' : ''}" onclick="switchTab('help')">
+            <span class="nav-item-icon">❓</span>
+            <span>Help &amp; User Guide</span>
           </button>
         </nav>
 
@@ -154,6 +164,10 @@ function renderParentView(container) {
               🎨 <span class="theme-btn-text">Theme</span>
             </button>
 
+            <button class="btn-theme-pill ${activeTab === 'help' ? 'active' : ''}" onclick="switchTab('help')" title="Help &amp; User Guide">
+              ❓ <span class="theme-btn-text">Help</span>
+            </button>
+
             ${children.length > 0 ? `
               <div class="topbar-child-select-box">
                 <span class="topbar-child-label">Child:</span>
@@ -175,7 +189,7 @@ function renderParentView(container) {
 
         <!-- Main Content Area -->
         <main class="dashboard-content">
-          ${currentChild ? `
+          ${currentChild && activeTab !== 'settings' && activeTab !== 'help' ? `
             <div class="child-overview-banner">
               <div class="child-overview-left">
                 <div class="child-avatar-big">${currentChild.avatar || '🧒'}</div>
@@ -2072,4 +2086,212 @@ function handleDeleteRewardHistory(rewardId, prizeName) {
       renderApp();
     }
   });
+}
+
+// ==========================================
+// PARENT HELP & USER GUIDE TAB (In-App)
+// ==========================================
+function renderParentHelpTab() {
+  const currentFamily = store.getCurrentFamily();
+  const familyCode = currentFamily ? currentFamily.code : 'KIDS-101';
+
+  return `
+    <!-- Help Hero Banner -->
+    <div class="help-hero-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div style="flex: 1; min-width: 240px;">
+          <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">Documentation &amp; User Manual</div>
+          <h2 style="font-size: 20px; font-weight: 800; margin: 4px 0 6px; color: #ffffff;">❓ Help &amp; Learning Center</h2>
+          <p style="font-size: 13px; margin: 0; opacity: 0.95; line-height: 1.4;">
+            Everything you need to know about setting up routines, awarding reward points, approving homework, and installing the app on your phones.
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <a href="https://github.com/rajeevelanthur/kids-study-tracker/blob/main/USER_GUIDE.md" target="_blank" rel="noopener noreferrer" class="btn" style="background: rgba(255, 255, 255, 0.2); color: #ffffff; border: 1.5px solid rgba(255, 255, 255, 0.5); font-size: 12.5px; font-weight: 700; width: auto; padding: 7px 12px; display: inline-flex; align-items: center; gap: 6px;">
+            <span>📘 Full Guide on GitHub</span>
+            <span>↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic 1: Quick Start & Family Workspace -->
+    <div class="help-topic-card">
+      <div class="help-topic-header">
+        <span style="font-size: 22px;">👨‍👩‍👧</span>
+        <h3 class="help-topic-title">1. Getting Started &amp; Student Setup</h3>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+        Connect your entire household with one private workspace code and personal student PINs.
+      </p>
+
+      <div class="help-step-list">
+        <div class="help-step-item">
+          <span class="help-step-num">1</span>
+          <div>
+            <strong>Family Code:</strong> Your private family code is <code style="background: var(--bg-surface-alt); padding: 2px 7px; border-radius: 4px; font-weight: 800; color: var(--primary); border: 1px solid var(--border-color);">${familyCode}</code>. Share this code with your kids so they can sign in from their phone, tablet, or PC.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">2</span>
+          <div>
+            <strong>Adding Children:</strong> Click <strong>"➕ Add Child"</strong> in the top bar to create a profile. Set their Name, Avatar, Standard (Classes 1–10), Syllabus (Kerala State or CBSE), and a secret 4-digit student PIN.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">3</span>
+          <div>
+            <strong>Student Login:</strong> Open this app on the child's device, enter the Family Code (<code style="color: var(--primary); font-weight: 700;">${familyCode}</code>) and their 4-digit PIN. They will see a cheerful dashboard with their daily checklist!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic 2: Daily Study Routine & Carryover -->
+    <div class="help-topic-card">
+      <div class="help-topic-header">
+        <span style="font-size: 22px;">📋</span>
+        <h3 class="help-topic-title">2. Assigning Daily Tasks &amp; Habits</h3>
+      </div>
+      <div class="help-step-list">
+        <div class="help-step-item">
+          <span class="help-step-num">1</span>
+          <div>
+            <strong>Assign Task:</strong> Go to the <strong>"➕ Assign Task"</strong> tab. Pick the subject, study category (Reading, Homework, Revision), write specific instructions, and set the reward points (default 10 pts).
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">2</span>
+          <div>
+            <strong>Duplicate Routine Tasks:</strong> For recurring daily homework (like Daily Math Practice), click the <strong>"📋 Duplicate"</strong> button on any task card to instantly schedule it again without retyping.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">3</span>
+          <div>
+            <strong>Automatic Carryover:</strong> If a task is not finished on the assigned date, it automatically carries over to the next day as <em>"⚠️ Carried Over"</em> until it is completed.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic 3: Student Submission & Parent Approval -->
+    <div class="help-topic-card">
+      <div class="help-topic-header">
+        <span style="font-size: 22px;">📬</span>
+        <h3 class="help-topic-title">3. Student Submission &amp; Parent Approval</h3>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+        Maintain high study standards with two-way verification before points are credited to the student's wallet.
+      </p>
+      <div class="help-step-list">
+        <div class="help-step-item">
+          <span class="help-step-num">1</span>
+          <div>
+            <strong>Child Submits:</strong> After finishing reading or writing, the student clicks <em>"📬 Submit for Parent Approval"</em> on their phone.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">2</span>
+          <div>
+            <strong>Parent Approves:</strong> On the Parent Dashboard, review their work and click <strong>"✅ Approve (+Points)"</strong>. You can award encouraging digital stickers (⭐ 🌟 🏆 🚀 💯) and write a proud remark.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">3</span>
+          <div>
+            <strong>Needs Revision:</strong> If homework is messy or incomplete, click <strong>"🔄 Needs Revision"</strong>. It will be sent back to the child's pending list with a friendly revision note.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic 4: Weekend Prizes & Goals -->
+    <div class="help-topic-card">
+      <div class="help-topic-header">
+        <span style="font-size: 22px;">🏆</span>
+        <h3 class="help-topic-title">4. Weekend Prizes, Target Stars &amp; Trophies</h3>
+      </div>
+      <div class="help-step-list">
+        <div class="help-step-item">
+          <span class="help-step-num">1</span>
+          <div>
+            <strong>Set Target Stars:</strong> In the <strong>"🏆 Weekend Prize"</strong> tab, enter an agreed weekend reward (e.g., <em>"Beach Outing &amp; Ice Cream"</em>) and the goal stars needed (e.g., <em>100 points</em>).
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">2</span>
+          <div>
+            <strong>Target Unlocked:</strong> When the student earns 100 points during the week, festive confetti fires on their screen with the message <em>"Target Unlocked!"</em>.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">3</span>
+          <div>
+            <strong>Mark Reward Given:</strong> Over the weekend, click <em>"🎁 Mark Reward Given"</em> to permanently record the prize in the child's <strong>📜 Trophy Case</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic 5: Mobile App Installation (PWA) -->
+    <div class="help-topic-card">
+      <div class="help-topic-header">
+        <span style="font-size: 22px;">📱</span>
+        <h3 class="help-topic-title">5. Install as Mobile App (Android &amp; iOS)</h3>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+        You don't need app stores. This web app installs directly onto your phone screen with full offline caching!
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 10px;">
+        <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 14px;">
+          <div style="font-weight: 700; color: #16a34a; font-size: 14px; margin-bottom: 6px;">🤖 Android (Google Chrome)</div>
+          <ol style="padding-left: 18px; font-size: 12.5px; color: var(--text-main); line-height: 1.5; margin: 0;">
+            <li>Open the site in Google Chrome.</li>
+            <li>Tap the 3-dots menu (<strong>⋮</strong>) in the top-right corner.</li>
+            <li>Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</li>
+            <li>Tap <strong>Install</strong> to add the icon to your home screen.</li>
+          </ol>
+        </div>
+
+        <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 14px;">
+          <div style="font-weight: 700; color: #2563eb; font-size: 14px; margin-bottom: 6px;">🍎 iPhone &amp; iPad (Safari)</div>
+          <ol style="padding-left: 18px; font-size: 12.5px; color: var(--text-main); line-height: 1.5; margin: 0;">
+            <li>Open the site in Apple Safari.</li>
+            <li>Tap the <strong>Share</strong> button (box with upward arrow).</li>
+            <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+            <li>Tap <strong>Add</strong> in the top-right corner.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic 6: Frequently Asked Questions (FAQ) -->
+    <div class="help-topic-card">
+      <div class="help-topic-header">
+        <span style="font-size: 22px;">❓</span>
+        <h3 class="help-topic-title">6. Frequently Asked Questions (FAQ)</h3>
+      </div>
+
+      <div class="help-faq-item">
+        <div class="help-faq-q">Q: What if my child forgets their 4-digit PIN?</div>
+        <div class="help-faq-a">A: Parents can easily view and change any child's PIN at any time. Go to the Parent Dashboard, choose the child from the topbar, click <strong>"✏️ Edit Profile"</strong> on their banner, enter a new 4-digit PIN, and save.</div>
+      </div>
+
+      <div class="help-faq-item">
+        <div class="help-faq-q">Q: Can both father and mother access the tracker from separate phones?</div>
+        <div class="help-faq-a">A: Yes! Both parents can sign in using the same <strong>Family Code</strong> and <strong>Parent PIN</strong> on their phones. All updates synchronize in real time through Google Firebase cloud sync.</div>
+      </div>
+
+      <div class="help-faq-item">
+        <div class="help-faq-q">Q: How do I change the color theme?</div>
+        <div class="help-faq-a">A: Click the <strong>"🎨 Theme"</strong> button in the top bar. You can choose from 6 beautiful color palettes: Classic Indigo, Emerald Forest, Sunset Amber, Ocean Breeze, Sweet Candy, or Midnight Dark.</div>
+      </div>
+
+      <div class="help-faq-item">
+        <div class="help-faq-q">Q: How can I back up my family's records?</div>
+        <div class="help-faq-a">A: Go to <strong>"Curriculum &amp; Categories"</strong> ➡️ <em>Section 3: Local Backup</em>. Click <strong>"💾 Download Backup (.json)"</strong> to save an offline copy of all tasks, student profiles, and reward records.</div>
+      </div>
+    </div>
+  `;
 }
