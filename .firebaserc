@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "kids-study-tracker",
+    "production": "kids-study-tracker",
+    "demo": "kids-study-tracker-demo"
+  }
+}

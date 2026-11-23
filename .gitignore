@@ -1,0 +1,12 @@
+# Firebase cache & local artifacts
+.firebase/
+*.log
+.firebaserc.backup
+.firebase.json.backup
+
+# Dependencies
+node_modules/
+
+# OS generated files
+Thumbs.db
+.DS_Store

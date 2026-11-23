@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#1e1b4b" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background with smooth rounded squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+
+  <!-- Subtle inner border -->
+  <rect x="12" y="12" width="488" height="488" rx="100" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="4" />
+
+  <!-- Academic Graduation Cap (Mortarboard) -->
+  <g filter="url(#shadow)">
+    <!-- Cap Diamond Top -->
+    <polygon points="256,120 430,195 256,270 82,195" fill="#ffffff" />
+    
+    <!-- Cap Skull Base -->
+    <path d="M140,225 L140,310 C140,360 372,360 372,310 L372,225 L256,275 Z" fill="#e0e7ff" />
+    
+    <!-- Tassel Ribbon & Ring -->
+    <circle cx="256" cy="195" r="14" fill="url(#gold)" />
+    <path d="M256,195 Q380,240 395,300" fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round" />
+    <rect x="388" y="300" width="14" height="38" rx="4" fill="url(#gold)" />
+  </g>
+
+  <!-- Golden Reward Star -->
+  <g transform="translate(206, 335) scale(1.0)">
+    <path d="M50 0 L64 30 L98 34 L72 58 L80 92 L50 74 L20 92 L28 58 L2 34 L36 30 Z" fill="url(#gold)" filter="url(#shadow)" />
+  </g>
+</svg>
