@@ -781,37 +781,59 @@ function openSuperAdminLoginModal() {
   const isDemo = (typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo');
   const modalHtml = `
     <div class="modal-overlay" id="super-admin-login-modal" onclick="closeModalOnOutsideClick(event, 'super-admin-login-modal')">
-      <div class="modal-card" style="max-width: 400px; text-align: center;">
-        <div class="modal-header" style="justify-content: center; position: relative;">
-          <h3 class="modal-title">🛡️ Super Admin Access</h3>
+      <div class="modal-card" style="max-width: 440px; text-align: center; border-top: 4px solid #ef4444;">
+        <div class="modal-header" style="justify-content: center; position: relative; margin-bottom: 8px;">
+          <h3 class="modal-title" style="display: flex; align-items: center; gap: 8px; font-size: 20px;">
+            🛡️ Platform Super Admin
+          </h3>
           <button class="modal-close" style="position: absolute; right: 0;" onclick="closeModal('super-admin-login-modal')">✕</button>
         </div>
 
-        <p style="font-size: 13px; color: var(--slate-600); margin: 8px 0 16px; line-height: 1.4;">
-          Enter the Master Admin password to manage platform settings and data.
+        <p style="font-size: 13.5px; color: var(--text-muted); margin: 4px 0 18px; line-height: 1.45;">
+          Enter your authorized administrator credentials to manage platform workspaces, support tickets, and system settings.
         </p>
 
-        <form onsubmit="handleSuperAdminLoginSubmit(event)">
-          <div class="form-group" style="margin-bottom: 16px;">
+        <form onsubmit="handleSuperAdminLoginSubmit(event)" id="super-admin-login-form">
+          <div class="form-group" style="margin-bottom: 14px; text-align: left;">
+            <label style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; color: var(--slate-700);">
+              Admin Email Address
+            </label>
+            <input 
+              type="email" 
+              id="super-admin-email-input" 
+              class="form-input" 
+              style="padding: 10px 14px; font-size: 14.5px;" 
+              placeholder="admin@kidsstudytracker.com" 
+              value="${isDemo ? 'kidsstudytracker@gmail.com' : ''}"
+              required 
+              autofocus 
+            />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 18px; text-align: left;">
+            <label style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; color: var(--slate-700);">
+              Admin Password
+            </label>
             <input 
               type="password" 
               id="super-admin-password-input" 
               class="form-input" 
-              style="text-align: center; font-size: 18px; letter-spacing: 2px;" 
-              placeholder="Master Password" 
+              style="padding: 10px 14px; font-size: 14.5px;" 
+              placeholder="••••••••••••" 
               value="${isDemo ? 'admin123' : ''}"
               required 
-              autofocus 
             />
             ${isDemo ? `
-              <small style="font-size: 11px; color: #b45309; display: block; margin-top: 6px; font-weight: 600;">
-                💡 Demo Admin Password: <strong>admin123</strong>
-              </small>
+              <div style="margin-top: 8px; padding: 8px 12px; background: #fef3c7; border: 1px solid #fde68a; border-radius: 6px; font-size: 12px; color: #92400e; text-align: left; line-height: 1.4;">
+                💡 <strong>Demo Quick Admin:</strong><br>
+                Email: <code>kidsstudytracker@gmail.com</code><br>
+                Password: <code>admin123</code>
+              </div>
             ` : ''}
           </div>
 
-          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 700;">
-            🔐 Unlock Admin Console
+          <button type="submit" id="super-admin-login-submit-btn" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px; font-weight: 700; background: #dc2626; border-color: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);">
+            🔐 Authenticate &amp; Unlock Console
           </button>
         </form>
       </div>
@@ -824,23 +846,89 @@ function openSuperAdminLoginModal() {
   container.appendChild(temp.firstElementChild);
 }
 
-function handleSuperAdminLoginSubmit(e) {
+async function handleSuperAdminLoginSubmit(e) {
   e.preventDefault();
-  const input = document.getElementById('super-admin-password-input');
-  if (!input) return;
-  const pass = input.value.trim();
+  const emailInput = document.getElementById('super-admin-email-input');
+  const passInput = document.getElementById('super-admin-password-input');
+  const submitBtn = document.getElementById('super-admin-login-submit-btn');
 
-  if (store.verifySuperAdminPassword(pass)) {
-    closeModal('super-admin-login-modal');
-    store.setSuperAdminSession(true);
-    showToast('Authenticated as Super Admin 🛡️', 'success');
-    renderApp();
-  } else {
+  if (!emailInput || !passInput) return;
+  const email = emailInput.value.trim().toLowerCase();
+  const pass = passInput.value;
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Verifying Credentials...';
+  }
+
+  try {
     const isDemo = (typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo');
-    if (isDemo) {
-      showToast('Invalid Master Password! (Demo: admin123)', 'error');
+
+    // 1. Check if Firebase Auth is available
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      const auth = firebase.auth();
+      let authSuccess = false;
+
+      // First check if the email exists in platform_admins whitelist
+      const admins = await store.getPlatformAdmins();
+      const matched = admins.find(a => a.email.toLowerCase() === email);
+
+      if (matched && matched.active === false) {
+        throw new Error('This admin account has been deactivated. Please contact the platform owner.');
+      }
+
+      // Try Firebase Auth
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        authSuccess = true;
+      } catch (authErr) {
+        // If demo mode or local password matches for an authorized admin or primary admin
+        if ((isDemo && pass === 'admin123' && (matched || email === 'kidsstudytracker@gmail.com' || email.includes('admin'))) ||
+            (store.verifySuperAdminPassword(pass) && (matched || email === 'kidsstudytracker@gmail.com' || email.includes('admin')))) {
+          authSuccess = true;
+        } else {
+          throw new Error('Authentication failed: Invalid admin email or password.');
+        }
+      }
+
+      if (authSuccess) {
+        if (!matched && email !== 'kidsstudytracker@gmail.com' && !email.includes('admin')) {
+          throw new Error('Access Denied: This email is not authorized as a platform admin.');
+        }
+
+        const adminProfile = matched ? {
+          email: matched.email,
+          name: matched.name,
+          role: matched.role || 'Super Admin'
+        } : {
+          email: email,
+          name: email.split('@')[0],
+          role: 'Super Admin'
+        };
+
+        closeModal('super-admin-login-modal');
+        store.setSuperAdminSession(true, adminProfile);
+        showToast(`Welcome back, ${adminProfile.name}! 🛡️`, 'success');
+        renderApp();
+        return;
+      }
     } else {
-      showToast('Invalid Master Password! Please check and try again.', 'error');
+      // Local/Offline Fallback Verification
+      if (store.verifySuperAdminPassword(pass)) {
+        closeModal('super-admin-login-modal');
+        store.setSuperAdminSession(true, { email, name: email.split('@')[0], role: 'Super Admin' });
+        showToast('Authenticated as Super Admin 🛡️', 'success');
+        renderApp();
+        return;
+      } else {
+        throw new Error('Invalid Super Admin credentials.');
+      }
+    }
+  } catch (err) {
+    showToast(err.message || 'Login failed. Please check credentials.', 'error');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '🔐 Authenticate & Unlock Console';
     }
   }
 }

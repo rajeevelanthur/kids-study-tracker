@@ -564,7 +564,7 @@ class DataStore {
     familyRewards.forEach(r => CloudSync.deleteDoc('rewards', r.id));
   }
 
-  // Super Admin Platform Security
+  // Super Admin Platform Security & Multi-Admin Access
   getSuperAdminPassword() {
     return localStorage.getItem('kst_super_admin_pass') || 'admin123';
   }
@@ -581,12 +581,104 @@ class DataStore {
     return sessionStorage.getItem('kst_super_admin_active') === 'true';
   }
 
-  setSuperAdminSession(active) {
+  getSuperAdminProfile() {
+    try {
+      const p = sessionStorage.getItem('kst_super_admin_profile');
+      return p ? JSON.parse(p) : { email: 'kidsstudytracker@gmail.com', role: 'Super Admin' };
+    } catch (e) {
+      return { email: 'kidsstudytracker@gmail.com', role: 'Super Admin' };
+    }
+  }
+
+  setSuperAdminSession(active, profile = null) {
     if (active) {
       sessionStorage.setItem('kst_super_admin_active', 'true');
+      if (profile) {
+        sessionStorage.setItem('kst_super_admin_profile', JSON.stringify(profile));
+      } else if (!sessionStorage.getItem('kst_super_admin_profile')) {
+        sessionStorage.setItem('kst_super_admin_profile', JSON.stringify({ email: 'kidsstudytracker@gmail.com', role: 'Super Admin' }));
+      }
     } else {
       sessionStorage.removeItem('kst_super_admin_active');
+      sessionStorage.removeItem('kst_super_admin_profile');
     }
+  }
+
+  // Multi-Admin Management via Firestore `platform_admins`
+  async getPlatformAdmins() {
+    const defaultList = [
+      {
+        id: 'primary_owner',
+        email: 'kidsstudytracker@gmail.com',
+        role: 'Super Admin',
+        name: 'Platform Owner',
+        active: true,
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    if (CloudSync.isReady()) {
+      try {
+        const snap = await firestoreDb.collection('platform_admins').get();
+        if (!snap.empty) {
+          const admins = [];
+          snap.forEach(doc => admins.push({ id: doc.id, ...doc.data() }));
+          return admins;
+        } else {
+          // Pre-seed primary admin if collection is empty
+          await firestoreDb.collection('platform_admins').doc('primary_owner').set(defaultList[0]);
+          return defaultList;
+        }
+      } catch (e) {
+        console.warn('Could not fetch platform_admins from cloud:', e);
+      }
+    }
+    // Fallback to localStorage if offline
+    const local = localStorage.getItem('kst_platform_admins');
+    return local ? JSON.parse(local) : defaultList;
+  }
+
+  async addPlatformAdmin({ email, name, role = 'Super Admin' }) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail) throw new Error('Valid email address is required.');
+
+    const adminDoc = {
+      email: cleanEmail,
+      name: (name || '').trim() || cleanEmail.split('@')[0],
+      role: role || 'Super Admin',
+      active: true,
+      addedAt: new Date().toISOString()
+    };
+
+    if (CloudSync.isReady()) {
+      const docRef = await firestoreDb.collection('platform_admins').add(adminDoc);
+      adminDoc.id = docRef.id;
+    } else {
+      adminDoc.id = 'admin_' + Date.now();
+    }
+
+    const currentAdmins = await this.getPlatformAdmins();
+    const updated = [...currentAdmins.filter(a => a.email !== cleanEmail), adminDoc];
+    localStorage.setItem('kst_platform_admins', JSON.stringify(updated));
+    return adminDoc;
+  }
+
+  async updatePlatformAdmin(adminId, updates) {
+    if (CloudSync.isReady() && adminId) {
+      await firestoreDb.collection('platform_admins').doc(adminId).set(updates, { merge: true });
+    }
+    const currentAdmins = await this.getPlatformAdmins();
+    const updated = currentAdmins.map(a => a.id === adminId ? { ...a, ...updates } : a);
+    localStorage.setItem('kst_platform_admins', JSON.stringify(updated));
+  }
+
+  async deletePlatformAdmin(adminId) {
+    if (CloudSync.isReady() && adminId) {
+      await firestoreDb.collection('platform_admins').doc(adminId).delete();
+    }
+    const currentAdmins = await this.getPlatformAdmins();
+    const updated = currentAdmins.filter(a => a.id !== adminId);
+    localStorage.setItem('kst_platform_admins', JSON.stringify(updated));
   }
 
   getCurrentFamily() {

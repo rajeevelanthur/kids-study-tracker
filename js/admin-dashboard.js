@@ -7,8 +7,9 @@
  */
 
 var superAdminSearchQuery = '';
-var superAdminActiveTab = 'families'; // 'families' | 'support'
+var superAdminActiveTab = 'families'; // 'families' | 'support' | 'admins'
 var superAdminTicketFilter = 'all'; // 'all' | 'open' | 'resolved'
+var cachedPlatformAdmins = [];
 
 function switchSuperAdminTab(tab) {
   superAdminActiveTab = tab;
@@ -26,9 +27,21 @@ function renderSuperAdminView(container) {
   const tasks = store.getTasks();
   const supportTickets = store.getSupportTickets ? store.getSupportTickets() : [];
   const openTickets = supportTickets.filter(t => t.status !== 'resolved');
+  const adminProfile = store.getSuperAdminProfile ? store.getSuperAdminProfile() : { email: 'kidsstudytracker@gmail.com', role: 'Super Admin' };
 
   const parents = users.filter(u => u.role === 'parent');
   const children = users.filter(u => u.role === 'child');
+
+  // Trigger async admin fetch if tab is admins
+  if (superAdminActiveTab === 'admins' && cachedPlatformAdmins.length === 0) {
+    store.getPlatformAdmins().then(admins => {
+      cachedPlatformAdmins = admins;
+      const adminListElem = document.getElementById('platform-admins-list-container');
+      if (adminListElem) {
+        adminListElem.innerHTML = renderPlatformAdminsList(cachedPlatformAdmins);
+      }
+    });
+  }
 
   // Filtered families based on search query
   const cleanQ = superAdminSearchQuery.trim().toLowerCase();
@@ -56,9 +69,14 @@ function renderSuperAdminView(container) {
               <h1 style="font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.2;">
                 Platform Super Admin Console
               </h1>
-              <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">
-                Master Multi-Family Control &amp; Support Portal
-              </span>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 3px;">
+                <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">
+                  Master Multi-Family Control &amp; Team Portal
+                </span>
+                <span style="font-size: 11px; padding: 2px 8px; border-radius: 6px; background: #e0e7ff; color: #3730a3; font-weight: 700;">
+                  👤 ${escapeHtml(adminProfile.email)} (${escapeHtml(adminProfile.role)})
+                </span>
+              </div>
             </div>
           </div>
 
@@ -105,12 +123,27 @@ function renderSuperAdminView(container) {
               ${openTickets.length > 0 ? `${openTickets.length} New` : supportTickets.length}
             </span>
           </button>
+
+          <button 
+            type="button" 
+            class="btn ${superAdminActiveTab === 'admins' ? 'btn-primary' : 'btn-outline-secondary'}" 
+            style="font-size: 14px; font-weight: 700; padding: 10px 20px; display: flex; align-items: center; gap: 8px;"
+            onclick="switchSuperAdminTab('admins')"
+          >
+            <span>👥</span>
+            <span>Admins &amp; Team</span>
+            <span style="font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 800; ${superAdminActiveTab === 'admins' ? 'background: rgba(255,255,255,0.25); color: #fff;' : 'background: var(--bg-surface-alt); color: var(--text-muted);'}">
+              ${cachedPlatformAdmins.length > 0 ? cachedPlatformAdmins.length : 'Manage'}
+            </span>
+          </button>
         </div>
 
         <!-- Render Current Tab -->
         ${superAdminActiveTab === 'families'
           ? renderSuperAdminFamiliesTab({ families, parents, children, tasks, filteredFamilies })
-          : renderSuperAdminSupportDeskTab(supportTickets, openTickets)
+          : superAdminActiveTab === 'support'
+            ? renderSuperAdminSupportDeskTab(supportTickets, openTickets)
+            : renderSuperAdminAdminsTab()
         }
 
       </div>
@@ -369,6 +402,210 @@ function renderSuperAdminSupportDeskTab(supportTickets, openTickets) {
       </div>
     `}
   `;
+}
+
+// ----------------------------------------------------
+// Tab 3: Platform Admins & Team Management
+// ----------------------------------------------------
+function renderSuperAdminAdminsTab() {
+  return `
+    <div class="card" style="margin-bottom: 20px; padding: 18px 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0;">
+            👥 Platform Administrators &amp; Team
+          </h2>
+          <p style="font-size: 13px; color: var(--text-muted); margin: 4px 0 0;">
+            Manage authorized administrator accounts, roles, and console access permissions.
+          </p>
+        </div>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          onclick="openSuperAdminAddAdminModal()" 
+          style="font-size: 13px; font-weight: 700; padding: 8px 16px; display: flex; align-items: center; gap: 6px;"
+        >
+          ➕ Add Admin Member
+        </button>
+      </div>
+
+      <div id="platform-admins-list-container">
+        ${renderPlatformAdminsList(cachedPlatformAdmins)}
+      </div>
+    </div>
+  `;
+}
+
+function renderPlatformAdminsList(admins) {
+  if (!admins || admins.length === 0) {
+    return `
+      <div style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 14px;">
+        ⏳ Loading platform administrators...
+      </div>
+    `;
+  }
+
+  const currentAdmin = store.getSuperAdminProfile ? store.getSuperAdminProfile() : {};
+
+  return `
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      ${admins.map(admin => {
+        const isSelf = (currentAdmin.email && currentAdmin.email.toLowerCase() === (admin.email || '').toLowerCase());
+        const isOwner = (admin.email === 'kidsstudytracker@gmail.com');
+
+        return `
+          <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 8px; background: ${admin.active ? 'linear-gradient(135deg, #10b981, #059669)' : '#94a3b8'}; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                ${isOwner ? '👑' : '🛡️'}
+              </div>
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <strong style="font-size: 15px; color: var(--text-main);">${escapeHtml(admin.name || admin.email.split('@')[0])}</strong>
+                  ${isSelf ? '<span style="font-size: 11px; background: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-weight: 700;">You</span>' : ''}
+                  <span style="font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 700; ${admin.active ? 'background: #dcfce7; color: #15803d;' : 'background: #fee2e2; color: #b91c1c;'}">
+                    ${admin.active ? 'Active' : 'Deactivated'}
+                  </span>
+                </div>
+                <div style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">
+                  ✉️ ${escapeHtml(admin.email)} &bull; Role: <strong>${escapeHtml(admin.role || 'Super Admin')}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              ${!isOwner ? `
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary" 
+                  style="padding: 5px 10px; font-size: 12px;" 
+                  onclick="handleToggleAdminActive('${admin.id}', ${!admin.active})"
+                >
+                  ${admin.active ? 'Deactivate' : 'Activate'}
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-outline-danger" 
+                  style="padding: 5px 10px; font-size: 12px;" 
+                  onclick="handleDeleteAdminAccount('${admin.id}', '${escapeHtml(admin.email)}')"
+                  title="Remove Admin"
+                >
+                  🗑️
+                </button>
+              ` : `
+                <span style="font-size: 12px; color: var(--text-muted); font-style: italic;">
+                  Primary Platform Owner
+                </span>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function openSuperAdminAddAdminModal() {
+  const modalHtml = `
+    <div class="modal-overlay" id="super-admin-add-admin-modal" onclick="closeModalOnOutsideClick(event, 'super-admin-add-admin-modal')">
+      <div class="modal-card" style="max-width: 440px;">
+        <div class="modal-header">
+          <h3 class="modal-title">➕ Add Platform Admin</h3>
+          <button class="modal-close" onclick="closeModal('super-admin-add-admin-modal')">✕</button>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          Grant Super Admin dashboard access to another administrator account.
+        </p>
+
+        <form onsubmit="handleSuperAdminAddAdminSubmit(event)">
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px;">Admin Full Name</label>
+            <input type="text" id="new-admin-name" class="form-input" placeholder="e.g. Anand" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px;">Admin Email Address</label>
+            <input type="email" id="new-admin-email" class="form-input" placeholder="e.g. anand@gmail.com" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px;">Admin Role</label>
+            <select id="new-admin-role" class="form-select">
+              <option value="Super Admin">Super Admin (Full Access)</option>
+              <option value="Support Admin">Support Admin (Tickets Only)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="button" class="btn btn-outline-secondary" onclick="closeModal('super-admin-add-admin-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="save-new-admin-btn">Add Admin</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  showModal(modalHtml);
+}
+
+async function handleSuperAdminAddAdminSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById('new-admin-name').value.trim();
+  const email = document.getElementById('new-admin-email').value.trim().toLowerCase();
+  const role = document.getElementById('new-admin-role').value;
+  const btn = document.getElementById('save-new-admin-btn');
+
+  if (!email) return;
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Saving...';
+  }
+
+  try {
+    await store.addPlatformAdmin({ name, email, role });
+    cachedPlatformAdmins = await store.getPlatformAdmins();
+    closeModal('super-admin-add-admin-modal');
+    showToast(`Admin ${email} added successfully! 🛡️`, 'success');
+    renderApp();
+  } catch (err) {
+    showToast('Failed to add admin: ' + err.message, 'error');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = 'Add Admin';
+    }
+  }
+}
+
+async function handleToggleAdminActive(adminId, newActive) {
+  try {
+    await store.updatePlatformAdmin(adminId, { active: newActive });
+    cachedPlatformAdmins = await store.getPlatformAdmins();
+    showToast(newActive ? 'Admin account activated.' : 'Admin account deactivated.', 'info');
+    renderApp();
+  } catch (err) {
+    showToast('Failed to update admin: ' + err.message, 'error');
+  }
+}
+
+function handleDeleteAdminAccount(adminId, adminEmail) {
+  showConfirmDialog({
+    title: 'Remove Platform Admin? 🛡️',
+    message: `Are you sure you want to remove administrator "${adminEmail}"? They will lose access to the Super Admin console immediately.`,
+    icon: '⚠️',
+    confirmText: 'Yes, Remove Admin',
+    isDanger: true,
+    onConfirm: async () => {
+      try {
+        await store.deletePlatformAdmin(adminId);
+        cachedPlatformAdmins = await store.getPlatformAdmins();
+        showToast('Admin removed successfully.', 'info');
+        renderApp();
+      } catch (err) {
+        showToast('Failed to delete admin: ' + err.message, 'error');
+      }
+    }
+  });
 }
 
 function renderSuperAdminFamiliesListHtml(familiesList) {
@@ -652,15 +889,13 @@ function handleSuperAdminSaveFamily(e, familyId) {
 }
 
 function handleSuperAdminDeleteFamily(familyId, familyName) {
-  showConfirmDialog({
-    title: `Delete Family: ${familyName}?`,
-    message: `Are you sure you want to permanently delete "${familyName}"? This will remove all parent accounts, student profiles, and all assigned study tasks for this family. This action cannot be undone.`,
-    icon: '🗑️',
-    confirmText: 'Yes, Delete Family',
-    isDanger: true,
-    onConfirm: () => {
+  openDestructiveActionVerificationModal({
+    actionTitle: `Delete Family: ${familyName}`,
+    warningMessage: `You are about to permanently delete the family workspace "<strong>${escapeHtml(familyName)}</strong>". All associated parent accounts, student profiles, completed tasks, and reward histories will be permanently wiped. This action CANNOT be undone.`,
+    confirmButtonText: 'Permanently Delete Family',
+    onVerified: () => {
       store.deleteFamily(familyId);
-      showToast(`Family "${familyName}" and all related tasks were deleted.`, 'info');
+      showToast(`Family "${familyName}" and all related tasks were permanently deleted.`, 'info');
       renderApp();
     }
   });
@@ -1040,15 +1275,13 @@ function exportSuperAdminBackup() {
   showToast('Full Platform Backup exported! 📥', 'success');
 }
 
-// 7. Phase 2: Wipe All Cloud Test Data for Fresh Production Launch
+// 7. Phase 2: Wipe All Cloud Test Data with Strict Secondary Verification
 function handleSuperAdminWipeCloudData() {
-  showConfirmDialog({
-    title: 'Wipe All Cloud Test Data? 🔥',
-    message: 'WARNING: This will permanently delete all families, students, tasks, and reward histories from Google Firebase Firestore and reset to a 100% fresh, clean database for real users. Are you sure you want to proceed?',
-    icon: '⚠️',
-    confirmText: 'Yes, Wipe Everything',
-    isDanger: true,
-    onConfirm: async () => {
+  openDestructiveActionVerificationModal({
+    actionTitle: 'Wipe All Cloud Data 🔥',
+    warningMessage: 'CRITICAL WARNING: This will permanently delete ALL registered families, parent logins, students, study tasks, and points history from Google Firebase Firestore and reset to an empty database. Real user data cannot be recovered once wiped.',
+    confirmButtonText: 'Yes, Wipe All Cloud Data',
+    onVerified: async () => {
       showToast('Wiping cloud database... please wait.', 'info');
       try {
         await store.wipeAllCloudData();
@@ -1061,6 +1294,127 @@ function handleSuperAdminWipeCloudData() {
       }
     }
   });
+}
+
+/**
+ * Enhanced Security: Destructive Action Verification Modal
+ * Requires entering current admin password to confirm
+ */
+function openDestructiveActionVerificationModal({
+  actionTitle = 'Confirm Destructive Action',
+  warningMessage = '',
+  confirmButtonText = 'Confirm & Delete',
+  onVerified
+}) {
+  const modalId = 'sa-destructive-verify-modal';
+  const isDemo = (typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo');
+
+  const modalHtml = `
+    <div class="modal-overlay" id="${modalId}" onclick="closeModalOnOutsideClick(event, '${modalId}')">
+      <div class="modal-card" style="max-width: 440px; border-top: 5px solid #dc2626; padding: 24px;">
+        <div class="modal-header" style="justify-content: center; position: relative; margin-bottom: 12px;">
+          <h3 class="modal-title" style="color: #dc2626; display: flex; align-items: center; gap: 8px; font-size: 19px;">
+            ⚠️ Admin Security Verification
+          </h3>
+          <button class="modal-close" style="position: absolute; right: 0;" onclick="closeModal('${modalId}')">✕</button>
+        </div>
+
+        <div style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; font-size: 13px; color: #991b1b; line-height: 1.5; text-align: left;">
+          ${warningMessage}
+        </div>
+
+        <form id="destructive-verify-form" onsubmit="handleDestructiveActionVerifySubmit(event)">
+          <div class="form-group" style="margin-bottom: 20px; text-align: left;">
+            <label style="display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--slate-700);">
+              Re-enter Admin Password to Proceed
+            </label>
+            <input 
+              type="password" 
+              id="destructive-admin-password" 
+              class="form-input" 
+              placeholder="Enter your admin password" 
+              value="${isDemo ? 'admin123' : ''}"
+              required 
+              autofocus 
+            />
+            <small style="font-size: 11.5px; color: var(--text-muted); display: block; margin-top: 5px;">
+              Please enter your Super Admin password to authorize this action.
+            </small>
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="button" class="btn btn-outline-secondary" onclick="closeModal('${modalId}')" style="min-width: 90px;">
+              Cancel
+            </button>
+            <button 
+              type="submit" 
+              id="destructive-action-submit-btn" 
+              class="btn btn-danger" 
+              style="font-weight: 700; padding: 10px 18px; background: #dc2626; border-color: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);"
+            >
+              🔥 ${escapeHtml(confirmButtonText)}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  showModal(modalHtml);
+
+  // Attach submit handler
+  window._currentDestructiveCallback = async (enteredPass) => {
+    // Verify admin password
+    const isDemo = (typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo');
+    let passValid = false;
+
+    if (store.verifySuperAdminPassword(enteredPass)) {
+      passValid = true;
+    } else if (isDemo && enteredPass === 'admin123') {
+      passValid = true;
+    } else if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+      // Try re-authenticating with Firebase Auth currentUser email
+      const user = firebase.auth().currentUser;
+      const cred = firebase.auth.EmailAuthProvider.credential(user.email, enteredPass);
+      await user.reauthenticateWithCredential(cred);
+      passValid = true;
+    }
+
+    if (!passValid) {
+      throw new Error('Incorrect Admin Password! Verification failed.');
+    }
+
+    closeModal(modalId);
+    if (typeof onVerified === 'function') {
+      onVerified();
+    }
+  };
+}
+
+async function handleDestructiveActionVerifySubmit(e) {
+  e.preventDefault();
+  const passInput = document.getElementById('destructive-admin-password');
+  const submitBtn = document.getElementById('destructive-action-submit-btn');
+
+  if (!passInput) return;
+  const pass = passInput.value;
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Verifying...';
+  }
+
+  try {
+    if (typeof window._currentDestructiveCallback === 'function') {
+      await window._currentDestructiveCallback(pass);
+    }
+  } catch (err) {
+    showToast(err.message, 'error');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '🔥 Try Again';
+    }
+  }
 }
 
 // 8. Phase 2: Explicitly Load Demo Test Data if desired
