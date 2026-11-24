@@ -63,6 +63,8 @@ function renderParentView(container) {
     tabContent = renderParentSettingsTab();
   } else if (activeTab === 'help') {
     tabContent = renderParentHelpTab();
+  } else if (activeTab === 'support') {
+    tabContent = renderParentSupportTab();
   }
 
   container.innerHTML = `
@@ -116,6 +118,11 @@ function renderParentView(container) {
             <span class="nav-item-icon">❓</span>
             <span>Help &amp; User Guide</span>
           </button>
+
+          <button class="nav-item ${activeTab === 'support' ? 'active' : ''}" onclick="switchTab('support')">
+            <span class="nav-item-icon">🎧</span>
+            <span>Contact Support</span>
+          </button>
         </nav>
 
         <!-- Sidebar Footer -->
@@ -166,6 +173,10 @@ function renderParentView(container) {
 
             <button class="btn-theme-pill ${activeTab === 'help' ? 'active' : ''}" onclick="switchTab('help')" title="Help &amp; User Guide">
               ❓ <span class="theme-btn-text">Help</span>
+            </button>
+
+            <button class="btn-theme-pill ${activeTab === 'support' ? 'active' : ''}" onclick="switchTab('support')" title="Contact Support">
+              🎧 <span class="theme-btn-text">Support</span>
             </button>
 
             ${children.length > 0 ? `
@@ -2284,4 +2295,233 @@ function renderParentHelpTab() {
       </div>
     </div>
   `;
+}
+
+// ==========================================
+// PARENT CONTACT SUPPORT & HELP DESK TAB
+// ==========================================
+function renderParentSupportTab() {
+  const currentFamily = store.getCurrentFamily();
+  const currentUser = store.getCurrentUser();
+  const parentEmail = currentFamily ? (currentFamily.parentEmail || (currentUser ? currentUser.email : '') || '') : '';
+  const familyTickets = currentFamily ? store.getSupportTicketsForFamily(currentFamily.id) : [];
+
+  return `
+    <!-- Support Hero Card -->
+    <div class="card" style="background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%); color: #ffffff; padding: 24px 20px; border-radius: var(--radius-md); margin-bottom: 20px; box-shadow: var(--shadow-md);">
+      <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">Direct Help Desk &amp; Inquiries</div>
+      <h2 style="font-size: 22px; font-weight: 800; margin: 4px 0 8px; color: #ffffff;">🎧 Contact Support &amp; Feedback</h2>
+      <p style="font-size: 13px; margin: 0; opacity: 0.95; line-height: 1.5; max-width: 650px;">
+        Have questions about Kerala/CBSE syllabus routines, point allocations, or spotted an issue? Send us a direct message here and our support team will reply directly to your registered email.
+      </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; align-items: start;">
+      
+      <!-- Contact Support Form Card -->
+      <div class="card" style="margin-bottom: 0;">
+        <div class="section-head" style="margin-bottom: 14px;">
+          <h3 class="section-title">✉️ Send a Support Message</h3>
+        </div>
+
+        <!-- Family Summary Pill -->
+        <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <span>Workspace: <strong>${escapeHtml(currentFamily ? currentFamily.name : 'Your Family')}</strong></span>
+            <span style="margin: 0 4px;">•</span>
+            <span class="family-code-badge" style="font-size: 11px;">${currentFamily ? currentFamily.code : 'KIDS'}</span>
+          </div>
+          <div>Parent: <strong>${escapeHtml(currentUser ? currentUser.name : 'Parent')}</strong></div>
+        </div>
+
+        <form onsubmit="handleSupportFormSubmit(event)">
+          <!-- Reply-To Email Address -->
+          <div class="form-group">
+            <label class="form-label">Your Email for Replies <span style="color: #dc2626;">*</span></label>
+            <input 
+              type="email" 
+              name="replyEmail" 
+              class="form-input" 
+              value="${escapeHtml(parentEmail)}" 
+              placeholder="e.g. parent@gmail.com" 
+              required 
+            />
+            <small style="color: var(--text-muted); font-size: 11px;">Our support reply will be sent directly to this email address.</small>
+          </div>
+
+          <!-- Category Selection -->
+          <div class="form-group">
+            <label class="form-label">Support Category <span style="color: #dc2626;">*</span></label>
+            <select name="category" class="form-select" required>
+              <option value="General Inquiry">❓ General Inquiry &amp; Setup Help</option>
+              <option value="Syllabus &amp; Subjects">📚 Syllabus &amp; Subjects Question</option>
+              <option value="Rewards &amp; Points">⭐ Rewards &amp; Point Calculations</option>
+              <option value="Technical Issue">⚙️ App Issue or Bug Report</option>
+              <option value="Feature Suggestion">💡 Feature Request &amp; Feedback</option>
+            </select>
+          </div>
+
+          <!-- Subject Line -->
+          <div class="form-group">
+            <label class="form-label">Subject / Topic <span style="color: #dc2626;">*</span></label>
+            <input 
+              type="text" 
+              name="subject" 
+              class="form-input" 
+              placeholder="e.g. Need help assigning Chapter 4 homework" 
+              required 
+            />
+          </div>
+
+          <!-- Message Details -->
+          <div class="form-group">
+            <label class="form-label">Message Details <span style="color: #dc2626;">*</span></label>
+            <textarea 
+              name="message" 
+              class="form-input" 
+              rows="5" 
+              placeholder="Please describe your question or issue in detail so we can help you promptly..." 
+              required
+            ></textarea>
+          </div>
+
+          <button type="submit" id="support-submit-btn" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px; font-weight: 700;">
+            🚀 Send Support Message ➔
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Column: Official Info & Recent History -->
+      <div>
+        <!-- Official Support Info Box -->
+        <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--primary);">
+          <h3 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">
+            ℹ️ Direct Support Channels
+          </h3>
+          <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+            <div style="margin-bottom: 8px;">
+              📧 <strong>Official Email:</strong> 
+              <a href="mailto:kidsstudytracker@gmail.com" style="color: var(--primary); font-weight: 700; text-decoration: none;">kidsstudytracker@gmail.com</a>
+            </div>
+            <div style="margin-bottom: 8px;">
+              ⏱️ <strong>Response Window:</strong> We typically respond within 24 hours.
+            </div>
+            <div>
+              📖 <strong>Self-Help:</strong> Need quick answers? Check our 
+              <a href="javascript:void(0)" onclick="switchTab('help')" style="color: var(--primary); font-weight: 700; text-decoration: none;">Help &amp; User Guide</a> tab for step-by-step instructions.
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Tickets Submitted by this Family -->
+        <div class="card" style="margin-bottom: 0;">
+          <h3 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <span>📋 My Recent Requests</span>
+            <span class="badge badge-primary" style="font-size: 11px;">${familyTickets.length}</span>
+          </h3>
+
+          ${familyTickets.length === 0 ? `
+            <div style="text-align: center; padding: 24px 10px; color: var(--text-muted); font-size: 13px;">
+              <div style="font-size: 28px; margin-bottom: 6px;">📬</div>
+              No support requests submitted yet. Use the form to reach out to our team whenever you need help!
+            </div>
+          ` : `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${familyTickets.map(t => `
+                <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; font-size: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-weight: 800; color: var(--text-main);">${escapeHtml(t.ticketNumber || 'TKT')}</span>
+                    <span style="font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 700; ${t.status === 'resolved' ? 'background: #dcfce7; color: #15803d;' : 'background: #eff6ff; color: #1d4ed8;'}">
+                      ${t.status === 'resolved' ? '✅ Resolved' : '🟢 Sent / Under Review'}
+                    </span>
+                  </div>
+                  <div style="font-weight: 700; color: var(--text-main); font-size: 13px; margin-bottom: 4px;">
+                    ${escapeHtml(t.subject)}
+                  </div>
+                  <div style="color: var(--text-muted); font-size: 11px;">
+                    ${escapeHtml(t.category)} • ${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function handleSupportFormSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const replyEmail = form.replyEmail.value.trim();
+  const category = form.category.value;
+  const subject = form.subject.value.trim();
+  const message = form.message.value.trim();
+
+  const currentFamily = store.getCurrentFamily();
+  const currentUser = store.getCurrentUser();
+
+  if (!replyEmail || !replyEmail.includes('@')) {
+    showToast('Please enter a valid email address for replies.', 'warning');
+    return;
+  }
+
+  const submitBtn = document.getElementById('support-submit-btn');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Sending Message...';
+  }
+
+  const ticketNumber = 'TKT-' + Math.floor(1000 + Math.random() * 9000);
+  const ticketId = 'tkt_' + Date.now();
+  const ticket = {
+    id: ticketId,
+    ticketNumber: ticketNumber,
+    familyId: currentFamily ? currentFamily.id : null,
+    familyName: currentFamily ? currentFamily.name : 'Unknown Family',
+    familyCode: currentFamily ? currentFamily.code : 'N/A',
+    parentName: currentUser ? currentUser.name : 'Parent',
+    replyEmail: replyEmail,
+    category: category,
+    subject: subject,
+    message: message,
+    status: 'open',
+    createdAt: new Date().toISOString()
+  };
+
+  // 1. Save ticket in store & Cloud Firestore
+  store.addSupportTicket(ticket);
+
+  // 2. Dispatch email to kidsstudytracker@gmail.com via FormSubmit endpoint
+  try {
+    const emailPayload = {
+      _subject: `[KST Support ${ticketNumber}] ${category}: ${subject}`,
+      name: `${currentUser ? currentUser.name : 'Parent'} (${currentFamily ? currentFamily.name : ''} - ${currentFamily ? currentFamily.code : ''})`,
+      email: replyEmail,
+      family_code: currentFamily ? currentFamily.code : 'N/A',
+      category: category,
+      message: `TICKET: ${ticketNumber}\nFAMILY: ${currentFamily ? currentFamily.name : ''} (${currentFamily ? currentFamily.code : ''})\nPARENT: ${currentUser ? currentUser.name : ''}\nREPLY TO: ${replyEmail}\nCATEGORY: ${category}\n\nMESSAGE:\n${message}`,
+      _captcha: "false"
+    };
+
+    fetch('https://formsubmit.co/ajax/kidsstudytracker@gmail.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(emailPayload)
+    }).catch(err => console.warn('Email gateway notice:', err));
+  } catch (err) {
+    console.warn('Email dispatch skipped:', err);
+  }
+
+  showToast(`🎉 Support ticket ${ticketNumber} submitted! We will reply to ${replyEmail} shortly.`, 'success');
+  form.reset();
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '🚀 Send Support Message ➔';
+  }
+  renderApp();
 }

@@ -12,7 +12,8 @@ const STORAGE_KEYS = {
   REWARDS: ENV_PREFIX + 'rewards',
   CURRENT_USER_ID: ENV_PREFIX + 'current_user_id',
   SYLLABUS: ENV_PREFIX + 'syllabus',
-  CATEGORIES: ENV_PREFIX + 'categories'
+  CATEGORIES: ENV_PREFIX + 'categories',
+  SUPPORT_TICKETS: ENV_PREFIX + 'support_tickets'
 };
 
 const SESSION_KEYS = {
@@ -391,6 +392,17 @@ class DataStore {
         this.save(STORAGE_KEYS.REWARDS, cloudRewards);
         this.debouncedRender();
       }, err => console.warn('Rewards listener warning:', err));
+    } catch (e) {}
+
+    // 5. Support Tickets Cloud Listener
+    try {
+      firestoreDb.collection('support_tickets').onSnapshot(snapshot => {
+        const cloudTickets = [];
+        snapshot.forEach(doc => cloudTickets.push({ ...doc.data(), id: doc.id }));
+        cloudTickets.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        this.save(STORAGE_KEYS.SUPPORT_TICKETS, cloudTickets);
+        this.debouncedRender();
+      }, err => console.warn('Support tickets listener note:', err));
     } catch (e) {}
   }
 
@@ -1069,6 +1081,47 @@ class DataStore {
     if (backupData.syllabus && typeof backupData.syllabus === 'object') this.save(STORAGE_KEYS.SYLLABUS, backupData.syllabus);
     if (Array.isArray(backupData.categories)) this.save(STORAGE_KEYS.CATEGORIES, backupData.categories);
     return true;
+  }
+
+  // Support Tickets & Contact Requests
+  getSupportTickets() {
+    return this.get(STORAGE_KEYS.SUPPORT_TICKETS) || [];
+  }
+
+  getSupportTicketsForFamily(familyId) {
+    if (!familyId) return [];
+    return this.getSupportTickets().filter(t => t.familyId === familyId);
+  }
+
+  addSupportTicket(ticket) {
+    const tickets = this.getSupportTickets();
+    tickets.unshift(ticket);
+    this.save(STORAGE_KEYS.SUPPORT_TICKETS, tickets);
+    CloudSync.setDoc('support_tickets', ticket.id, ticket);
+    return ticket;
+  }
+
+  updateSupportTicket(ticketId, updates) {
+    const tickets = this.getSupportTickets();
+    let updated = null;
+    const newTickets = tickets.map(t => {
+      if (t.id === ticketId) {
+        updated = { ...t, ...updates };
+        return updated;
+      }
+      return t;
+    });
+    if (updated) {
+      this.save(STORAGE_KEYS.SUPPORT_TICKETS, newTickets);
+      CloudSync.setDoc('support_tickets', ticketId, updated);
+    }
+    return updated;
+  }
+
+  deleteSupportTicket(ticketId) {
+    const tickets = this.getSupportTickets().filter(t => t.id !== ticketId);
+    this.save(STORAGE_KEYS.SUPPORT_TICKETS, tickets);
+    CloudSync.deleteDoc('support_tickets', ticketId);
   }
 
   resetToDemo() {
