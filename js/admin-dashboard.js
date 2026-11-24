@@ -227,8 +227,10 @@ function renderSuperAdminFamilyCard(family) {
             <div style="font-size: 14px; font-weight: 700; color: var(--text-main);">
               Parent Admin: <strong>${parent ? escapeHtml(parent.name) : 'No Parent Assigned'}</strong>
             </div>
-            <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+            <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
               <span>4-digit PIN: <strong style="color: var(--primary); font-family: monospace; font-size: 14px;">${parent ? (parent.pin || '1234') : 'N/A'}</strong></span>
+              <span>•</span>
+              <span>✉️ <strong>${escapeHtml(family.parentEmail || (parent ? parent.email : '') || 'No Email')}</strong></span>
             </div>
           </div>
         </div>
@@ -302,7 +304,8 @@ function updateSuperAdminFamiliesList() {
     const matchName = (f.name || '').toLowerCase().includes(cleanQ);
     const codeNorm = (f.code || '').replace(/[-\s_]/g, '').toLowerCase();
     const matchCode = (f.code || '').toLowerCase().includes(cleanQ) || (normQ && codeNorm.includes(normQ));
-    return matchName || matchCode;
+    const matchEmail = (f.parentEmail || '').toLowerCase().includes(cleanQ);
+    return matchName || matchCode || matchEmail;
   });
   container.innerHTML = renderSuperAdminFamiliesListHtml(filtered);
 
@@ -356,6 +359,9 @@ function handleExitSuperAdmin() {
 function openSuperAdminEditFamilyModal(familyId) {
   const family = store.getFamilyById(familyId);
   if (!family) return;
+  const familyUsers = store.getUsersForFamily(familyId);
+  const parent = familyUsers.find(u => u.role === 'parent');
+  const parentEmail = family.parentEmail || (parent ? parent.email : '') || '';
 
   const modalHtml = `
     <div class="modal-overlay" id="sa-edit-family-modal" onclick="closeModalOnOutsideClick(event, 'sa-edit-family-modal')">
@@ -375,6 +381,12 @@ function openSuperAdminEditFamilyModal(familyId) {
             <label class="form-label">Family Code (Unique 6-8 chars)</label>
             <input type="text" name="code" class="form-input" style="text-transform: uppercase; font-weight: 700; letter-spacing: 1px;" value="${family.code}" required />
             <small style="color: var(--text-muted); font-size: 11px;">Must be unique across all families (e.g. KIDS101).</small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Parent Email Address <span style="color: #dc2626;">*</span></label>
+            <input type="email" name="parentEmail" class="form-input" value="${escapeHtml(parentEmail)}" placeholder="e.g. parent@gmail.com" required />
+            <small style="color: var(--text-muted); font-size: 11px;">Mandatory for customer support, communications, and PIN recovery.</small>
           </div>
 
           <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -401,6 +413,12 @@ function handleSuperAdminSaveFamily(e, familyId) {
   const form = e.target;
   const name = form.name.value.trim();
   const code = form.code.value.trim().toUpperCase();
+  const parentEmail = form.parentEmail.value.trim();
+
+  if (!parentEmail || !parentEmail.includes('@')) {
+    showToast('Please enter a valid email address.', 'warning');
+    return;
+  }
 
   // Validate unique code
   const existingWithCode = store.getFamilyByCode(code);
@@ -409,7 +427,15 @@ function handleSuperAdminSaveFamily(e, familyId) {
     return;
   }
 
-  store.updateFamily(familyId, { name, code });
+  store.updateFamily(familyId, { name, code, parentEmail });
+
+  // Also update parent user's email if present
+  const familyUsers = store.getUsersForFamily(familyId);
+  const parent = familyUsers.find(u => u.role === 'parent');
+  if (parent) {
+    store.updateUser(parent.id, { email: parentEmail });
+  }
+
   closeModal('sa-edit-family-modal');
   showToast(`Family details updated successfully! ✅`, 'success');
   renderApp();
@@ -573,6 +599,12 @@ function openSuperAdminAddFamilyModal() {
           </div>
 
           <div class="form-group">
+            <label class="form-label">Parent Email Address <span style="color: #dc2626;">*</span></label>
+            <input type="email" name="parentEmail" class="form-input" placeholder="e.g. ramesh.parent@gmail.com" required />
+            <small style="color: var(--text-muted); font-size: 11px;">Mandatory for customer support, communications, and PIN recovery.</small>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Parent 4-digit PIN</label>
             <input type="text" name="pin" class="form-input" value="${(typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo') ? '1234' : ''}" placeholder="e.g. 1234" maxlength="4" required />
           </div>
@@ -611,18 +643,25 @@ function handleSuperAdminCreateFamily(e) {
   const form = e.target;
   const familyName = form.familyName.value.trim();
   const parentName = form.parentName.value.trim();
+  const parentEmail = form.parentEmail.value.trim();
   const pin = form.pin.value.trim() || '1234';
   const avatar = form.avatar.value;
+
+  if (!parentEmail || !parentEmail.includes('@')) {
+    showToast('Please enter a valid Parent Email address.', 'warning');
+    return;
+  }
 
   const result = store.createFamily({
     name: familyName,
     parentName,
+    parentEmail,
     pin,
     avatar
   });
 
   closeModal('sa-add-family-modal');
-  showToast(`Family "${result.family.name}" created with Code: ${result.family.code}! 🎉`, 'success');
+  showToast(`Family "${result.family.name}" created with Code: ${result.family.code}! 🎉 (Parent: ${parentEmail})`, 'success');
   renderApp();
 }
 

@@ -25,12 +25,14 @@ const SEED_FAMILIES = [
     id: 'fam_101',
     name: "Rajeev's Family",
     code: 'KIDS101',
+    parentEmail: 'kidsstudytracker@gmail.com',
     createdAt: new Date().toISOString()
   },
   {
     id: 'fam_202',
     name: "Anand's Family",
     code: 'KIDS202',
+    parentEmail: 'anand.parent@gmail.com',
     createdAt: new Date().toISOString()
   }
 ];
@@ -42,6 +44,7 @@ const SEED_USERS = [
     id: 'user_parent',
     familyId: 'fam_101',
     name: 'Rajeev (Parent)',
+    email: 'kidsstudytracker@gmail.com',
     role: 'parent',
     pin: '9999',
     avatar: '👨‍👩‍👧‍👦'
@@ -75,6 +78,7 @@ const SEED_USERS = [
     id: 'user_parent_2',
     familyId: 'fam_202',
     name: 'Anand (Parent)',
+    email: 'anand.parent@gmail.com',
     role: 'parent',
     pin: '8888',
     avatar: '👨‍🏫'
