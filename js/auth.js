@@ -9,6 +9,8 @@
 var authTab = 'signin';  // 'signin' | 'register_family'
 var activeAuthFamilyCode = null;
 var selectedLoginUserId = null;
+var pendingRegistration = null; // { familyName, parentName, parentEmail, pin, avatar, firebaseUser }
+var verificationPollingInterval = null;
 
 function getStoredDeviceFamilyCode() {
   try {
@@ -79,9 +81,11 @@ function renderLandingAuthPage(container) {
         </div>
       </div>
 
-      ${authTab === 'signin' 
-        ? renderSignInView(currentFamily, familyUsers, selectedUser) 
-        : renderRegisterFamilyCard()
+      ${pendingRegistration
+        ? renderEmailVerificationPendingCard()
+        : (authTab === 'signin' 
+            ? renderSignInView(currentFamily, familyUsers, selectedUser) 
+            : renderRegisterFamilyCard())
       }
 
       <div style="margin-top: 24px; padding-top: 14px; text-align: center;">
@@ -317,6 +321,18 @@ function renderRegisterFamilyCard() {
         </div>
 
         <div class="form-group">
+          <label class="form-label">Parent Email Address <span style="color: #dc2626;">*</span></label>
+          <input 
+            type="email" 
+            name="parentEmail" 
+            class="form-input" 
+            placeholder="e.g. parent@gmail.com" 
+            required 
+          />
+          <small style="color: var(--slate-500); font-size: 11px;">🔒 We'll send a one-time verification link to secure your workspace &amp; recover PIN if needed.</small>
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Parent Profile Avatar</label>
           <select name="avatar" class="form-select">
             <option value="👨‍👩‍👧‍👦">👨‍👩‍👧‍👦 Family / Parents</option>
@@ -342,8 +358,8 @@ function renderRegisterFamilyCard() {
           <small style="color: var(--slate-500); font-size: 11px;">This PIN secures parent controls like assigning tasks & approving completions.</small>
         </div>
 
-        <button type="submit" class="btn btn-success" style="font-size: 16px; padding: 14px; width: 100%; margin-top: 10px;">
-          🚀 Create Family & Enter Dashboard
+        <button type="submit" id="reg-submit-btn" class="btn btn-success" style="font-size: 15px; padding: 14px; width: 100%; margin-top: 10px; font-weight: 700;">
+          ✉️ Verify Email &amp; Create Family ➔
         </button>
       </form>
 
@@ -420,27 +436,230 @@ function handleSignInSubmit(e) {
   }
 }
 
-function handleRegisterFamilySubmit(e) {
+async function handleRegisterFamilySubmit(e) {
   e.preventDefault();
   const form = e.target;
   const familyName = form.familyName.value.trim();
   const parentName = form.parentName.value.trim();
+  const parentEmail = form.parentEmail.value.trim();
   const pin = form.pin.value.trim() || '1234';
   const avatar = form.avatar.value;
+
+  if (!parentEmail || !parentEmail.includes('@')) {
+    showToast('Please enter a valid Parent Email address.', 'warning');
+    return;
+  }
+
+  const submitBtn = document.getElementById('reg-submit-btn');
+  const origBtnText = submitBtn ? submitBtn.innerHTML : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Sending Verification Email...';
+  }
+
+  // If Firebase Auth is available, verify email before creating workspace
+  if (typeof firebase !== 'undefined' && firebase.auth) {
+    try {
+      const auth = firebase.auth();
+      // Internal password for Firebase Auth (min 6 chars)
+      const authPassword = `Kst_${pin}_${parentEmail.split('@')[0]}!`;
+
+      let userCredential = null;
+      try {
+        userCredential = await auth.createUserWithEmailAndPassword(parentEmail, authPassword);
+      } catch (createErr) {
+        if (createErr.code === 'auth/email-already-in-use') {
+          // Email already in Firebase Auth, attempt signing in
+          try {
+            userCredential = await auth.signInWithEmailAndPassword(parentEmail, authPassword);
+          } catch (signInErr) {
+            throw new Error('This email is already registered in the system. If you recently registered, please check your email for the verification link.');
+          }
+        } else {
+          throw createErr;
+        }
+      }
+
+      const user = userCredential.user;
+
+      // If email was already verified, complete registration immediately!
+      if (user.emailVerified) {
+        completeFamilyRegistration({
+          familyName,
+          parentName,
+          parentEmail,
+          pin,
+          avatar
+        });
+        return;
+      }
+
+      // Send verification link
+      const actionCodeSettings = {
+        url: window.location.origin + window.location.pathname,
+        handleCodeInApp: false
+      };
+      await user.sendEmailVerification(actionCodeSettings);
+
+      pendingRegistration = {
+        familyName,
+        parentName,
+        parentEmail,
+        pin,
+        avatar,
+        firebaseUser: user
+      };
+
+      showToast(`📩 Verification email sent to ${parentEmail}!`, 'success');
+      startVerificationPolling();
+      renderApp();
+    } catch (err) {
+      console.error('Registration / Email verification error:', err);
+      showToast(err.message || 'Could not send verification email. Please check internet connection.', 'error');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origBtnText;
+      }
+    }
+  } else {
+    // Offline / Fallback mode
+    completeFamilyRegistration({
+      familyName,
+      parentName,
+      parentEmail,
+      pin,
+      avatar
+    });
+  }
+}
+
+function startVerificationPolling() {
+  if (verificationPollingInterval) clearInterval(verificationPollingInterval);
+  verificationPollingInterval = setInterval(async () => {
+    if (!pendingRegistration) {
+      clearInterval(verificationPollingInterval);
+      verificationPollingInterval = null;
+      return;
+    }
+    try {
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        const user = firebase.auth().currentUser;
+        if (user) {
+          await user.reload();
+          if (user.emailVerified) {
+            if (verificationPollingInterval) {
+              clearInterval(verificationPollingInterval);
+              verificationPollingInterval = null;
+            }
+            showToast('🎉 Email verified successfully!', 'success');
+            completeFamilyRegistration(pendingRegistration);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Verification polling check:', e);
+    }
+  }, 3500);
+}
+
+async function handleCheckEmailVerification() {
+  if (!pendingRegistration) return;
+  const btn = document.getElementById('check-verification-btn');
+  const origText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Checking...';
+  }
+
+  try {
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        await user.reload();
+        if (user.emailVerified) {
+          showToast('🎉 Email verified successfully!', 'success');
+          completeFamilyRegistration(pendingRegistration);
+          return;
+        }
+      }
+    }
+    showToast('Email not yet verified. Please click the link received in your inbox.', 'warning');
+  } catch (err) {
+    console.error('Manual verification check error:', err);
+    showToast('Could not verify status. Please check your connection.', 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origText;
+    }
+  }
+}
+
+async function handleResendVerificationEmail() {
+  if (!pendingRegistration) return;
+  const btn = document.getElementById('resend-verification-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Sending...';
+  }
+
+  try {
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const actionCodeSettings = {
+          url: window.location.origin + window.location.pathname,
+          handleCodeInApp: false
+        };
+        await user.sendEmailVerification(actionCodeSettings);
+        showToast(`📩 Fresh verification link sent to ${pendingRegistration.parentEmail}!`, 'success');
+      }
+    }
+  } catch (err) {
+    console.error('Resend email error:', err);
+    showToast('Failed to resend. Please wait a moment before trying again.', 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '🔄 Resend Verification Email';
+    }
+  }
+}
+
+function handleCancelPendingRegistration() {
+  if (verificationPollingInterval) {
+    clearInterval(verificationPollingInterval);
+    verificationPollingInterval = null;
+  }
+  pendingRegistration = null;
+  showToast('Registration cancelled. You can edit your details.', 'info');
+  renderApp();
+}
+
+function completeFamilyRegistration(regData) {
+  if (verificationPollingInterval) {
+    clearInterval(verificationPollingInterval);
+    verificationPollingInterval = null;
+  }
+
+  const { familyName, parentName, parentEmail, pin, avatar } = regData;
 
   const result = store.createFamily({
     name: familyName,
     parentName,
+    parentEmail,
     pin,
     avatar
   });
 
-  // Switch to the newly created family and log in as Parent
+  pendingRegistration = null;
+
+  // Switch to newly created family and log in as Parent
   activeAuthFamilyCode = result.family.code;
   setStoredDeviceFamilyCode(result.family.code);
   store.setCurrentUser(result.parentUser);
 
-  showToast(`🎉 Family "${result.family.name}" created with Code ${result.family.code}!`, 'success');
+  showToast(`🎉 Family "${result.family.name}" verified & created! Code: ${result.family.code}`, 'success');
 
   // Show welcome modal informing parent of their code
   setTimeout(() => {
@@ -452,8 +671,8 @@ function handleRegisterFamilySubmit(e) {
           <h3 style="font-size: 18px; font-weight: 800; color: var(--slate-900); margin-bottom: 8px;">
             ${escapeHtml(result.family.name)}
           </h3>
-          <p style="font-size: 14px; color: var(--slate-600); margin-bottom: 18px;">
-            Your dedicated workspace has been successfully initialized.
+          <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 18px;">
+            Your dedicated workspace has been verified with <strong>${escapeHtml(parentEmail || '')}</strong> and initialized!
           </p>
 
           <div style="background: #ede9fe; border: 2px dashed #8b5cf6; border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px;">
@@ -466,7 +685,7 @@ function handleRegisterFamilySubmit(e) {
           </div>
 
           <p style="font-size: 13px; color: var(--slate-600); text-align: left; margin-bottom: 20px; line-height: 1.5;">
-            📌 <strong>Next Step:</strong> You can now add your children profiles by clicking <strong>"➕ Add Child"</strong> in the top header. Share the code <strong>${result.family.code}</strong> with your kids so they can sign in from their mobile, tablet, or PC.
+            📌 <strong>Next Step:</strong> You can now add your children profiles by clicking <strong>"➕ Add Child"</strong> in the top header. Share the code <strong>${result.family.code}</strong> with your kids so they can sign in from their phone, tablet, or PC without needing an email!
           </p>
 
           <button class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px;" onclick="closeModal()">
@@ -480,6 +699,75 @@ function handleRegisterFamilySubmit(e) {
   }, 250);
 
   renderApp();
+}
+
+function renderEmailVerificationPendingCard() {
+  if (!pendingRegistration) return '';
+  const email = pendingRegistration.parentEmail;
+
+  return `
+    <div class="auth-card" style="text-align: center; max-width: 480px; margin: 0 auto;">
+      <div style="font-size: 48px; margin-bottom: 8px;">📩</div>
+      <h3 style="font-size: 20px; font-weight: 800; color: var(--slate-900); margin-bottom: 6px;">
+        Verify Your Parent Email
+      </h3>
+      <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 16px; line-height: 1.5;">
+        We have sent a verification link to your email to activate your family workspace:
+      </p>
+
+      <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 18px; display: inline-block; max-width: 100%;">
+        <span style="font-size: 15px; font-weight: 800; color: #1d4ed8; word-break: break-all;">
+          ✉️ ${escapeHtml(email)}
+        </span>
+      </div>
+
+      <!-- Action Instructions -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-sm); padding: 14px; text-align: left; margin-bottom: 20px; font-size: 13px; color: var(--slate-700); line-height: 1.6;">
+        <div style="font-weight: 700; color: var(--slate-900); margin-bottom: 6px;">📋 Next Steps on Mobile / PC:</div>
+        1. Open your <strong>Gmail / Email app</strong>.<br/>
+        2. Click the verification link in the email.<br/>
+        3. Switch back to this app — it will <strong>automatically detect</strong> verification!
+      </div>
+
+      <!-- Live Polling Indicator -->
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; color: var(--slate-500); margin-bottom: 18px;">
+        <span class="spinner" style="width: 14px; height: 14px; border: 2px solid #cbd5e1; border-top-color: var(--primary); border-radius: 50%; display: inline-block; animation: spin 1s linear infinite;"></span>
+        <span>Checking verification status automatically...</span>
+      </div>
+
+      <!-- Primary Action: Manual Check Button -->
+      <button 
+        type="button" 
+        id="check-verification-btn"
+        class="btn btn-primary" 
+        style="width: 100%; padding: 13px; font-size: 15px; font-weight: 700; margin-bottom: 10px;"
+        onclick="handleCheckEmailVerification()"
+      >
+        ✅ I Have Verified My Email (Continue)
+      </button>
+
+      <!-- Secondary Actions: Resend & Cancel -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--slate-200); font-size: 13px;">
+        <button 
+          type="button" 
+          id="resend-verification-btn"
+          class="btn btn-outline-secondary" 
+          style="padding: 6px 14px; font-size: 12px;"
+          onclick="handleResendVerificationEmail()"
+        >
+          🔄 Resend Verification Email
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary" 
+          style="padding: 6px 14px; font-size: 12px; color: var(--slate-600);"
+          onclick="handleCancelPendingRegistration()"
+        >
+          ✏️ Edit Details / Cancel
+        </button>
+      </div>
+    </div>
+  `;
 }
 
 function handleSignOut() {

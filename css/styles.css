@@ -2639,3 +2639,7 @@ body {
     padding: 6px 8px !important;
   }
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

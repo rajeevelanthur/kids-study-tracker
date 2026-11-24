@@ -434,7 +434,7 @@ class DataStore {
     return this.getFamilies().find(f => normalize(f.code) === clean) || null;
   }
 
-  createFamily({ name, parentName, pin, avatar }) {
+  createFamily({ name, parentName, parentEmail, pin, avatar }) {
     const families = this.getFamilies();
     const id = 'fam_' + Date.now();
     const codeNum = Math.floor(100 + Math.random() * 900);
@@ -444,6 +444,7 @@ class DataStore {
       id,
       name: name || `${parentName}'s Family`,
       code,
+      parentEmail: parentEmail || null,
       createdAt: new Date().toISOString()
     };
     families.push(newFamily);
@@ -454,6 +455,7 @@ class DataStore {
       id: 'user_' + Date.now(),
       familyId: id,
       name: parentName,
+      email: parentEmail || null,
       role: 'parent',
       pin: pin || '1234',
       avatar: avatar || '👨‍👩‍👧‍👦'
