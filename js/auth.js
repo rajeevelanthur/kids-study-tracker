@@ -864,66 +864,60 @@ async function handleSuperAdminLoginSubmit(e) {
   try {
     const isDemo = (typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo');
 
-    // 1. Check if Firebase Auth is available
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-      const auth = firebase.auth();
-      let authSuccess = false;
+    // 1. Fetch current admins from cloud Firestore platform_admins
+    const admins = await store.getPlatformAdmins();
+    const matched = admins.find(a => a.email.toLowerCase() === email);
 
-      // First check if the email exists in platform_admins whitelist
-      const admins = await store.getPlatformAdmins();
-      const matched = admins.find(a => a.email.toLowerCase() === email);
+    if (!matched && email !== 'kidsstudytracker@gmail.com') {
+      throw new Error('Access Denied: This email is not registered as a platform administrator.');
+    }
 
-      if (matched && matched.active === false) {
-        throw new Error('This admin account has been deactivated. Please contact the platform owner.');
-      }
+    if (matched && matched.active === false) {
+      throw new Error('This admin account has been deactivated. Please contact the platform owner.');
+    }
 
-      // Try Firebase Auth
+    let authSuccess = false;
+
+    // Check Cloud Password saved in platform_admins
+    if (matched && matched.password && pass === matched.password) {
+      authSuccess = true;
+    } else if (isDemo && pass === 'admin123') {
+      // In demo mode, admin123 is accepted for convenience
+      authSuccess = true;
+    } else if (matched && !matched.password && (pass === 'admin123' || store.verifySuperAdminPassword(pass))) {
+      // Initial migration fallback for existing primary admin before password change
+      authSuccess = true;
+    } else if (typeof firebase !== 'undefined' && firebase.auth) {
+      // Try Firebase Auth email/pass
       try {
-        await auth.signInWithEmailAndPassword(email, pass);
+        await firebase.auth().signInWithEmailAndPassword(email, pass);
         authSuccess = true;
       } catch (authErr) {
-        // If demo mode or local password matches for an authorized admin or primary admin
-        if ((isDemo && pass === 'admin123' && (matched || email === 'kidsstudytracker@gmail.com' || email.includes('admin'))) ||
-            (store.verifySuperAdminPassword(pass) && (matched || email === 'kidsstudytracker@gmail.com' || email.includes('admin')))) {
-          authSuccess = true;
-        } else {
-          throw new Error('Authentication failed: Invalid admin email or password.');
-        }
-      }
-
-      if (authSuccess) {
-        if (!matched && email !== 'kidsstudytracker@gmail.com' && !email.includes('admin')) {
-          throw new Error('Access Denied: This email is not authorized as a platform admin.');
-        }
-
-        const adminProfile = matched ? {
-          email: matched.email,
-          name: matched.name,
-          role: matched.role || 'Super Admin'
-        } : {
-          email: email,
-          name: email.split('@')[0],
-          role: 'Super Admin'
-        };
-
-        closeModal('super-admin-login-modal');
-        store.setSuperAdminSession(true, adminProfile);
-        showToast(`Welcome back, ${adminProfile.name}! 🛡️`, 'success');
-        renderApp();
-        return;
-      }
-    } else {
-      // Local/Offline Fallback Verification
-      if (store.verifySuperAdminPassword(pass)) {
-        closeModal('super-admin-login-modal');
-        store.setSuperAdminSession(true, { email, name: email.split('@')[0], role: 'Super Admin' });
-        showToast('Authenticated as Super Admin 🛡️', 'success');
-        renderApp();
-        return;
-      } else {
-        throw new Error('Invalid Super Admin credentials.');
+        // Fall through
       }
     }
+
+    if (!authSuccess) {
+      throw new Error('Authentication failed: Invalid admin email or password.');
+    }
+
+    const adminProfile = matched ? {
+      id: matched.id,
+      email: matched.email,
+      name: matched.name,
+      role: matched.role || 'Super Admin'
+    } : {
+      id: 'primary_owner',
+      email: email,
+      name: email.split('@')[0],
+      role: 'Super Admin'
+    };
+
+    closeModal('super-admin-login-modal');
+    store.setSuperAdminSession(true, adminProfile);
+    showToast(`Welcome back, ${adminProfile.name}! 🛡️`, 'success');
+    renderApp();
+    return;
   } catch (err) {
     showToast(err.message || 'Login failed. Please check credentials.', 'error');
     if (submitBtn) {

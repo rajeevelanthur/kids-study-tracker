@@ -84,9 +84,6 @@ function renderSuperAdminView(container) {
             <button class="btn btn-primary" onclick="openSuperAdminAddFamilyModal()" style="font-size: 13px; padding: 7px 14px;">
               ➕ Add New Family
             </button>
-            <button class="btn btn-outline-primary" onclick="openSuperAdminChangePasswordModal()" style="font-size: 13px; padding: 7px 14px;" title="Change master password">
-              🔑 Password
-            </button>
             <button class="btn btn-outline-secondary" onclick="exportSuperAdminBackup()" style="font-size: 13px; padding: 7px 14px;" title="Export entire platform database as JSON">
               📥 Backup JSON
             </button>
@@ -408,6 +405,9 @@ function renderSuperAdminSupportDeskTab(supportTickets, openTickets) {
 // Tab 3: Platform Admins & Team Management
 // ----------------------------------------------------
 function renderSuperAdminAdminsTab() {
+  const currentAdmin = store.getSuperAdminProfile ? store.getSuperAdminProfile() : {};
+  const isCurrentPrimaryOwner = (currentAdmin.email && currentAdmin.email.toLowerCase() === 'kidsstudytracker@gmail.com');
+
   return `
     <div class="card" style="margin-bottom: 20px; padding: 18px 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
@@ -419,14 +419,16 @@ function renderSuperAdminAdminsTab() {
             Manage authorized administrator accounts, roles, and console access permissions.
           </p>
         </div>
-        <button 
-          type="button" 
-          class="btn btn-primary" 
-          onclick="openSuperAdminAddAdminModal()" 
-          style="font-size: 13px; font-weight: 700; padding: 8px 16px; display: flex; align-items: center; gap: 6px;"
-        >
-          ➕ Add Admin Member
-        </button>
+        ${isCurrentPrimaryOwner ? `
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            onclick="openSuperAdminAddAdminModal()" 
+            style="font-size: 13px; font-weight: 700; padding: 8px 16px; display: flex; align-items: center; gap: 6px;"
+          >
+            ➕ Add Admin Member
+          </button>
+        ` : ''}
       </div>
 
       <div id="platform-admins-list-container">
@@ -446,12 +448,16 @@ function renderPlatformAdminsList(admins) {
   }
 
   const currentAdmin = store.getSuperAdminProfile ? store.getSuperAdminProfile() : {};
+  const isCurrentPrimaryOwner = (currentAdmin.email && currentAdmin.email.toLowerCase() === 'kidsstudytracker@gmail.com');
 
   return `
     <div style="display: flex; flex-direction: column; gap: 12px;">
       ${admins.map(admin => {
         const isSelf = (currentAdmin.email && currentAdmin.email.toLowerCase() === (admin.email || '').toLowerCase());
         const isOwner = (admin.email === 'kidsstudytracker@gmail.com');
+
+        // Can change password if: logged in as primary owner OR this is the logged-in admin's own card
+        const canChangePassword = isCurrentPrimaryOwner || isSelf;
 
         return `
           <div style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -474,7 +480,19 @@ function renderPlatformAdminsList(admins) {
             </div>
 
             <div style="display: flex; align-items: center; gap: 8px;">
-              ${!isOwner ? `
+              ${canChangePassword ? `
+                <button 
+                  type="button" 
+                  class="btn btn-outline-primary" 
+                  style="padding: 5px 12px; font-size: 12px; font-weight: 700;" 
+                  onclick="openAdminChangePasswordModal('${admin.id}', '${escapeHtml(admin.name || admin.email)}', '${escapeHtml(admin.email)}')"
+                  title="Change login password"
+                >
+                  🔑 Password
+                </button>
+              ` : ''}
+
+              ${!isOwner ? (isCurrentPrimaryOwner ? `
                 <button 
                   type="button" 
                   class="btn btn-outline-secondary" 
@@ -492,7 +510,7 @@ function renderPlatformAdminsList(admins) {
                 >
                   🗑️
                 </button>
-              ` : `
+              ` : '') : `
                 <span style="font-size: 12px; color: var(--text-muted); font-style: italic;">
                   Primary Platform Owner
                 </span>
@@ -503,6 +521,89 @@ function renderPlatformAdminsList(admins) {
       }).join('')}
     </div>
   `;
+}
+
+function openAdminChangePasswordModal(adminId, adminName, adminEmail) {
+  const modalHtml = `
+    <div class="modal-overlay" id="admin-change-pass-modal" onclick="closeModalOnOutsideClick(event, 'admin-change-pass-modal')">
+      <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-header">
+          <h3 class="modal-title">🔑 Change Admin Password</h3>
+          <button class="modal-close" onclick="closeModal('admin-change-pass-modal')">✕</button>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          Set a new cloud password for <strong>${escapeHtml(adminName)}</strong> (<code style="font-size: 12px;">${escapeHtml(adminEmail)}</code>). This will take effect across all devices immediately.
+        </p>
+
+        <form onsubmit="handleAdminChangePasswordSubmit(event, '${adminId}', '${escapeHtml(adminEmail)}')">
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px;">New Password</label>
+            <input 
+              type="password" 
+              id="admin-new-password-input" 
+              class="form-input" 
+              placeholder="Enter new strong password" 
+              required 
+              minlength="4" 
+              autofocus 
+            />
+            <small style="font-size: 11.5px; color: var(--text-muted); display: block; margin-top: 4px;">
+              Minimum 4 characters (letters, numbers, or symbols).
+            </small>
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button type="button" class="btn btn-outline-secondary" onclick="closeModal('admin-change-pass-modal')">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="save-admin-pass-btn">💾 Save Cloud Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  showModal(modalHtml);
+}
+
+async function handleAdminChangePasswordSubmit(e, adminId, adminEmail) {
+  e.preventDefault();
+  const input = document.getElementById('admin-new-password-input');
+  const btn = document.getElementById('save-admin-pass-btn');
+  if (!input) return;
+  const newPass = input.value.trim();
+
+  if (newPass.length < 4) {
+    showToast('Password must be at least 4 characters long.', 'warning');
+    return;
+  }
+
+  // Security Verification: Only primary owner OR the admin themselves can update this password
+  const currentAdmin = store.getSuperAdminProfile ? store.getSuperAdminProfile() : {};
+  const isPrimaryOwner = (currentAdmin.email && currentAdmin.email.toLowerCase() === 'kidsstudytracker@gmail.com');
+  const isSelf = (currentAdmin.email && currentAdmin.email.toLowerCase() === (adminEmail || '').toLowerCase());
+
+  if (!isPrimaryOwner && !isSelf) {
+    showToast('Permission Denied: You can only change your own password.', 'error');
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Saving to Cloud...';
+  }
+
+  try {
+    await store.updateAdminPassword(adminId, newPass);
+    cachedPlatformAdmins = await store.getPlatformAdmins();
+    closeModal('admin-change-pass-modal');
+    showToast(`Password updated for ${adminEmail}! 🔑`, 'success');
+    renderApp();
+  } catch (err) {
+    showToast('Failed to update password: ' + err.message, 'error');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '💾 Save Cloud Password';
+    }
+  }
 }
 
 function openSuperAdminAddAdminModal() {
@@ -529,12 +630,17 @@ function openSuperAdminAddAdminModal() {
             <input type="email" id="new-admin-email" class="form-input" placeholder="e.g. anand@gmail.com" required />
           </div>
 
-          <div class="form-group" style="margin-bottom: 18px;">
+          <div class="form-group" style="margin-bottom: 12px;">
             <label style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px;">Admin Role</label>
             <select id="new-admin-role" class="form-select">
               <option value="Super Admin">Super Admin (Full Access)</option>
               <option value="Support Admin">Support Admin (Tickets Only)</option>
             </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 18px;">
+            <label style="display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px;">Initial Login Password</label>
+            <input type="password" id="new-admin-password" class="form-input" placeholder="Set password for this admin" minlength="4" required />
           </div>
 
           <div style="display: flex; gap: 10px; justify-content: flex-end;">
@@ -553,6 +659,7 @@ async function handleSuperAdminAddAdminSubmit(e) {
   const name = document.getElementById('new-admin-name').value.trim();
   const email = document.getElementById('new-admin-email').value.trim().toLowerCase();
   const role = document.getElementById('new-admin-role').value;
+  const password = document.getElementById('new-admin-password').value.trim();
   const btn = document.getElementById('save-new-admin-btn');
 
   if (!email) return;
@@ -563,7 +670,7 @@ async function handleSuperAdminAddAdminSubmit(e) {
   }
 
   try {
-    await store.addPlatformAdmin({ name, email, role });
+    await store.addPlatformAdmin({ name, email, role, password });
     cachedPlatformAdmins = await store.getPlatformAdmins();
     closeModal('super-admin-add-admin-modal');
     showToast(`Admin ${email} added successfully! 🛡️`, 'success');
@@ -1247,7 +1354,7 @@ function openSuperAdminChangePasswordModal() {
   container.appendChild(temp.firstElementChild);
 }
 
-function handleSuperAdminSavePassword(e) {
+async function handleSuperAdminSavePassword(e) {
   e.preventDefault();
   const form = e.target;
   const newPass = form.newPassword.value.trim();
@@ -1255,9 +1362,30 @@ function handleSuperAdminSavePassword(e) {
     showToast('Password must be at least 4 characters long.', 'warning');
     return;
   }
-  store.setSuperAdminPassword(newPass);
-  closeModal('sa-change-pass-modal');
-  showToast('Super Admin Password updated successfully! 🔑', 'success');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '⏳ Saving to Cloud...';
+  }
+  try {
+    store.setSuperAdminPassword(newPass);
+    // Find primary owner in platform_admins and update cloud password
+    const admins = await store.getPlatformAdmins();
+    const primary = admins.find(a => a.email === 'kidsstudytracker@gmail.com') || admins[0];
+    if (primary && primary.id) {
+      await store.updateAdminPassword(primary.id, newPass);
+    }
+    cachedPlatformAdmins = await store.getPlatformAdmins();
+    closeModal('sa-change-pass-modal');
+    showToast('Super Admin Cloud Password updated successfully! 🔑', 'success');
+    renderApp();
+  } catch (err) {
+    showToast('Failed to update password: ' + err.message, 'error');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '💾 Save New Password';
+    }
+  }
 }
 
 // 6. Platform Backup Export
@@ -1333,7 +1461,8 @@ function openDestructiveActionVerificationModal({
               id="destructive-admin-password" 
               class="form-input" 
               placeholder="Enter your admin password" 
-              value="${isDemo ? 'admin123' : ''}"
+              value=""
+              autocomplete="new-password"
               required 
               autofocus 
             />
@@ -1368,16 +1497,24 @@ function openDestructiveActionVerificationModal({
     const isDemo = (typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo');
     let passValid = false;
 
-    if (store.verifySuperAdminPassword(enteredPass)) {
+    // Check against current admin's cloud password
+    const currentAdmin = store.getSuperAdminProfile ? store.getSuperAdminProfile() : {};
+    const admins = await store.getPlatformAdmins();
+    const matched = admins.find(a => (a.email || '').toLowerCase() === (currentAdmin.email || '').toLowerCase());
+
+    if (matched && matched.password && enteredPass === matched.password) {
+      passValid = true;
+    } else if (store.verifySuperAdminPassword(enteredPass)) {
       passValid = true;
     } else if (isDemo && enteredPass === 'admin123') {
       passValid = true;
     } else if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
-      // Try re-authenticating with Firebase Auth currentUser email
-      const user = firebase.auth().currentUser;
-      const cred = firebase.auth.EmailAuthProvider.credential(user.email, enteredPass);
-      await user.reauthenticateWithCredential(cred);
-      passValid = true;
+      try {
+        const user = firebase.auth().currentUser;
+        const cred = firebase.auth.EmailAuthProvider.credential(user.email, enteredPass);
+        await user.reauthenticateWithCredential(cred);
+        passValid = true;
+      } catch (e) {}
     }
 
     if (!passValid) {

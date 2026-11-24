@@ -612,6 +612,7 @@ class DataStore {
         email: 'kidsstudytracker@gmail.com',
         role: 'Super Admin',
         name: 'Platform Owner',
+        password: this.getSuperAdminPassword() || 'admin123',
         active: true,
         createdAt: new Date().toISOString()
       }
@@ -623,9 +624,14 @@ class DataStore {
         if (!snap.empty) {
           const admins = [];
           snap.forEach(doc => admins.push({ id: doc.id, ...doc.data() }));
+          // Ensure primary owner exists in the list
+          if (!admins.some(a => a.email === 'kidsstudytracker@gmail.com')) {
+            await firestoreDb.collection('platform_admins').doc('primary_owner').set(defaultList[0]);
+            admins.unshift(defaultList[0]);
+          }
           return admins;
         } else {
-          // Pre-seed primary admin if collection is empty
+          // Pre-seed primary admin with password if collection is empty
           await firestoreDb.collection('platform_admins').doc('primary_owner').set(defaultList[0]);
           return defaultList;
         }
@@ -638,7 +644,7 @@ class DataStore {
     return local ? JSON.parse(local) : defaultList;
   }
 
-  async addPlatformAdmin({ email, name, role = 'Super Admin' }) {
+  async addPlatformAdmin({ email, name, role = 'Super Admin', password = 'admin' }) {
     const cleanEmail = (email || '').trim().toLowerCase();
     if (!cleanEmail) throw new Error('Valid email address is required.');
 
@@ -646,6 +652,7 @@ class DataStore {
       email: cleanEmail,
       name: (name || '').trim() || cleanEmail.split('@')[0],
       role: role || 'Super Admin',
+      password: (password || '').trim() || 'admin123',
       active: true,
       addedAt: new Date().toISOString()
     };
@@ -661,6 +668,25 @@ class DataStore {
     const updated = [...currentAdmins.filter(a => a.email !== cleanEmail), adminDoc];
     localStorage.setItem('kst_platform_admins', JSON.stringify(updated));
     return adminDoc;
+  }
+
+  async updateAdminPassword(adminId, newPassword) {
+    if (!newPassword || newPassword.trim().length < 4) {
+      throw new Error('Password must be at least 4 characters long.');
+    }
+    const cleanPass = newPassword.trim();
+    if (CloudSync.isReady() && adminId) {
+      await firestoreDb.collection('platform_admins').doc(adminId).set({ password: cleanPass }, { merge: true });
+    }
+    const currentAdmins = await this.getPlatformAdmins();
+    const updated = currentAdmins.map(a => a.id === adminId ? { ...a, password: cleanPass } : a);
+    localStorage.setItem('kst_platform_admins', JSON.stringify(updated));
+
+    // Also update local master password if primary owner
+    const matched = currentAdmins.find(a => a.id === adminId);
+    if (matched && matched.email === 'kidsstudytracker@gmail.com') {
+      this.setSuperAdminPassword(cleanPass);
+    }
   }
 
   async updatePlatformAdmin(adminId, updates) {
