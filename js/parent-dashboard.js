@@ -2267,11 +2267,59 @@ function renderParentHelpTab() {
       </div>
     </div>
 
-    <!-- Topic 6: Frequently Asked Questions (FAQ) -->
+    <!-- Topic 6: Contact Support & Help Desk -->
+    <div class="help-topic-card">
+      <div class="help-topic-header">
+        <span style="font-size: 22px;">🎧</span>
+        <h3 class="help-topic-title">6. Contact Support &amp; Help Desk</h3>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+        Have a question about routines, point allocations, or spotted an issue? Our direct helpdesk is built right into your dashboard.
+      </p>
+
+      <div class="help-step-list">
+        <div class="help-step-item">
+          <span class="help-step-num">1</span>
+          <div>
+            <strong>Submit Inquiries:</strong> Click the <strong>"🎧 Contact Support"</strong> tab in the navigation menu. Select a category (e.g., <em>Curriculum &amp; Syllabus Question</em> or <em>Bug Report</em>), write your message, and submit.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">2</span>
+          <div>
+            <strong>Direct Email Replies:</strong> Your ticket is immediately logged with a tracking number (e.g., <code>TKT-1042</code>) and delivered to <strong>kidsstudytracker@gmail.com</strong>. Our team replies directly to your verified parent email address.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">3</span>
+          <div>
+            <strong>Live Ticket Tracking:</strong> View the live status (<code>🟢 Open</code> or <code>✅ Resolved</code>) of all your past requests in the <strong>"My Recent Requests"</strong> section of the support page.
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px;">
+        <button class="btn btn-outline-primary" style="padding: 6px 14px; font-size: 12px; font-weight: 700;" onclick="switchTab('support')">
+          🎧 Open Contact Support Tab
+        </button>
+      </div>
+    </div>
+
+    <!-- Topic 7: Frequently Asked Questions (FAQ) -->
     <div class="help-topic-card">
       <div class="help-topic-header">
         <span style="font-size: 22px;">❓</span>
-        <h3 class="help-topic-title">6. Frequently Asked Questions (FAQ)</h3>
+        <h3 class="help-topic-title">7. Frequently Asked Questions (FAQ)</h3>
+      </div>
+
+      <div class="help-faq-item">
+        <div class="help-faq-q">Q: How do I contact support or report an issue?</div>
+        <div class="help-faq-a">A: Click the <strong>"🎧 Contact Support"</strong> tab in the navigation menu. Select an inquiry category, type your question, and submit. Our support team will reply directly to your registered email address from <code>kidsstudytracker@gmail.com</code>.</div>
+      </div>
+
+      <div class="help-faq-item">
+        <div class="help-faq-q">Q: Why is a parent email address required?</div>
+        <div class="help-faq-a">A: The parent email address ensures family workspace security, verifies legitimate account registration, and allows our support team to respond directly to your help inquiries.</div>
       </div>
 
       <div class="help-faq-item">

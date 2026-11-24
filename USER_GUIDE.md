@@ -16,7 +16,8 @@ Welcome to the **Kids Study & Rewards Tracker**! This guide provides comprehensi
 9. [Curriculum & Category Customization](#9-curriculum--category-customization)
 10. [Data Backup, Restore & Sync](#10-data-backup-restore--sync)
 11. [Mobile Installation (PWA on Android & iOS)](#11-mobile-installation-pwa-on-android--ios)
-12. [Frequently Asked Questions (FAQ)](#12-frequently-asked-questions-faq)
+12. [Parent Contact Support & Help Desk](#12-parent-contact-support--help-desk)
+13. [Frequently Asked Questions (FAQ)](#13-frequently-asked-questions-faq)
 
 ---
 
@@ -44,11 +45,17 @@ The application runs in your web browser and synchronizes across all devices in 
 
 ## 3. First-Time Setup & Family Profile
 
+### Registering Your Family Workspace
+When creating a new family account on the login page:
+1. Click **`Register New Family`**.
+2. Enter your **Family Name** (e.g., *Menon Family*), **Parent's Full Name**, **Parent's Email Address**, and choose a secret **4-digit Parent PIN**.
+3. A verification email is automatically sent to your registered email address. Open your inbox, click the verification link, and return to the app. The system automatically detects verification and unlocks your workspace immediately!
+
 ### Understanding Your Family Code
-When you first open the app and set up your family workspace, a unique **Family Code** (e.g., `KIDS101` or `KIDS485`) is generated. Note that hyphens or spaces are completely optional—kids can type `kids101` or `KIDS-101` and it will automatically work.
+When your family workspace is set up, a unique **Family Code** (e.g., `KIDS101` or `KIDS485`) is generated. Note that hyphens or spaces are completely optional—kids can type `kids101` or `KIDS-101` and it will automatically work.
 * **What is it for?** The Family Code links all your family's devices (mom's phone, dad's phone, child's tablet or phone) to the same private cloud workspace.
 * **Where to find it?** The Family Code is always displayed at the top of the Parent Dashboard topbar and in the *Curriculum & Settings* tab.
-* **Security:** Keep this code within your family. Anyone with your Family Code and a PIN can sign in.
+* **Security:** Keep this code within your family. Anyone with your Family Code and a student/parent PIN can sign in.
 
 ---
 
@@ -200,7 +207,35 @@ You do not need to download the app from Google Play or the Apple App Store. The
 
 ---
 
-## 12. Frequently Asked Questions (FAQ)
+## 12. Parent Contact Support & Help Desk
+
+If you ever encounter an issue, need help configuring a curriculum, or have a suggestion, you can reach out directly from the application.
+
+### How to Submit a Support Inquiry
+1. Log in to the **Parent Dashboard**.
+2. Click the **`🎧 Contact Support`** button in the sidebar or top navigation bar.
+3. Fill in your inquiry:
+   * **Inquiry Category:** Select from *Curriculum & Syllabus Question*, *Task & Daily Routine Help*, *Points, Stars & Rewards*, *Device Login & PIN Assistance*, *Bug Report / Technical Issue*, or *Feature Request / Feedback*.
+   * **Subject:** A brief title summarizing your issue.
+   * **Message:** Details of your question or problem.
+   * **Reply-To Email:** Automatically filled with your verified registered parent email address.
+4. Click **`🚀 Submit Support Request`**.
+
+### What Happens Next?
+* A unique **Ticket Number** (e.g., `TKT-1042`) is immediately generated and logged under your family's *My Recent Requests* history.
+* An instant notification is dispatched to the support team inbox at **`kidsstudytracker@gmail.com`**.
+* The administrator reviews your request and replies directly to your registered email address.
+* You can monitor the ticket status (`🟢 Open / Needs Reply` or `✅ Resolved`) directly within your *Contact Support* view.
+
+---
+
+## 13. Frequently Asked Questions (FAQ)
+
+#### Q: How do I contact support or report an issue?
+**A:** Navigate to the **`🎧 Contact Support`** tab in the Parent Dashboard. Select a category, enter your message, and click submit. Our support team receives your inquiry at `kidsstudytracker@gmail.com` and replies directly to your registered email address.
+
+#### Q: Why is a parent email address required during registration?
+**A:** The parent email address ensures account security, enables verification to prevent spam registrations, and provides a direct channel for the support team to reply to your questions.
 
 #### Q: What if a child forgets their PIN?
 **A:** Parents can easily view or reset a child's PIN at any time. In the Parent Dashboard, switch to that child, click **`✏️ Edit Profile`**, enter a new 4-digit PIN, and save.
