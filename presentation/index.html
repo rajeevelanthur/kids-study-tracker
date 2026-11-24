@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kids Study & Rewards Tracker — Product Demo Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --secondary: #ec4899;
+      --accent: #10b981;
+      --amber: #f59e0b;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    /* Ambient Glow */
+    .glow-orb {
+      position: absolute;
+      width: 550px;
+      height: 550px;
+      border-radius: 50%;
+      filter: blur(140px);
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-1 { top: -10%; left: -5%; background: var(--primary); }
+    .glow-2 { bottom: -10%; right: -5%; background: var(--secondary); }
+
+    /* Top Progress Bar */
+    .progress-bar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      z-index: 100;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--amber));
+      transition: width 0.35s ease;
+    }
+
+    /* Slide Deck Container */
+    .deck-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      width: 90%;
+      max-width: 1150px;
+      height: 82vh;
+      max-height: 720px;
+      padding: 48px 56px;
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(24px) scale(0.98);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Slide Header */
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--primary-light);
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-bottom: 12px;
+    }
+
+    .slide-title {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      line-height: 1.2;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .slide-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 800px;
+    }
+
+    /* Slide Content Grids */
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 24px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 22px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .feature-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Special Highlight Cards */
+    .hero-stat-card {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      padding: 24px;
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Workflow Timeline */
+    .demo-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+    }
+
+    .step-number {
+      background: var(--primary);
+      color: white;
+      font-weight: 900;
+      font-size: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .step-tag {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 3px 10px;
+      border-radius: 99px;
+      white-space: nowrap;
+      align-self: center;
+    }
+
+    /* Slide Footer / Meta */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    /* Bottom Control Bar */
+    .deck-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 99px;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 100;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .btn-ctrl {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: background 0.15s ease, color 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-ctrl:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .slide-counter {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* Speaker Notes Drawer */
+    .notes-drawer {
+      position: fixed;
+      bottom: 75px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      width: 80%;
+      max-width: 900px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+      backdrop-filter: blur(20px);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .notes-drawer.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .notes-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--amber);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .notes-text {
+      font-size: 14px;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+
+    /* Keyboard Hints */
+    .kb-pill {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #fff;
+    }
+
+    /* External Demo Link Button */
+    .btn-live-demo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
+      transition: transform 0.2s ease;
+    }
+    .btn-live-demo:hover {
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .slide {
+        padding: 24px 20px;
+        height: 90vh;
+      }
+      .slide-title { font-size: 26px; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light -->
+  <div class="glow-orb glow-1"></div>
+  <div class="glow-orb glow-2"></div>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" id="progressBar"></div>
+  </div>
+
+  <!-- Main Slide Deck -->
+  <div class="deck-container">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active" data-notes="Welcome everyone! Today I am thrilled to introduce the Kids Study & Rewards Tracker—a digital companion built to transform daily study time from a battle of wills into a positive, habit-building adventure for families.">
+      <div>
+        <div class="slide-badge">🚀 Live Product Presentation</div>
+        <h1 class="slide-title" style="font-size: 46px; margin-top: 10px; background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          Kids Study &amp; Rewards Tracker
+        </h1>
+        <p class="slide-subtitle" style="font-size: 19px; margin-top: 12px; color: #cbd5e1;">
+          Empowering children to build consistent learning habits through positive reinforcement, gamified milestones, and friction-free accountability.
+        </p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card">
+            <div class="feature-icon">✨</div>
+            <div class="feature-title">Habits, Not Nagging</div>
+            <div class="feature-desc">Replaces repetitive daily reminders with an engaging, child-friendly checklist and tangible rewards.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🤝</div>
+            <div class="feature-title">Two-Way Accountability</div>
+            <div class="feature-desc">Kids submit completed homework; parents review with encouragement stickers before awarding stars.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🌴</div>
+            <div class="feature-title">Curriculum Aligned</div>
+            <div class="feature-desc">Pre-loaded subjects for Kerala State Syllabus and CBSE from Class 1 to Class 10.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Presented by: <strong>Rajeev</strong> &bull; Product Demo</div>
+        <div>Press <span class="kb-pill">&rarr;</span> or <span class="kb-pill">Space</span> to advance &bull; <span class="kb-pill">S</span> for Speaker Notes</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: The Problem -->
+    <div class="slide" data-notes="Every parent knows the daily struggle: 'Did you finish your homework?' 'Have you read your chapters?' It leads to evening fatigue, conflict, and resistance. Without visibility or positive reinforcement, kids view studying as a chore rather than a rewarding goal.">
+      <div>
+        <div class="slide-badge" style="color: #f87171; background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.3);">⚠️ The Problem</div>
+        <h2 class="slide-title">The Daily Homework Struggle in Modern Households</h2>
+        <p class="slide-subtitle">Why traditional reminders and disorganized study routines fail parents and students.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="feature-card" style="border-left: 4px solid #ef4444;">
+            <div class="feature-icon">😤</div>
+            <div class="feature-title">Parent Nagging Fatigue</div>
+            <div class="feature-desc">Parents spend their evenings repeatedly reminding kids to sit down and study, generating friction and emotional stress for the whole family.</div>
+          </div>
+          <div class="feature-card" style="border-left: 4px solid #f59e0b;">
+            <div class="feature-icon">📉</div>
+            <div class="feature-title">Lack of Motivation &amp; Feedback</div>
+            <div class="feature-desc">Children don't see immediate progress or appreciation for their efforts. Without gamified rewards, enthusiasm drops quickly.</div>
+          </div>
+          <div class="feature-card" style="border-left: 4px solid #ec4899;">
+            <div class="feature-icon">🤹</div>
+            <div class="feature-title">Multi-Child Disorganization</div>
+            <div class="feature-desc">Managing different classes, homework notebooks, Malayalam/CBSE subjects, and tests across multiple kids is overwhelming without a single source of truth.</div>
+          </div>
+          <div class="feature-card" style="border-left: 4px solid #8b5cf6;">
+            <div class="feature-icon">📱</div>
+            <div class="feature-title">Complex Password Barriers</div>
+            <div class="feature-desc">Typical educational apps require email logins and passwords that young children cannot handle independently on tablets or phones.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Problem Statement: Replacing friction with gamified collaboration</div>
+        <div>Slide 2 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: The Solution & Core Philosophy -->
+    <div class="slide" data-notes="Our core philosophy is simple: celebrate progress. We focus on Monday-to-Friday study habits, freeing weekends for celebration. Children are motivated by tangible weekend goals, while parents retain full oversight.">
+      <div>
+        <div class="slide-badge" style="color: #34d399; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3);">💡 The Solution</div>
+        <h2 class="slide-title">Core Philosophy: Positive Reinforcement &amp; Habits</h2>
+        <p class="slide-subtitle">A balanced system designed around how children learn and stay motivated.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-title">Mon–Fri Focus &amp; Weekend Prizes</div>
+            <div class="feature-desc">Routine study runs Monday to Friday. Stars accumulate toward an agreed weekend treat—like a beach outing, movie night, or book.</div>
+          </div>
+          <div class="feature-card" style="background: rgba(99, 102, 241, 0.08); border-color: rgba(99, 102, 241, 0.3);">
+            <div class="feature-icon">⭐</div>
+            <div class="feature-title">Praise Stickers &amp; Warm Notes</div>
+            <div class="feature-desc">Parents don't just 'tick a box'. They attach digital encouragement badges (⭐ Gold Star, 🏆 Champ, 💯 Perfect) with warm personal notes.</div>
+          </div>
+          <div class="feature-card" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.3);">
+            <div class="feature-icon">🔄</div>
+            <div class="feature-title">Smart Task Carryover</div>
+            <div class="feature-desc">Unfinished tasks don't disappear. The system automatically rolls them over with pending badges so no study goal is forgotten.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Architecture: Gamification + Human Encouragement</div>
+        <div>Slide 3 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Product Architecture -->
+    <div class="slide" data-notes="The platform consists of three seamlessly synchronized portals: The Student Experience, the Parent Command Center, and the Super Admin Support Desk. Everything syncs in real time via Google Firebase Firestore.">
+      <div>
+        <div class="slide-badge">🏗️ Architecture</div>
+        <h2 class="slide-title">Three Tailored Experiences in One App</h2>
+        <p class="slide-subtitle">Unified workspace linking child devices, parental phones, and administrative support.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card" style="border-top: 4px solid #38bdf8;">
+            <div class="feature-icon">🧒</div>
+            <div class="feature-title">1. Student Portal</div>
+            <div class="feature-desc">
+              <ul style="padding-left: 18px; margin-top: 8px; line-height: 1.6; font-size: 13px;">
+                <li>Zero-password 4-digit PIN login</li>
+                <li>Visual checklist &amp; point badges</li>
+                <li>One-click <em>Submit for Approval</em></li>
+                <li>Confetti milestone animations</li>
+              </ul>
+            </div>
+          </div>
+          <div class="feature-card" style="border-top: 4px solid #a855f7;">
+            <div class="feature-icon">👩‍🏫</div>
+            <div class="feature-title">2. Parent Command Center</div>
+            <div class="feature-desc">
+              <ul style="padding-left: 18px; margin-top: 8px; line-height: 1.6; font-size: 13px;">
+                <li>Multi-child routine management</li>
+                <li>Review queue with sticker awards</li>
+                <li>Weekend prize goal tracker</li>
+                <li>In-App Contact Support Desk</li>
+              </ul>
+            </div>
+          </div>
+          <div class="feature-card" style="border-top: 4px solid #f59e0b;">
+            <div class="feature-icon">🛡️</div>
+            <div class="feature-title">3. Super Admin Desk</div>
+            <div class="feature-desc">
+              <ul style="padding-left: 18px; margin-top: 8px; line-height: 1.6; font-size: 13px;">
+                <li>Tab 1: <strong>Families &amp; Workspaces</strong></li>
+                <li>Tab 2: <strong>Support Desk &amp; Inquiries</strong></li>
+                <li>1-Click Gmail reply with auto-context</li>
+                <li>Real-time ticket status tracking</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Powered by Google Firebase Cloud Sync (Real-Time)</div>
+        <div>Slide 4 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Student Experience -->
+    <div class="slide" data-notes="Let's look at the student experience. A child opens the app on their tablet or phone, enters their family code like KIDS101 and their personal 4-digit PIN. No complex passwords. They see today's tasks clearly.">
+      <div>
+        <div class="slide-badge">🧒 Student Experience</div>
+        <h2 class="slide-title">Delightful, Child-First Study Dashboard</h2>
+        <p class="slide-subtitle">Designed to give young students autonomy and pride in their daily accomplishments.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="feature-card">
+            <div class="feature-icon">🔑</div>
+            <div class="feature-title">Friction-Free Student PIN</div>
+            <div class="feature-desc">Kids enter the Family Code (e.g. <code>KIDS101</code>) and their 4-digit PIN (e.g. <code>1234</code>). Case-insensitive and instant—zero password hurdles.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📬</div>
+            <div class="feature-title">One-Click Submission</div>
+            <div class="feature-desc">When homework or reading is finished, a single click on <strong>"Submit for Approval (+10 pts)"</strong> alerts the parent and marks the task as sent.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🌟</div>
+            <div class="feature-title">Visual Progress Bar &amp; Stars</div>
+            <div class="feature-desc">Students watch their star meter climb toward the weekend goal, fostering patience and sustained effort through Friday.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <div class="feature-title">6 Eye-Friendly Color Themes</div>
+            <div class="feature-desc">Kids can personalize their dashboard: Classic Indigo, Emerald Forest, Sunset Amber, Ocean Breeze, Sweet Candy, or Midnight Dark.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Designed for Independent Child Use</div>
+        <div>Slide 5 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Parent Review & Stickers -->
+    <div class="slide" data-notes="Parents retain full control. Points are not awarded automatically. The parent inspects the work, clicks Approve, picks an encouragement sticker like Gold Star or Super Effort, and adds a personal note.">
+      <div>
+        <div class="slide-badge">👩‍🏫 Parent Control</div>
+        <h2 class="slide-title">Approval Queue, Stickers &amp; Praise Notes</h2>
+        <p class="slide-subtitle">Transforming grading into a moment of connection and encouragement.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card">
+            <div class="feature-icon">🔔</div>
+            <div class="feature-title">Live Submission Alerts</div>
+            <div class="feature-desc">Parent dashboard displays an alert whenever a child submits homework, making it effortless to review before bedtime.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <div class="feature-title">Encouragement Stickers</div>
+            <div class="feature-desc">Attach digital badges to completed tasks: ⭐ Gold Star, 🌟 Shining Star, 🎯 Target Hit, 🏆 Champ, 🚀 Super Effort, or 💯 Perfect.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <div class="feature-title">Constructive Revision Request</div>
+            <div class="feature-desc">If work needs neatening, click <em>Needs Revision</em> to return the task with gentle feedback without penalizing the student.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Parent-Guided Accountability</div>
+        <div>Slide 6 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Weekend Prizes & Trophy Case -->
+    <div class="slide" data-notes="The reward milestone is what powers child enthusiasm. Once the Friday target is unlocked, fireworks and confetti trigger! The parent marks the reward given, and it enters the permanent Trophy Case.">
+      <div>
+        <div class="slide-badge">🏆 Motivation Engine</div>
+        <h2 class="slide-title">Weekend Prizes &amp; The Permanent Trophy Case</h2>
+        <p class="slide-subtitle">Creating lasting pride through visible, celebrated achievements.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="hero-stat-card">
+            <div style="font-size: 38px; margin-bottom: 8px;">🎉</div>
+            <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px;">Dynamic Goal Unlocking</h3>
+            <p style="font-size: 14px; color: #e0e7ff; line-height: 1.6;">
+              When total approved points reach the family target (e.g. 100 points), the app erupts with celebratory confetti and displays <strong>"Target Unlocked!"</strong> on both parent and child screens.
+            </p>
+          </div>
+          <div class="hero-stat-card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.15) 100%); border-color: rgba(245, 158, 11, 0.4);">
+            <div style="font-size: 38px; margin-bottom: 8px;">📜</div>
+            <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px;">Lifelong Trophy Case</h3>
+            <p style="font-size: 14px; color: #fef3c7; line-height: 1.6;">
+              Every weekend prize unlocked and awarded is archived in the child's personal Trophy Case—giving them a permanent visual history of weeks they stayed disciplined and succeeded!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Long-term Habit Reinforcement</div>
+        <div>Slide 7 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Syllabus & Offline PWA -->
+    <div class="slide" data-notes="We understand regional requirements. The app is pre-configured with Kerala State Syllabus and CBSE curricula for Classes 1 to 10. Plus, with PWA technology, it installs like a native mobile app without app store downloads.">
+      <div>
+        <div class="slide-badge">📱 Localized &amp; Mobile-Ready</div>
+        <h2 class="slide-title">Kerala &amp; CBSE Curricula + Progressive Web App</h2>
+        <p class="slide-subtitle">Built specifically for Indian households with offline-first capabilities.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="feature-card">
+            <div class="feature-icon">🌴</div>
+            <div class="feature-title">Kerala State &amp; CBSE</div>
+            <div class="feature-desc">Pre-configured subjects: Malayalam, English, Hindi, Mathematics, Basic Science, Social Science, Physics, Chemistry, Biology, IT.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📲</div>
+            <div class="feature-title">Instant PWA Mobile Install</div>
+            <div class="feature-desc">Installs directly from Chrome on Android or Safari on iOS without app store fees or downloads. Launches full-screen with native icon.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📶</div>
+            <div class="feature-title">Offline Caching &amp; Sync</div>
+            <div class="feature-desc">Works seamlessly even if home Wi-Fi drops. Tasks are cached locally and synchronize automatically once reconnected.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Zero App Store Dependency &bull; Universal Web Access</div>
+        <div>Slide 8 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Support Desk & Email Integration -->
+    <div class="slide" data-notes="Our newest major addition is the direct In-App Support Desk. Parents can raise queries directly. The Super Admin has a dedicated tab to manage inquiries and reply via Gmail with one click.">
+      <div>
+        <div class="slide-badge" style="color: #a855f7; background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.3);">🎧 In-App Support System</div>
+        <h2 class="slide-title">Direct Help Desk &amp; Dedicated Admin Console</h2>
+        <p class="slide-subtitle">Instant parent-to-admin communication with real-time tracking.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <div class="feature-title">Parent Contact Support Form</div>
+            <div class="feature-desc">
+              Parents select a category, type their question, and submit. The app auto-attaches their verified email, creates a ticket (e.g. <code>TKT-1042</code>), and alerts <strong>kidsstudytracker@gmail.com</strong>.
+            </div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <div class="feature-title">Separated Super Admin Console</div>
+            <div class="feature-desc">
+              Super Admin has a dedicated <strong>🎧 Support Desk &amp; Inquiries</strong> tab with Open/Resolved status filters, ticket metrics, and a 1-click <em>Reply via Gmail</em> button.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Complete Customer Care Cycle Built-In</div>
+        <div>Slide 9 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Live Demo Workflow -->
+    <div class="slide" data-notes="Here is the exact live demonstration flow we are about to see in action. In under 5 minutes, we will show the full loop from parent task creation to child submission, approval, and support desk resolution.">
+      <div>
+        <div class="slide-badge">⚡ Live Demo Script</div>
+        <h2 class="slide-title">The 5-Minute Live Product Walkthrough</h2>
+        <p class="slide-subtitle">Experience the full product lifecycle in 5 rapid, real-time steps.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="demo-step">
+          <div class="step-number">1</div>
+          <div>
+            <div class="step-title">Parent Login &amp; Task Assignment</div>
+            <div class="step-desc">Parent signs in (<code>KIDS101</code> / PIN <code>9999</code>), schedules today's Math &amp; Science tasks, and sets weekend prize goal.</div>
+          </div>
+          <span class="step-tag" style="color: #818cf8;">Parent View</span>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-number">2</div>
+          <div>
+            <div class="step-title">Student Login &amp; Homework Submission</div>
+            <div class="step-desc">Child logs in with 4-digit PIN (<code>1234</code>), checks today's tasks, and clicks <em>Submit for Approval</em>.</div>
+          </div>
+          <span class="step-tag" style="color: #38bdf8;">Student View</span>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-number">3</div>
+          <div>
+            <div class="step-title">Parent Approval with Gold Star Sticker</div>
+            <div class="step-desc">Parent receives live notification banner, verifies homework, awards a ⭐ Gold Star and praise remark.</div>
+          </div>
+          <span class="step-tag" style="color: #34d399;">Parent Review</span>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-number">4</div>
+          <div>
+            <div class="step-title">Confetti Celebration &amp; Trophy Archive</div>
+            <div class="step-desc">Points unlock the weekend reward with confetti; parent awards prize into the permanent Trophy Case.</div>
+          </div>
+          <span class="step-tag" style="color: #f59e0b;">Milestone</span>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-number">5</div>
+          <div>
+            <div class="step-title">Support Ticket Creation &amp; Admin Reply</div>
+            <div class="step-desc">Parent submits inquiry; Super Admin views in separated Helpdesk tab and opens 1-click Gmail reply.</div>
+          </div>
+          <span class="step-tag" style="color: #ec4899;">Admin Helpdesk</span>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Ready to switch to live browser demo</div>
+        <div>Slide 10 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Tech Stack -->
+    <div class="slide" data-notes="A quick note on technology: The entire app is crafted in ultra-fast vanilla JavaScript with zero heavy build steps. Google Firebase powers authentication and Firestore real-time synchronization, with dual hosting environments.">
+      <div>
+        <div class="slide-badge">💻 Under the Hood</div>
+        <h2 class="slide-title">Technology Stack &amp; Reliability</h2>
+        <p class="slide-subtitle">Modern, lightweight web architecture built for high performance and low maintenance.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-4">
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <div class="feature-title">Pure Vanilla JS</div>
+            <div class="feature-desc">Zero bloat, instant load speeds, 100/100 Lighthouse performance, and straightforward maintainability.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔥</div>
+            <div class="feature-title">Google Firebase</div>
+            <div class="feature-desc">Firestore real-time cloud sync, Firebase Auth email verification, and secure cloud storage.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <div class="feature-title">Dual Hosting</div>
+            <div class="feature-desc">Isolated <strong>Demo / Staging</strong> environment for safe feature validation before <strong>Production</strong> releases.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💾</div>
+            <div class="feature-title">JSON Data Portability</div>
+            <div class="feature-desc">1-click full offline JSON backup and restore ensures families always own 100% of their records.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Robust, Scalable, Zero-Maintenance Architecture</div>
+        <div>Slide 11 of 12</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: Conclusion & Q&A -->
+    <div class="slide" data-notes="Thank you for your time! Both our Demo and Live environments are active and ready. Let's open the floor to questions and begin the hands-on demonstration.">
+      <div style="text-align: center; margin-top: 10px;">
+        <div class="slide-badge">🚀 Experience It Live</div>
+        <h2 class="slide-title" style="font-size: 40px; margin-top: 10px;">Ready to Transform Study Routines?</h2>
+        <p class="slide-subtitle" style="margin: 0 auto; font-size: 16px;">
+          Try the live application right now on any phone, tablet, or laptop.
+        </p>
+      </div>
+
+      <div class="slide-body" style="align-items: center; justify-content: center;">
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px;">
+          <a href="https://kids-study-tracker.web.app" target="_blank" class="btn-live-demo">
+            🚀 Open Live Production App
+          </a>
+          <a href="https://kids-study-tracker-demo.web.app" target="_blank" class="btn-live-demo" style="background: rgba(255, 255, 255, 0.1); border: 1px solid var(--card-border);">
+            🧪 Open Demo / Staging App
+          </a>
+        </div>
+
+        <div class="feature-card" style="max-width: 650px; text-align: center;">
+          <div style="font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 6px;">Demo Credentials:</div>
+          <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+            <strong>Family Code:</strong> <code style="color: var(--primary-light);">KIDS101</code> &bull; 
+            <strong>Parent PIN:</strong> <code style="color: var(--primary-light);">9999</code> &bull; 
+            <strong>Student PIN:</strong> <code style="color: var(--primary-light);">1234</code><br>
+            <strong>Super Admin Password:</strong> <code style="color: var(--primary-light);">admin123</code> &bull; 
+            <strong>Support:</strong> <code>kidsstudytracker@gmail.com</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer" style="justify-content: center; gap: 20px;">
+        <div>Thank you! &bull; Questions &amp; Interactive Feedback</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Speaker Notes Drawer -->
+  <div class="notes-drawer" id="notesDrawer">
+    <div class="notes-title">
+      <span>🎙️ Presenter Script &amp; Talking Points</span>
+      <span style="margin-left: auto; font-size: 11px; opacity: 0.7;">Press 'S' to hide</span>
+    </div>
+    <div class="notes-text" id="notesContent"></div>
+  </div>
+
+  <!-- Bottom Floating Control Bar -->
+  <div class="deck-controls">
+    <button class="btn-ctrl" onclick="prevSlide()" title="Previous (Left Arrow)">◀</button>
+    <div class="slide-counter" id="slideCounter">1 / 12</div>
+    <button class="btn-ctrl" onclick="nextSlide()" title="Next (Right Arrow)">▶</button>
+    <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.15); margin: 0 4px;"></div>
+    <button class="btn-ctrl" onclick="toggleNotes()" title="Speaker Notes (S)">
+      <span>🎙️ Notes</span>
+    </button>
+    <button class="btn-ctrl" onclick="toggleFullscreen()" title="Fullscreen (F)">
+      <span>⛶ Fullscreen</span>
+    </button>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progressBar');
+    const slideCounter = document.getElementById('slideCounter');
+    const notesDrawer = document.getElementById('notesDrawer');
+    const notesContent = document.getElementById('notesContent');
+    let currentIndex = 0;
+
+    function updateSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+      
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+
+      currentIndex = index;
+      
+      // Update Progress Bar
+      const progress = ((currentIndex + 1) / slides.length) * 100;
+      progressBar.style.width = `${progress}%`;
+
+      // Update Counter
+      slideCounter.textContent = `${currentIndex + 1} / ${slides.length}`;
+
+      // Update Notes
+      const notes = slides[currentIndex].getAttribute('data-notes') || 'No notes for this slide.';
+      notesContent.textContent = notes;
+    }
+
+    function nextSlide() {
+      if (currentIndex < slides.length - 1) {
+        updateSlide(currentIndex + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) {
+        updateSlide(currentIndex - 1);
+      }
+    }
+
+    function toggleNotes() {
+      notesDrawer.classList.toggle('open');
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => alert(err.message));
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        toggleNotes();
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFullscreen();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        updateSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        updateSlide(slides.length - 1);
+      }
+    });
+
+    // Touch swipe support for mobile/tablets
+    let touchStartX = 0;
+    let touchEndX = 0;
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - 50) nextSlide();
+      if (touchEndX > touchStartX + 50) prevSlide();
+    });
+
+    // Initialize
+    updateSlide(0);
+  </script>
+</body>
+</html>
