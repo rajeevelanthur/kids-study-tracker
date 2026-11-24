@@ -41,7 +41,7 @@ function renderChildView(container) {
           <div>
             <h1 style="font-size: 17px; font-weight: 800; color: var(--text-main); margin: 0; line-height: 1.2;">Study Tracker</h1>
             <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">
-              ${currentFamily ? `🏡 ${escapeHtml(currentFamily.name)} • ` : ''}${currentUser.syllabus && currentUser.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala State'} (Class ${currentUser.grade || 7}) • <span style="color: ${typeof CURRENT_ENV_CONFIG !== 'undefined' ? CURRENT_ENV_CONFIG.color : '#047857'}; font-weight: 700;">${typeof CURRENT_ENV_CONFIG !== 'undefined' ? CURRENT_ENV_CONFIG.badge : '☁️ Cloud'}</span>
+              ${currentFamily ? `🏡 ${escapeHtml(currentFamily.name)} • ` : ''}${currentUser.syllabus && currentUser.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala State'} (${getGradeLabel(currentUser.grade || 7)}) • <span style="color: ${typeof CURRENT_ENV_CONFIG !== 'undefined' ? CURRENT_ENV_CONFIG.color : '#047857'}; font-weight: 700;">${typeof CURRENT_ENV_CONFIG !== 'undefined' ? CURRENT_ENV_CONFIG.badge : '☁️ Cloud'}</span>
             </span>
           </div>
         </div>
@@ -71,7 +71,7 @@ function renderChildView(container) {
         <div class="points-top">
           <div>
             <div class="points-greeting">Hi, ${escapeHtml(currentUser.name)}! 👋</div>
-            <div class="points-subtitle">Class ${currentUser.grade} • ${currentUser.syllabus && currentUser.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala State Syllabus'}</div>
+            <div class="points-subtitle">${getGradeLabel(currentUser.grade)} • ${currentUser.syllabus && currentUser.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala State Syllabus'}</div>
           </div>
           <div class="points-score-box">
             <div class="points-number">⭐ ${weeklyPts}</div>

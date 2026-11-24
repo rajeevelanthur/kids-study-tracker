@@ -474,7 +474,7 @@ function renderSuperAdminFamilyCard(family) {
                       <div style="font-size: 14px; font-weight: 800; color: var(--text-main);">
                         ${escapeHtml(c.name)} 
                         <span style="font-size: 11px; font-weight: 600; color: var(--text-muted); background: var(--bg-surface); border: 1px solid var(--border-color); padding: 1px 6px; border-radius: 99px;">
-                          Class ${c.grade} • ${c.syllabus && c.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala'}
+                          ${getGradeLabel(c.grade)} • ${c.syllabus && c.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala'}
                         </span>
                       </div>
                       <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
@@ -707,10 +707,10 @@ function openSuperAdminEditUserModal(userId) {
 
           ${isChild ? `
             <div class="form-group">
-              <label class="form-label">Class / Standard (Classes 1 - 10)</label>
+              <label class="form-label">Class / Standard (Classes 1 to 12 / Plus Two)</label>
               <select name="grade" class="form-select" required>
-                ${[1,2,3,4,5,6,7,8,9,10].map(g => `
-                  <option value="${g}" ${g === user.grade ? 'selected' : ''}>Class ${g}</option>
+                ${[1,2,3,4,5,6,7,8,9,10,11,12].map(g => `
+                  <option value="${g}" ${g === user.grade ? 'selected' : ''}>${getGradeLabel(g)}</option>
                 `).join('')}
               </select>
             </div>
@@ -895,10 +895,10 @@ function openSuperAdminAddChildModal(familyId) {
           </div>
 
           <div class="form-group">
-            <label class="form-label">Class / Standard (Classes 1 - 10)</label>
+            <label class="form-label">Class / Standard (Classes 1 to 12 / Plus Two)</label>
             <select name="grade" class="form-select" required>
-              ${[1,2,3,4,5,6,7,8,9,10].map(g => `
-                <option value="${g}" ${g === 5 ? 'selected' : ''}>Class ${g}</option>
+              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(g => `
+                <option value="${g}" ${g === 5 ? 'selected' : ''}>${getGradeLabel(g)}</option>
               `).join('')}
             </select>
           </div>

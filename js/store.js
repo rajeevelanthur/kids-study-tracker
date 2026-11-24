@@ -326,6 +326,40 @@ class DataStore {
       existingSyllabus.cbse = DEFAULT_CBSE_SYLLABUS;
       this.save(STORAGE_KEYS.SYLLABUS, existingSyllabus);
     }
+
+    // Auto-migrate Higher Secondary Grades (Classes 11 & 12) if missing
+    if (existingSyllabus) {
+      let syllabusMigrated = false;
+      if (existingSyllabus.kerala) {
+        if (!existingSyllabus.kerala[11]) { existingSyllabus.kerala[11] = DEFAULT_KERALA_SYLLABUS[11]; syllabusMigrated = true; }
+        if (!existingSyllabus.kerala[12]) { existingSyllabus.kerala[12] = DEFAULT_KERALA_SYLLABUS[12]; syllabusMigrated = true; }
+      }
+      if (existingSyllabus.cbse) {
+        if (!existingSyllabus.cbse[11]) { existingSyllabus.cbse[11] = DEFAULT_CBSE_SYLLABUS[11]; syllabusMigrated = true; }
+        if (!existingSyllabus.cbse[12]) { existingSyllabus.cbse[12] = DEFAULT_CBSE_SYLLABUS[12]; syllabusMigrated = true; }
+      }
+
+      // Sanitize stored subjects to ensure pure English names (strips legacy Malayalam brackets)
+      ['kerala', 'cbse'].forEach(boardKey => {
+        if (existingSyllabus[boardKey]) {
+          Object.keys(existingSyllabus[boardKey]).forEach(gradeKey => {
+            const list = existingSyllabus[boardKey][gradeKey];
+            if (Array.isArray(list)) {
+              list.forEach(sub => {
+                if (sub && sub.name && /[\u0D00-\u0D7F]/.test(sub.name)) {
+                  sub.name = sub.name.replace(/\s*\([\u0D00-\u0D7F\s\.\,\-\/\d]+\)/g, '').trim();
+                  syllabusMigrated = true;
+                }
+              });
+            }
+          });
+        }
+      });
+
+      if (syllabusMigrated) {
+        this.save(STORAGE_KEYS.SYLLABUS, existingSyllabus);
+      }
+    }
     if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
       this.save(STORAGE_KEYS.CATEGORIES, DEFAULT_TASK_CATEGORIES);
     }

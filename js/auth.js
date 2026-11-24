@@ -69,7 +69,7 @@ function renderLandingAuthPage(container) {
       <div class="landing-hero">
         <div class="landing-icon">🎓</div>
         <h2 class="landing-title">Kids Study Tracker</h2>
-        <p class="landing-subtitle">Kerala State &amp; CBSE Syllabus (Classes 1 - 10) • Multi-Family Study &amp; Rewards Portal</p>
+        <p class="landing-subtitle">Kerala State &amp; CBSE Syllabus (Classes 1 - 12 / Plus Two) • Multi-Family Study &amp; Rewards Portal</p>
 
         <div class="auth-tabs-nav">
           <button class="auth-tab-btn ${authTab === 'signin' ? 'active' : ''}" onclick="switchAuthTab('signin')">

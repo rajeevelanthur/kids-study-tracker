@@ -185,7 +185,7 @@ function renderParentView(container) {
                 <select class="topbar-child-select" onchange="selectChild(this.value)">
                   ${children.map(c => `
                     <option value="${c.id}" ${c.id === (currentChild ? currentChild.id : '') ? 'selected' : ''}>
-                      ${c.avatar || '🧒'} ${c.name} (Class ${c.grade})
+                      ${c.avatar || '🧒'} ${c.name} (${getGradeLabel(c.grade)})
                     </option>
                   `).join('')}
                 </select>
@@ -206,7 +206,7 @@ function renderParentView(container) {
                 <div class="child-avatar-big">${currentChild.avatar || '🧒'}</div>
                 <div class="child-overview-info">
                   <div class="child-overview-name">${escapeHtml(currentChild.name)}</div>
-                  <div class="child-overview-meta">Standard ${currentChild.grade} (Class ${currentChild.grade}) • ${currentChild.syllabus && currentChild.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala State Syllabus'}</div>
+                  <div class="child-overview-meta">${getGradeLabel(currentChild.grade)} • ${currentChild.syllabus && currentChild.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala State Syllabus'}</div>
                 </div>
               </div>
               <div class="child-overview-actions">
@@ -234,7 +234,7 @@ function renderParentTasksTab(child) {
       <div class="empty-state">
         <div class="empty-state-icon">🧒</div>
         <div class="empty-state-title">No child profiles found</div>
-        <p>Click "Add Child" to add a student profile (Classes 1 - 10).</p>
+        <p>Click "Add Child" to add a student profile (Classes 1 to 12 / Plus Two).</p>
       </div>
     `;
   }
@@ -393,7 +393,7 @@ function renderParentAddTaskTab(child) {
     <div class="card">
       <div class="section-head">
         <h3 class="section-title">Assign New Study Task</h3>
-        <span style="font-size: 13px; color: var(--slate-600);">${escapeHtml(child.name)} (Class ${child.grade})</span>
+        <span style="font-size: 13px; color: var(--slate-600);">${escapeHtml(child.name)} (${getGradeLabel(child.grade)})</span>
       </div>
 
       ${isDuplicating ? `
@@ -593,10 +593,10 @@ function openAddChildModal() {
           </div>
 
           <div class="form-group">
-            <label class="form-label">Class / Standard (Classes 1 - 10)</label>
+            <label class="form-label">Class / Standard (Classes 1 to 12 / Plus Two)</label>
             <select name="grade" class="form-select" required>
-              ${[1,2,3,4,5,6,7,8,9,10].map(g => `
-                <option value="${g}" ${g === 5 ? 'selected' : ''}>Class ${g}</option>
+              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(g => `
+                <option value="${g}" ${g === 5 ? 'selected' : ''}>${getGradeLabel(g)}</option>
               `).join('')}
             </select>
           </div>
@@ -701,10 +701,10 @@ function openEditChildModal(childId) {
           </div>
 
           <div class="form-group">
-            <label class="form-label">Class / Standard (Classes 1 - 10)</label>
+            <label class="form-label">Class / Standard (Classes 1 to 12 / Plus Two)</label>
             <select name="grade" class="form-select" required>
-              ${[1,2,3,4,5,6,7,8,9,10].map(g => `
-                <option value="${g}" ${g === child.grade ? 'selected' : ''}>Class ${g}</option>
+              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(g => `
+                <option value="${g}" ${g === child.grade ? 'selected' : ''}>${getGradeLabel(g)}</option>
               `).join('')}
             </select>
           </div>
@@ -1163,7 +1163,7 @@ function renderParentSettingsTab() {
         <h3 class="section-title">⚙️ Admin Curriculum & Category Settings</h3>
       </div>
       <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 16px;">
-        As Parent Admin, you can customize subjects for both Kerala State Syllabus and CBSE (Classes 1 to 10), as well as task categories and default points.
+        As Parent Admin, you can customize subjects for both Kerala State Syllabus and CBSE (Classes 1 to 12 / Plus Two), as well as task categories and default points.
       </p>
 
       <!-- Section 1: Subjects by Board & Grade -->
@@ -1191,17 +1191,17 @@ function renderParentSettingsTab() {
           </div>
 
           <div class="settings-grade-col">
-            <label style="font-size: 13px; font-weight: 600;">Select Grade:</label>
+            <label style="font-size: 13px; font-weight: 600;">Select Grade / Class:</label>
             <select class="form-select settings-grade-select" onchange="changeSettingsGrade(this.value)">
-              ${[1,2,3,4,5,6,7,8,9,10].map(g => `
-                <option value="${g}" ${g === selectedSettingsGrade ? 'selected' : ''}>Class ${g}</option>
+              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(g => `
+                <option value="${g}" ${g === selectedSettingsGrade ? 'selected' : ''}>${getGradeLabel(g)}</option>
               `).join('')}
             </select>
           </div>
         </div>
 
         <div class="settings-active-catalog-banner">
-          <span>Active Catalog: <strong>${boardName} • Class ${selectedSettingsGrade}</strong></span>
+          <span>Active Catalog: <strong>${boardName} • ${getGradeLabel(selectedSettingsGrade)}</strong></span>
           <span style="font-weight: 700; color: var(--primary);">${subjects.length} Subjects</span>
         </div>
 

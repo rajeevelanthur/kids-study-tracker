@@ -28,7 +28,7 @@ The **Kids Study & Rewards Tracker** is designed to transform daily homework and
 * **Habit-Building, Not Nagging:** Instead of repeated reminders, children have a clear daily checklist of achievable tasks.
 * **Positive Reinforcement:** Completing tasks earns reward stars towards an agreed-upon weekend reward (such as a park visit, special treat, or hobby time).
 * **Two-Way Accountability:** Students mark tasks complete and submit them; parents review their work before stars are officially awarded.
-* **Curriculum-Aligned:** Preloaded with standard subjects for **Kerala State Syllabus** and **CBSE** from Classes 1 to 10.
+* **Curriculum-Aligned:** Preloaded with standard subjects for **Kerala State Syllabus** and **CBSE** from Classes 1 to 12 (Plus Two).
 
 ---
 
@@ -69,7 +69,7 @@ Parents can add profiles for multiple children across different classes and syll
 3. Fill in the student details:
    * **Full Name:** Child's name (e.g., Arjun, Ananya).
    * **Avatar:** Choose a cheerful avatar emoji (e.g., 🧒, 👧, 👦, 🎓, 🚀).
-   * **Class / Grade:** Select from Standard 1 to 10.
+   * **Class / Grade:** Select from Standard 1 to 12 (including Plus One & Plus Two).
    * **Curriculum Board:** Select **🌴 Kerala State Syllabus** or **🏛️ CBSE (Central Board)**.
    * **Student PIN:** Choose a 4-digit PIN for the child (e.g., `1234`).
 4. Click **`Save Profile`**.
@@ -161,7 +161,7 @@ The app adapts to whatever textbooks and subjects your child's school uses.
 
 ### Managing Subjects
 1. Go to the **`⚙️ Curriculum & Categories`** tab.
-2. Select the syllabus (**Kerala State** or **CBSE**) and the **Class** (1 to 10).
+2. Select the syllabus (**Kerala State** or **CBSE**) and the **Class** (1 to 12 / Plus Two).
 3. **Add Subject:** Click `➕ Add Subject` to introduce language subjects (e.g., Sanskrit, Arabic, French, Hindi) or special electives (e.g., Computer Applications, Environmental Studies).
 4. **Edit / Delete:** Modify subject names, icons, or remove subjects not taught in your school.
 5. **Reset:** If you ever make a mistake, click `🔄 Reset to Defaults` to restore the state-recommended syllabus list.

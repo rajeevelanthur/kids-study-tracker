@@ -370,3 +370,13 @@ function triggerConfetti() {
   }
   requestAnimationFrame(animate);
 }
+
+/**
+ * Format Class / Grade Label (Supports Standards 1-10 and Plus One / Plus Two)
+ */
+function getGradeLabel(grade) {
+  const g = parseInt(grade, 10);
+  if (g === 11) return 'Class 11 (Plus One)';
+  if (g === 12) return 'Class 12 (Plus Two)';
+  return `Class ${g}`;
+}

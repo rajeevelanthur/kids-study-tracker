@@ -22,10 +22,10 @@ const SYLLABUS_TYPES = {
 
 const DEFAULT_KERALA_SYLLABUS = {
   1: [
-    { id: 'mal',  name: 'Malayalam (കളിത്തോണി)', icon: '📖', color: '#10b981' },
+    { id: 'mal',  name: 'Malayalam', icon: '📖', color: '#10b981' },
     { id: 'eng',  name: 'English', icon: '📝', color: '#3b82f6' },
-    { id: 'mat',  name: 'Mathematics (ഗണിതം)', icon: '📐', color: '#8b5cf6' },
-    { id: 'evs',  name: 'Environmental Studies (പരിസരപഠനം)', icon: '🌱', color: '#06b6d4' },
+    { id: 'mat',  name: 'Mathematics', icon: '📐', color: '#8b5cf6' },
+    { id: 'evs',  name: 'Environmental Studies', icon: '🌱', color: '#06b6d4' },
     { id: 'art',  name: 'Art & Physical Education', icon: '🎨', color: '#ec4899' }
   ],
   2: [
@@ -55,8 +55,8 @@ const DEFAULT_KERALA_SYLLABUS = {
     { id: 'eng',  name: 'English', icon: '📝', color: '#3b82f6' },
     { id: 'hin',  name: 'Hindi', icon: '🇮🇳', color: '#f59e0b' },
     { id: 'mat',  name: 'Mathematics', icon: '📐', color: '#8b5cf6' },
-    { id: 'sci',  name: 'Basic Science (അടിസ്ഥാന ശാസ്ത്രം)', icon: '🔬', color: '#06b6d4' },
-    { id: 'soc',  name: 'Social Science (സാമൂഹ്യശാസ്ത്രം)', icon: '🌍', color: '#d97706' },
+    { id: 'sci',  name: 'Basic Science', icon: '🔬', color: '#06b6d4' },
+    { id: 'soc',  name: 'Social Science', icon: '🌍', color: '#d97706' },
     { id: 'art',  name: 'Art, Health & Physical Education', icon: '🏃', color: '#ec4899' }
   ],
   6: [
@@ -86,9 +86,9 @@ const DEFAULT_KERALA_SYLLABUS = {
     { id: 'eng',  name: 'English', icon: '📝', color: '#3b82f6' },
     { id: 'hin',  name: 'Hindi', icon: '🇮🇳', color: '#f59e0b' },
     { id: 'mat',  name: 'Mathematics', icon: '📐', color: '#8b5cf6' },
-    { id: 'phy',  name: 'Physics (ഭൗതികശാസ്ത്രം)', icon: '⚡', color: '#0284c7' },
-    { id: 'che',  name: 'Chemistry (രസതന്ത്രം)', icon: '🧪', color: '#14b8a6' },
-    { id: 'bio',  name: 'Biology (ജീവശാസ്ത്രം)', icon: '🌿', color: '#22c55e' },
+    { id: 'phy',  name: 'Physics', icon: '⚡', color: '#0284c7' },
+    { id: 'che',  name: 'Chemistry', icon: '🧪', color: '#14b8a6' },
+    { id: 'bio',  name: 'Biology', icon: '🌿', color: '#22c55e' },
     { id: 'soc1', name: 'Social Science I (History & Civics)', icon: '🏛️', color: '#d97706' },
     { id: 'soc2', name: 'Social Science II (Geography & Economics)', icon: '🌐', color: '#b45309' },
     { id: 'ict',  name: 'Information Technology (IT)', icon: '💻', color: '#6366f1' }
@@ -118,6 +118,40 @@ const DEFAULT_KERALA_SYLLABUS = {
     { id: 'soc1', name: 'Social Science I (History & Civics)', icon: '🏛️', color: '#d97706' },
     { id: 'soc2', name: 'Social Science II (Geography & Economics)', icon: '🌐', color: '#b45309' },
     { id: 'ict',  name: 'Information Technology (IT)', icon: '💻', color: '#6366f1' }
+  ],
+  11: [
+    { id: 'eng',  name: 'English (Part I)', icon: '📝', color: '#3b82f6' },
+    { id: 'lang2',name: 'Second Language (Malayalam / Hindi / Arabic)', icon: '📖', color: '#10b981' },
+    { id: 'phy',  name: 'Physics', icon: '⚡', color: '#0284c7' },
+    { id: 'che',  name: 'Chemistry', icon: '🧪', color: '#14b8a6' },
+    { id: 'bio',  name: 'Biology (Botany & Zoology)', icon: '🌿', color: '#22c55e' },
+    { id: 'mat',  name: 'Mathematics', icon: '📐', color: '#8b5cf6' },
+    { id: 'cs',   name: 'Computer Science', icon: '💻', color: '#6366f1' },
+    { id: 'acc',  name: 'Accountancy', icon: '📊', color: '#f59e0b' },
+    { id: 'bst',  name: 'Business Studies', icon: '🏢', color: '#d97706' },
+    { id: 'eco',  name: 'Economics', icon: '📈', color: '#0ea5e9' },
+    { id: 'ca',   name: 'Computer Applications', icon: '🖥️', color: '#8b5cf6' },
+    { id: 'his',  name: 'History', icon: '🏛️', color: '#b45309' },
+    { id: 'pol',  name: 'Political Science', icon: '🗳️', color: '#ef4444' },
+    { id: 'soc',  name: 'Sociology', icon: '👥', color: '#14b8a6' },
+    { id: 'geo',  name: 'Geography', icon: '🌐', color: '#059669' }
+  ],
+  12: [
+    { id: 'eng',  name: 'English (Part I - Plus Two)', icon: '📝', color: '#3b82f6' },
+    { id: 'lang2',name: 'Second Language (Malayalam / Hindi / Arabic)', icon: '📖', color: '#10b981' },
+    { id: 'phy',  name: 'Physics', icon: '⚡', color: '#0284c7' },
+    { id: 'che',  name: 'Chemistry', icon: '🧪', color: '#14b8a6' },
+    { id: 'bio',  name: 'Biology (Botany & Zoology)', icon: '🌿', color: '#22c55e' },
+    { id: 'mat',  name: 'Mathematics', icon: '📐', color: '#8b5cf6' },
+    { id: 'cs',   name: 'Computer Science', icon: '💻', color: '#6366f1' },
+    { id: 'acc',  name: 'Accountancy', icon: '📊', color: '#f59e0b' },
+    { id: 'bst',  name: 'Business Studies', icon: '🏢', color: '#d97706' },
+    { id: 'eco',  name: 'Economics', icon: '📈', color: '#0ea5e9' },
+    { id: 'ca',   name: 'Computer Applications', icon: '🖥️', color: '#8b5cf6' },
+    { id: 'his',  name: 'History', icon: '🏛️', color: '#b45309' },
+    { id: 'pol',  name: 'Political Science', icon: '🗳️', color: '#ef4444' },
+    { id: 'soc',  name: 'Sociology', icon: '👥', color: '#14b8a6' },
+    { id: 'geo',  name: 'Geography', icon: '🌐', color: '#059669' }
   ]
 };
 
@@ -204,6 +238,42 @@ const DEFAULT_CBSE_SYLLABUS = {
     { id: 'sci',   name: 'Science (Theory & Lab Practical)', icon: '🔬', color: '#06b6d4' },
     { id: 'soc',   name: 'Social Science (History, Geography, Pol Science, Economics)', icon: '🌍', color: '#d97706' },
     { id: 'it',    name: 'Information Technology (IT 402) / AI', icon: '💻', color: '#6366f1' }
+  ],
+  11: [
+    { id: 'eng',   name: 'English Core (Subject 301)', icon: '📝', color: '#3b82f6' },
+    { id: 'lang',  name: 'Optional Language (Hindi Core / Malayalam)', icon: '📖', color: '#10b981' },
+    { id: 'phy',   name: 'Physics (042)', icon: '⚡', color: '#0284c7' },
+    { id: 'che',   name: 'Chemistry (043)', icon: '🧪', color: '#14b8a6' },
+    { id: 'mat',   name: 'Mathematics / Applied Maths (041 / 241)', icon: '📐', color: '#8b5cf6' },
+    { id: 'bio',   name: 'Biology (044)', icon: '🌿', color: '#22c55e' },
+    { id: 'cs',    name: 'Computer Science (083)', icon: '💻', color: '#6366f1' },
+    { id: 'ip',    name: 'Informatics Practices (065)', icon: '🖥️', color: '#818cf8' },
+    { id: 'acc',   name: 'Accountancy (055)', icon: '📊', color: '#f59e0b' },
+    { id: 'bst',   name: 'Business Studies (054)', icon: '🏢', color: '#d97706' },
+    { id: 'eco',   name: 'Economics (030)', icon: '📈', color: '#0ea5e9' },
+    { id: 'his',   name: 'History (027)', icon: '🏛️', color: '#b45309' },
+    { id: 'pol',   name: 'Political Science (028)', icon: '🗳️', color: '#ef4444' },
+    { id: 'geo',   name: 'Geography (029)', icon: '🌐', color: '#059669' },
+    { id: 'psy',   name: 'Psychology (037) / Sociology (039)', icon: '🧠', color: '#ec4899' },
+    { id: 'pe',    name: 'Physical Education (048)', icon: '🏃', color: '#10b981' }
+  ],
+  12: [
+    { id: 'eng',   name: 'English Core (301 - Class 12)', icon: '📝', color: '#3b82f6' },
+    { id: 'lang',  name: 'Optional Language (Hindi Core / Malayalam)', icon: '📖', color: '#10b981' },
+    { id: 'phy',   name: 'Physics (Theory & Practical - 042)', icon: '⚡', color: '#0284c7' },
+    { id: 'che',   name: 'Chemistry (Theory & Practical - 043)', icon: '🧪', color: '#14b8a6' },
+    { id: 'mat',   name: 'Mathematics / Applied Maths (041 / 241)', icon: '📐', color: '#8b5cf6' },
+    { id: 'bio',   name: 'Biology (Theory & Lab - 044)', icon: '🌿', color: '#22c55e' },
+    { id: 'cs',    name: 'Computer Science (Python - 083)', icon: '💻', color: '#6366f1' },
+    { id: 'ip',    name: 'Informatics Practices (SQL / Pandas - 065)', icon: '🖥️', color: '#818cf8' },
+    { id: 'acc',   name: 'Accountancy (Partnership & Company - 055)', icon: '📊', color: '#f59e0b' },
+    { id: 'bst',   name: 'Business Studies (054)', icon: '🏢', color: '#d97706' },
+    { id: 'eco',   name: 'Economics (Macroeconomics & Indian Eco - 030)', icon: '📈', color: '#0ea5e9' },
+    { id: 'his',   name: 'History (Themes in Indian History - 027)', icon: '🏛️', color: '#b45309' },
+    { id: 'pol',   name: 'Political Science (World & Indian Politics - 028)', icon: '🗳️', color: '#ef4444' },
+    { id: 'geo',   name: 'Geography (029)', icon: '🌐', color: '#059669' },
+    { id: 'psy',   name: 'Psychology / Sociology', icon: '🧠', color: '#ec4899' },
+    { id: 'pe',    name: 'Physical Education (048)', icon: '🏃', color: '#10b981' }
   ]
 };
 
