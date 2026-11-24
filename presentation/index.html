@@ -211,6 +211,24 @@
       justify-content: center;
     }
 
+    /* Embedded UI Screenshots */
+    .slide-screenshot-mockup {
+      width: 100%;
+      max-height: 380px;
+      object-fit: cover;
+      object-position: top;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+      background: #111827;
+      display: block;
+    }
+    .slide-screenshot-mockup:hover {
+      transform: scale(1.02);
+      border-color: var(--primary);
+    }
+
     /* Workflow Timeline */
     .demo-step {
       display: flex;
@@ -591,26 +609,38 @@
       </div>
 
       <div class="slide-body">
-        <div class="grid-2">
-          <div class="feature-card">
-            <div class="feature-icon">🔑</div>
-            <div class="feature-title">Friction-Free Student PIN</div>
-            <div class="feature-desc">Kids enter the Family Code (e.g. <code>KIDS101</code>) and their 4-digit PIN (e.g. <code>1234</code>). Case-insensitive and instant—zero password hurdles.</div>
+        <div class="grid-2" style="align-items: center;">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="feature-card" style="padding: 16px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">🔑</span>
+                <span class="feature-title" style="margin: 0;">Friction-Free Student PIN</span>
+              </div>
+              <div class="feature-desc">Kids enter Family Code (e.g. <code>KIDS-101</code>) &amp; 4-digit PIN (<code>1234</code>). Zero complex passwords.</div>
+            </div>
+
+            <div class="feature-card" style="padding: 16px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">📬</span>
+                <span class="feature-title" style="margin: 0;">One-Click Homework Submission</span>
+              </div>
+              <div class="feature-desc">Completing a task is celebrated with <strong>"Submit for Approval (+15 pts)"</strong> sending instant parent alerts.</div>
+            </div>
+
+            <div class="feature-card" style="padding: 16px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">🌟</span>
+                <span class="feature-title" style="margin: 0;">Visual Progress &amp; Trophy Count</span>
+              </div>
+              <div class="feature-desc">Dynamic star meters (e.g. 75/120 pts) keep children motivated to build study consistency all week.</div>
+            </div>
           </div>
-          <div class="feature-card">
-            <div class="feature-icon">📬</div>
-            <div class="feature-title">One-Click Submission</div>
-            <div class="feature-desc">When homework or reading is finished, a single click on <strong>"Submit for Approval (+10 pts)"</strong> alerts the parent and marks the task as sent.</div>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🌟</div>
-            <div class="feature-title">Visual Progress Bar &amp; Stars</div>
-            <div class="feature-desc">Students watch their star meter climb toward the weekend goal, fostering patience and sustained effort through Friday.</div>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🎨</div>
-            <div class="feature-title">6 Eye-Friendly Color Themes</div>
-            <div class="feature-desc">Kids can personalize their dashboard: Classic Indigo, Emerald Forest, Sunset Amber, Ocean Breeze, Sweet Candy, or Midnight Dark.</div>
+
+          <div>
+            <img src="demo-images/02-student-dashboard.png" alt="Student Dashboard UI" class="slide-screenshot-mockup" title="Student Dashboard Live Screen">
+            <div style="text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">
+              Live Student Dashboard View (Arjun &bull; Class 7 Kerala Syllabus)
+            </div>
           </div>
         </div>
       </div>
@@ -630,21 +660,38 @@
       </div>
 
       <div class="slide-body">
-        <div class="grid-3">
-          <div class="feature-card">
-            <div class="feature-icon">🔔</div>
-            <div class="feature-title">Live Submission Alerts</div>
-            <div class="feature-desc">Parent dashboard displays an alert whenever a child submits homework, making it effortless to review before bedtime.</div>
+        <div class="grid-2" style="align-items: center;">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="feature-card" style="padding: 16px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">🔔</span>
+                <span class="feature-title" style="margin: 0;">Live Submission Alerts</span>
+              </div>
+              <div class="feature-desc">Parents get an alert: <em>"Arjun submitted 1 task for your approval!"</em> making homework review seamless.</div>
+            </div>
+
+            <div class="feature-card" style="padding: 16px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">⭐</span>
+                <span class="feature-title" style="margin: 0;">6 Digital Encouragement Stickers</span>
+              </div>
+              <div class="feature-desc">Choose from ⭐ Star Student, 🚀 Super Fast, ✍️ Neat Work, 💯 Perfect, 💡 Brilliant, and 🏆 Champion badges!</div>
+            </div>
+
+            <div class="feature-card" style="padding: 16px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">💬</span>
+                <span class="feature-title" style="margin: 0;">Personal Warm Praise Remarks</span>
+              </div>
+              <div class="feature-desc">Add words of encouragement: <em>"Excellent work! Proud of you!"</em> which proudly shines on the child's screen.</div>
+            </div>
           </div>
-          <div class="feature-card">
-            <div class="feature-icon">⭐</div>
-            <div class="feature-title">Encouragement Stickers</div>
-            <div class="feature-desc">Attach digital badges to completed tasks: ⭐ Gold Star, 🌟 Shining Star, 🎯 Target Hit, 🏆 Champ, 🚀 Super Effort, or 💯 Perfect.</div>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🔄</div>
-            <div class="feature-title">Constructive Revision Request</div>
-            <div class="feature-desc">If work needs neatening, click <em>Needs Revision</em> to return the task with gentle feedback without penalizing the student.</div>
+
+          <div>
+            <img src="demo-images/05-parent-approval-stickers.png" alt="Parent Approval Stickers Modal" class="slide-screenshot-mockup" title="Parent Approval Modal with Stickers">
+            <div style="text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">
+              Parent Approval Modal &bull; Sticker Selector &amp; Encouragement Note
+            </div>
           </div>
         </div>
       </div>
@@ -664,20 +711,34 @@
       </div>
 
       <div class="slide-body">
-        <div class="grid-2">
-          <div class="hero-stat-card">
-            <div style="font-size: 38px; margin-bottom: 8px;">🎉</div>
-            <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px;">Dynamic Goal Unlocking</h3>
-            <p style="font-size: 14px; color: #e0e7ff; line-height: 1.6;">
-              When total approved points reach the family target (e.g. 100 points), the app erupts with celebratory confetti and displays <strong>"Target Unlocked!"</strong> on both parent and child screens.
-            </p>
+        <div class="grid-2" style="align-items: center;">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="hero-stat-card" style="padding: 18px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 26px;">🎉</span>
+                <span style="font-size: 16px; font-weight: 800; color: #fff;">Dynamic Goal Unlocking</span>
+              </div>
+              <p style="font-size: 13px; color: #e0e7ff; line-height: 1.5; margin: 0;">
+                Points (e.g. 90/120 pts) build toward agreed treats like <em>Weekend Ice Cream &amp; Park Outing</em>. Reaching 100% unleashes celebratory confetti!
+              </p>
+            </div>
+
+            <div class="hero-stat-card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.15) 100%); border-color: rgba(245, 158, 11, 0.4); padding: 18px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 26px;">📜</span>
+                <span style="font-size: 16px; font-weight: 800; color: #fff;">Permanent Trophy Case</span>
+              </div>
+              <p style="font-size: 13px; color: #fef3c7; line-height: 1.5; margin: 0;">
+                Parents click <strong>Mark Reward Given</strong>, archiving the milestone permanently to nurture lifelong self-discipline and pride.
+              </p>
+            </div>
           </div>
-          <div class="hero-stat-card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.15) 100%); border-color: rgba(245, 158, 11, 0.4);">
-            <div style="font-size: 38px; margin-bottom: 8px;">📜</div>
-            <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px;">Lifelong Trophy Case</h3>
-            <p style="font-size: 14px; color: #fef3c7; line-height: 1.6;">
-              Every weekend prize unlocked and awarded is archived in the child's personal Trophy Case—giving them a permanent visual history of weeks they stayed disciplined and succeeded!
-            </p>
+
+          <div>
+            <img src="demo-images/06-weekend-prize-goals.png" alt="Weekend Prize and Trophy Case UI" class="slide-screenshot-mockup" title="Weekend Prize Goals & Trophy Case">
+            <div style="text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">
+              Weekend Goal Progress Meter (75% Complete) &amp; Reward History
+            </div>
           </div>
         </div>
       </div>
@@ -731,19 +792,29 @@
       </div>
 
       <div class="slide-body">
-        <div class="grid-2">
-          <div class="feature-card">
-            <div class="feature-icon">📝</div>
-            <div class="feature-title">Parent Contact Support Form</div>
-            <div class="feature-desc">
-              Parents select a category, type their question, and submit. The app auto-attaches their verified email, creates a ticket (e.g. <code>TKT-1042</code>), and alerts <strong>kidsstudytracker@gmail.com</strong>.
+        <div class="grid-2" style="align-items: center;">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="feature-card" style="padding: 16px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">📝</span>
+                <span class="feature-title" style="margin: 0;">Parent Contact Support Tab</span>
+              </div>
+              <div class="feature-desc">Parents raise queries with categories &amp; descriptions. Auto-attaches verified parent email and logs a unique ticket number.</div>
+            </div>
+
+            <div class="feature-card" style="padding: 16px 20px;">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                <span style="font-size: 24px;">🛡️</span>
+                <span class="feature-title" style="margin: 0;">Dedicated Super Admin Desk</span>
+              </div>
+              <div class="feature-desc">Separated <strong>Support Desk &amp; Inquiries</strong> tab with ticket filters (All, Open, Resolved) and 1-Click <em>Reply via Gmail</em>.</div>
             </div>
           </div>
-          <div class="feature-card">
-            <div class="feature-icon">🛡️</div>
-            <div class="feature-title">Separated Super Admin Console</div>
-            <div class="feature-desc">
-              Super Admin has a dedicated <strong>🎧 Support Desk &amp; Inquiries</strong> tab with Open/Resolved status filters, ticket metrics, and a 1-click <em>Reply via Gmail</em> button.
+
+          <div>
+            <img src="demo-images/08-super-admin-support-desk.png" alt="Super Admin Support Desk UI" class="slide-screenshot-mockup" title="Super Admin Helpdesk Console">
+            <div style="text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">
+              Super Admin Helpdesk Console &bull; Ticket Tracking &amp; Gmail Reply
             </div>
           </div>
         </div>

@@ -10,3 +10,7 @@ node_modules/
 # OS generated files
 Thumbs.db
 .DS_Store
+
+# Demo screenshots (local only, do not push to git)
+demo-images/
+presentation/demo-images/
