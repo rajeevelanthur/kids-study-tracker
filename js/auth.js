@@ -414,7 +414,8 @@ function selectLoginUser(userId) {
 
 function handleSignInSubmit(e) {
   e.preventDefault();
-  const enteredPin = document.getElementById('login-pin-input').value.trim();
+  const pinInput = document.getElementById('login-pin-input');
+  const enteredPin = pinInput ? pinInput.value.trim() : '';
   const user = store.getUserById(selectedLoginUserId);
 
   if (!user) {
@@ -422,14 +423,15 @@ function handleSignInSubmit(e) {
     return;
   }
 
-  if (enteredPin === user.pin || !user.pin) {
+  const expectedPin = (user.pin !== undefined && user.pin !== null) ? String(user.pin).trim() : '';
+  if (!expectedPin || enteredPin === expectedPin) {
     store.setCurrentUser(user);
     showToast(`Welcome back, ${user.name}! 👋`, 'success');
     renderApp();
   } else {
     const isDemo = (typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo');
     if (isDemo) {
-      showToast(`Incorrect PIN for ${user.name}. (Demo PIN: ${user.pin || '1234'})`, 'error');
+      showToast(`Incorrect PIN for ${user.name}. (Demo PIN: ${expectedPin || '1234'})`, 'error');
     } else {
       showToast(`Incorrect PIN for ${user.name}. Please check and try again.`, 'error');
     }

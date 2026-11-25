@@ -92,6 +92,18 @@ function openThemeModal() {
 // ==========================================
 // 2. STUDY WEEK ENGINE (Monday to Friday Tracker)
 // ==========================================
+if (typeof getFormattedDate !== 'function') {
+  function getFormattedDate(d = new Date()) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+}
+if (typeof TODAY_STR === 'undefined') {
+  var TODAY_STR = getFormattedDate();
+}
+
 function getCurrentStudyWeek(refDate = new Date()) {
   const d = new Date(refDate);
   const day = d.getDay(); // 0 is Sun, 1 is Mon ... 5 is Fri, 6 is Sat

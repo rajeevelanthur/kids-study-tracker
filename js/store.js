@@ -20,84 +20,7 @@ const SESSION_KEYS = {
   ACTIVE_USER_ID: ENV_PREFIX + 'session_user_id'
 };
 
-// Default seed families
-const SEED_FAMILIES = [
-  {
-    id: 'fam_101',
-    name: "Rajeev's Family",
-    code: 'KIDS101',
-    parentEmail: 'kidsstudytracker@gmail.com',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'fam_202',
-    name: "Anand's Family",
-    code: 'KIDS202',
-    parentEmail: 'anand.parent@gmail.com',
-    createdAt: new Date().toISOString()
-  }
-];
-
-// Default seed users with Family ID isolation
-const SEED_USERS = [
-  // Family 1 (Code: KIDS101)
-  {
-    id: 'user_parent',
-    familyId: 'fam_101',
-    name: 'Rajeev (Parent)',
-    email: 'kidsstudytracker@gmail.com',
-    role: 'parent',
-    pin: '9999',
-    avatar: '👨‍👩‍👧‍👦'
-  },
-  {
-    id: 'user_child_1',
-    familyId: 'fam_101',
-    name: 'Arjun',
-    role: 'child',
-    pin: '1234',
-    grade: 7,
-    syllabus: 'Kerala State Syllabus',
-    avatar: '👦',
-    weeklyPoints: 65,
-    totalPoints: 240
-  },
-  {
-    id: 'user_child_2',
-    familyId: 'fam_101',
-    name: 'Meera',
-    role: 'child',
-    pin: '1111',
-    grade: 4,
-    syllabus: 'Kerala State Syllabus',
-    avatar: '👧',
-    weeklyPoints: 50,
-    totalPoints: 190
-  },
-  // Family 2 (Code: KIDS202)
-  {
-    id: 'user_parent_2',
-    familyId: 'fam_202',
-    name: 'Anand (Parent)',
-    email: 'anand.parent@gmail.com',
-    role: 'parent',
-    pin: '8888',
-    avatar: '👨‍🏫'
-  },
-  {
-    id: 'user_child_3',
-    familyId: 'fam_202',
-    name: 'Appu',
-    role: 'child',
-    pin: '5555',
-    grade: 5,
-    syllabus: 'CBSE',
-    avatar: '🧒',
-    weeklyPoints: 40,
-    totalPoints: 120
-  }
-];
-
+// Helper date formatter
 function getFormattedDate(d = new Date()) {
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -105,156 +28,31 @@ function getFormattedDate(d = new Date()) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-const TODAY_STR = getFormattedDate();
-const YESTERDAY_DATE = new Date(Date.now() - 86400000);
-const YESTERDAY_STR = getFormattedDate(YESTERDAY_DATE);
+var TODAY_STR = getFormattedDate();
+var YESTERDAY_DATE = new Date(Date.now() - 86400000);
+var YESTERDAY_STR = getFormattedDate(YESTERDAY_DATE);
 
-const SEED_TASKS = [
-  // Family 1 Tasks (KIDS101)
-  {
-    id: 't_1',
-    familyId: 'fam_101',
-    childId: 'user_child_1',
-    subjectName: 'Mathematics',
-    subjectIcon: '📐',
-    taskType: 'homework',
-    taskTypeName: 'Homework / Writing Exercise',
-    title: 'Chapter 3: Complete Exercise 3.2 (Problems 1 to 5)',
-    points: 10,
-    date: TODAY_STR,
-    status: 'completed',
-    submittedAt: new Date(Date.now() - 4000000).toISOString(),
-    completedAt: new Date(Date.now() - 3600000).toISOString()
-  },
-  {
-    id: 't_2',
-    familyId: 'fam_101',
-    childId: 'user_child_1',
-    subjectName: 'Malayalam I (Adisthana Padavali)',
-    subjectIcon: '📖',
-    taskType: 'reading',
-    taskTypeName: 'Reading & Understanding',
-    title: 'Read Lesson 4 aloud & note difficult words',
-    points: 5,
-    date: TODAY_STR,
-    status: 'submitted', // Awaiting Parent Approval!
-    submittedAt: new Date(Date.now() - 1800000).toISOString(),
-    completedAt: null
-  },
-  {
-    id: 't_3',
-    familyId: 'fam_101',
-    childId: 'user_child_1',
-    subjectName: 'Basic Science',
-    subjectIcon: '🔬',
-    taskType: 'examprep',
-    taskTypeName: 'Exam / Test Preparation',
-    title: 'Prepare Chapter 2 for class quiz (Pending from yesterday)',
-    points: 15,
-    date: YESTERDAY_STR,
-    status: 'pending',
-    submittedAt: null,
-    completedAt: null
-  },
-  {
-    id: 't_4',
-    familyId: 'fam_101',
-    childId: 'user_child_2',
-    subjectName: 'English',
-    subjectIcon: '📘',
-    taskType: 'homework',
-    taskTypeName: 'Homework / Writing Exercise',
-    title: 'Complete English handwriting practice (Page 14)',
-    points: 10,
-    date: TODAY_STR,
-    status: 'completed',
-    sticker: '⭐',
-    stickerText: 'Neat Handwriting!',
-    parentRemark: 'Very neat and clean handwriting! Proud of you! 🌟',
-    submittedAt: new Date(Date.now() - 7500000).toISOString(),
-    completedAt: new Date(Date.now() - 7200000).toISOString()
-  },
-  {
-    id: 't_5',
-    familyId: 'fam_101',
-    childId: 'user_child_2',
-    subjectName: 'Environmental Studies',
-    subjectIcon: '🌱',
-    taskType: 'reading',
-    taskTypeName: 'Reading & Understanding',
-    title: 'Read Lesson 2 on Plants and answer questions',
-    points: 5,
-    date: TODAY_STR,
-    status: 'pending',
-    submittedAt: null,
-    completedAt: null
-  },
-  // Family 2 Tasks (KIDS202)
-  {
-    id: 't_6',
-    familyId: 'fam_202',
-    childId: 'user_child_3',
-    subjectName: 'Environmental Studies',
-    subjectIcon: '🌍',
-    taskType: 'homework',
-    taskTypeName: 'Homework / Writing Exercise',
-    title: 'Draw the water cycle diagram in science record book',
-    points: 10,
-    date: TODAY_STR,
-    status: 'pending',
-    submittedAt: null,
-    completedAt: null
+// Fallback seed loader from data/demo_seed_data.json
+function getDemoSeedData() {
+  if (typeof MasterDataLoader !== 'undefined' && MasterDataLoader.getSeedData()) {
+    return MasterDataLoader.getSeedData();
   }
-];
-
-const SEED_REWARDS = [
-  {
-    id: 'r_1',
-    familyId: 'fam_101',
-    childId: 'user_child_1',
-    prizeName: 'Weekend Ice Cream & Park Outing 🍦',
-    targetPoints: 100,
-    status: 'active'
-  },
-  {
-    id: 'r_hist_1',
-    familyId: 'fam_101',
-    childId: 'user_child_1',
-    prizeName: 'Lego Creator Mini Kit 🧱',
-    targetPoints: 100,
-    pointsAchieved: 110,
-    status: 'rewarded',
-    weekLabel: 'Week ending 15 Nov 2026',
-    rewardedAt: new Date(Date.now() - 7 * 86400000).toISOString()
-  },
-  {
-    id: 'r_2',
-    familyId: 'fam_101',
-    childId: 'user_child_2',
-    prizeName: 'Favorite Storybook & Art Kit 🎨',
-    targetPoints: 80,
-    status: 'active'
-  },
-  {
-    id: 'r_hist_2',
-    familyId: 'fam_101',
-    childId: 'user_child_2',
-    prizeName: 'Color Pencil Set & Sketchpad 🖍️',
-    targetPoints: 80,
-    pointsAchieved: 85,
-    status: 'rewarded',
-    weekLabel: 'Week ending 15 Nov 2026',
-    rewardedAt: new Date(Date.now() - 7 * 86400000).toISOString()
-  },
-  {
-    id: 'r_3',
-    familyId: 'fam_202',
-    childId: 'user_child_3',
-    prizeName: 'Sunday Pizza & Movie Night 🍕',
-    targetPoints: 80,
-    status: 'active'
-  }
-];
+  return {
+    families: [
+      { id: 'fam_101', name: "Rajeev's Family", code: 'KIDS101', parentEmail: 'kidsstudytracker@gmail.com', createdAt: new Date().toISOString() },
+      { id: 'fam_202', name: "Anand's Family", code: 'KIDS202', parentEmail: 'anand.parent@gmail.com', createdAt: new Date().toISOString() }
+    ],
+    users: [
+      { id: 'user_parent', familyId: 'fam_101', name: 'Rajeev (Parent)', email: 'kidsstudytracker@gmail.com', role: 'parent', pin: '9999', avatar: '👨‍👩‍👧‍👦' },
+      { id: 'user_child_1', familyId: 'fam_101', name: 'Arjun', role: 'child', pin: '1234', grade: 7, syllabus: 'Kerala State Syllabus', avatar: '👦', weeklyPoints: 65, totalPoints: 240 },
+      { id: 'user_child_2', familyId: 'fam_101', name: 'Meera', role: 'child', pin: '1111', grade: 4, syllabus: 'Kerala State Syllabus', avatar: '👧', weeklyPoints: 50, totalPoints: 190 },
+      { id: 'user_parent_2', familyId: 'fam_202', name: 'Anand (Parent)', email: 'anand.parent@gmail.com', role: 'parent', pin: '8888', avatar: '👨‍🏫' },
+      { id: 'user_child_3', familyId: 'fam_202', name: 'Appu', role: 'child', pin: '5555', grade: 5, syllabus: 'CBSE', avatar: '🧒', weeklyPoints: 40, totalPoints: 120 }
+    ],
+    tasks: [],
+    rewards: []
+  };
+}
 
 // ==========================================
 // FIREBASE CLOUD FIRESTORE SYNC HELPER (Phase 2)
@@ -823,102 +621,178 @@ class DataStore {
     } catch (e) {}
   }
 
-  // Subjects Management (Kerala State & CBSE, Grades 1 to 10)
+  // Subjects Management (Integrated JSON Master + Family Cloud Overrides)
   getAllSyllabus(syllabusType = 'kerala') {
-    const raw = this.get(STORAGE_KEYS.SYLLABUS);
+    const master = (typeof MasterDataLoader !== 'undefined') ? MasterDataLoader.getSyllabus() : null;
     const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
-    if (!raw) return typeKey === 'cbse' ? DEFAULT_CBSE_SYLLABUS : DEFAULT_KERALA_SYLLABUS;
-    if (raw.kerala || raw.cbse) {
-      return raw[typeKey] || (typeKey === 'cbse' ? DEFAULT_CBSE_SYLLABUS : DEFAULT_KERALA_SYLLABUS);
-    }
-    return raw;
+    const fallback = typeKey === 'cbse' ? DEFAULT_CBSE_SYLLABUS : DEFAULT_KERALA_SYLLABUS;
+    return (master && master[typeKey]) ? master[typeKey] : fallback;
   }
 
   getSubjectsForGrade(grade, syllabusType = 'kerala') {
-    const syllabus = this.getAllSyllabus(syllabusType);
     const g = parseInt(grade, 10);
     const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
-    const defaultFallback = typeKey === 'cbse' ? DEFAULT_CBSE_SYLLABUS[g] : DEFAULT_KERALA_SYLLABUS[g];
-    return syllabus[g] || defaultFallback || [];
+    const baseSyllabus = this.getAllSyllabus(typeKey);
+    const baseSubjects = (baseSyllabus && baseSyllabus[g]) ? JSON.parse(JSON.stringify(baseSyllabus[g])) : [];
+
+    // Check if current active family has custom overrides in cloud
+    const curFamily = this.getCurrentFamily();
+    if (curFamily && curFamily.customSyllabus && curFamily.customSyllabus[typeKey] && curFamily.customSyllabus[typeKey][g]) {
+      const overrides = curFamily.customSyllabus[typeKey][g];
+      return overrides;
+    }
+
+    // LocalStorage fallback for legacy offline mode
+    const raw = this.get(STORAGE_KEYS.SYLLABUS);
+    if (raw && raw[typeKey] && raw[typeKey][g]) {
+      return raw[typeKey][g];
+    }
+
+    return baseSubjects;
   }
 
   addSubject(grade, subject, syllabusType = 'kerala') {
-    const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
-    let raw = this.get(STORAGE_KEYS.SYLLABUS) || {};
-    if (!raw.kerala && !raw.cbse) {
-      raw = { kerala: raw, cbse: DEFAULT_CBSE_SYLLABUS };
-    }
-    if (!raw[typeKey]) raw[typeKey] = typeKey === 'cbse' ? DEFAULT_CBSE_SYLLABUS : DEFAULT_KERALA_SYLLABUS;
     const g = parseInt(grade, 10);
-    if (!raw[typeKey][g]) raw[typeKey][g] = [];
-    raw[typeKey][g].push(subject);
+    const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
+    const currentList = this.getSubjectsForGrade(g, typeKey);
+    const updatedList = [...currentList, subject];
+
+    // Save to LocalStorage
+    let raw = this.get(STORAGE_KEYS.SYLLABUS) || {};
+    if (!raw[typeKey]) raw[typeKey] = {};
+    raw[typeKey][g] = updatedList;
     this.save(STORAGE_KEYS.SYLLABUS, raw);
+
+    // Save to Family Cloud Document in Firestore
+    const curFamily = this.getCurrentFamily();
+    if (curFamily) {
+      if (!curFamily.customSyllabus) curFamily.customSyllabus = {};
+      if (!curFamily.customSyllabus[typeKey]) curFamily.customSyllabus[typeKey] = {};
+      curFamily.customSyllabus[typeKey][g] = updatedList;
+      this.updateFamily(curFamily.id, { customSyllabus: curFamily.customSyllabus });
+    }
+
     return subject;
   }
 
   updateSubject(grade, subjectId, updates, syllabusType = 'kerala') {
-    const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
-    let raw = this.get(STORAGE_KEYS.SYLLABUS) || {};
-    if (!raw.kerala && !raw.cbse) {
-      raw = { kerala: raw, cbse: DEFAULT_CBSE_SYLLABUS };
-    }
     const g = parseInt(grade, 10);
-    if (raw[typeKey] && raw[typeKey][g]) {
-      raw[typeKey][g] = raw[typeKey][g].map(s => s.id === subjectId ? { ...s, ...updates } : s);
-      this.save(STORAGE_KEYS.SYLLABUS, raw);
+    const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
+    const currentList = this.getSubjectsForGrade(g, typeKey);
+    const updatedList = currentList.map(s => s.id === subjectId ? { ...s, ...updates } : s);
+
+    // Save to LocalStorage
+    let raw = this.get(STORAGE_KEYS.SYLLABUS) || {};
+    if (!raw[typeKey]) raw[typeKey] = {};
+    raw[typeKey][g] = updatedList;
+    this.save(STORAGE_KEYS.SYLLABUS, raw);
+
+    // Save to Family Cloud Document in Firestore
+    const curFamily = this.getCurrentFamily();
+    if (curFamily) {
+      if (!curFamily.customSyllabus) curFamily.customSyllabus = {};
+      if (!curFamily.customSyllabus[typeKey]) curFamily.customSyllabus[typeKey] = {};
+      curFamily.customSyllabus[typeKey][g] = updatedList;
+      this.updateFamily(curFamily.id, { customSyllabus: curFamily.customSyllabus });
     }
   }
 
   deleteSubject(grade, subjectId, syllabusType = 'kerala') {
-    const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
-    let raw = this.get(STORAGE_KEYS.SYLLABUS) || {};
-    if (!raw.kerala && !raw.cbse) {
-      raw = { kerala: raw, cbse: DEFAULT_CBSE_SYLLABUS };
-    }
     const g = parseInt(grade, 10);
-    if (raw[typeKey] && raw[typeKey][g]) {
-      raw[typeKey][g] = raw[typeKey][g].filter(s => s.id !== subjectId);
-      this.save(STORAGE_KEYS.SYLLABUS, raw);
+    const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
+    const currentList = this.getSubjectsForGrade(g, typeKey);
+    const updatedList = currentList.filter(s => s.id !== subjectId);
+
+    // Save to LocalStorage
+    let raw = this.get(STORAGE_KEYS.SYLLABUS) || {};
+    if (!raw[typeKey]) raw[typeKey] = {};
+    raw[typeKey][g] = updatedList;
+    this.save(STORAGE_KEYS.SYLLABUS, raw);
+
+    // Save to Family Cloud Document in Firestore
+    const curFamily = this.getCurrentFamily();
+    if (curFamily) {
+      if (!curFamily.customSyllabus) curFamily.customSyllabus = {};
+      if (!curFamily.customSyllabus[typeKey]) curFamily.customSyllabus[typeKey] = {};
+      curFamily.customSyllabus[typeKey][g] = updatedList;
+      this.updateFamily(curFamily.id, { customSyllabus: curFamily.customSyllabus });
     }
   }
 
   resetSubjectsForGrade(grade, syllabusType = 'kerala') {
-    const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
-    let raw = this.get(STORAGE_KEYS.SYLLABUS) || {};
-    if (!raw.kerala && !raw.cbse) {
-      raw = { kerala: raw, cbse: DEFAULT_CBSE_SYLLABUS };
-    }
     const g = parseInt(grade, 10);
-    const defaults = typeKey === 'cbse' ? DEFAULT_CBSE_SYLLABUS : DEFAULT_KERALA_SYLLABUS;
-    if (!raw[typeKey]) raw[typeKey] = {};
-    raw[typeKey][g] = defaults[g] || [];
-    this.save(STORAGE_KEYS.SYLLABUS, raw);
+    const typeKey = (syllabusType && String(syllabusType).toLowerCase().includes('cbse')) ? 'cbse' : 'kerala';
+    const baseSyllabus = this.getAllSyllabus(typeKey);
+    const defaultList = (baseSyllabus && baseSyllabus[g]) ? JSON.parse(JSON.stringify(baseSyllabus[g])) : [];
+
+    // Reset in LocalStorage
+    let raw = this.get(STORAGE_KEYS.SYLLABUS) || {};
+    if (raw[typeKey]) {
+      delete raw[typeKey][g];
+      this.save(STORAGE_KEYS.SYLLABUS, raw);
+    }
+
+    // Reset in Family Cloud Document
+    const curFamily = this.getCurrentFamily();
+    if (curFamily && curFamily.customSyllabus && curFamily.customSyllabus[typeKey]) {
+      delete curFamily.customSyllabus[typeKey][g];
+      this.updateFamily(curFamily.id, { customSyllabus: curFamily.customSyllabus });
+    }
   }
 
-  // Task Categories Management
+  // Task Categories Management (Integrated JSON Master + Family Cloud Overrides)
   getCategories() {
-    return this.get(STORAGE_KEYS.CATEGORIES) || DEFAULT_TASK_CATEGORIES;
+    const masterCats = (typeof MasterDataLoader !== 'undefined') ? MasterDataLoader.getCategories() : DEFAULT_TASK_CATEGORIES;
+    const curFamily = this.getCurrentFamily();
+    if (curFamily && curFamily.customCategories && curFamily.customCategories.length > 0) {
+      return curFamily.customCategories;
+    }
+    return this.get(STORAGE_KEYS.CATEGORIES) || masterCats;
   }
 
   addCategory(category) {
-    const categories = this.getCategories();
-    categories.push(category);
+    const categories = [...this.getCategories(), category];
     this.save(STORAGE_KEYS.CATEGORIES, categories);
+
+    const curFamily = this.getCurrentFamily();
+    if (curFamily) {
+      curFamily.customCategories = categories;
+      this.updateFamily(curFamily.id, { customCategories: categories });
+    }
     return category;
   }
 
   updateCategory(id, updates) {
     const categories = this.getCategories().map(c => c.id === id ? { ...c, ...updates } : c);
     this.save(STORAGE_KEYS.CATEGORIES, categories);
+
+    const curFamily = this.getCurrentFamily();
+    if (curFamily) {
+      curFamily.customCategories = categories;
+      this.updateFamily(curFamily.id, { customCategories: categories });
+    }
   }
 
   deleteCategory(id) {
     const categories = this.getCategories().filter(c => c.id !== id);
     this.save(STORAGE_KEYS.CATEGORIES, categories);
+
+    const curFamily = this.getCurrentFamily();
+    if (curFamily) {
+      curFamily.customCategories = categories;
+      this.updateFamily(curFamily.id, { customCategories: categories });
+    }
   }
 
   resetCategories() {
-    this.save(STORAGE_KEYS.CATEGORIES, DEFAULT_TASK_CATEGORIES);
+    const masterCats = (typeof MasterDataLoader !== 'undefined') ? MasterDataLoader.getCategories() : DEFAULT_TASK_CATEGORIES;
+    this.save(STORAGE_KEYS.CATEGORIES, masterCats);
+
+    const curFamily = this.getCurrentFamily();
+    if (curFamily && curFamily.customCategories) {
+      delete curFamily.customCategories;
+      this.updateFamily(curFamily.id, { customCategories: null });
+    }
   }
 
   // Tasks
@@ -1281,20 +1155,31 @@ class DataStore {
   }
 
   seedDemoData() {
-    this.save(STORAGE_KEYS.FAMILIES, SEED_FAMILIES);
-    this.save(STORAGE_KEYS.USERS, SEED_USERS);
-    this.save(STORAGE_KEYS.TASKS, SEED_TASKS);
-    this.save(STORAGE_KEYS.REWARDS, SEED_REWARDS);
-    this.save(STORAGE_KEYS.SYLLABUS, {
+    const seed = getDemoSeedData();
+    const families = seed.families || [];
+    const users = seed.users || [];
+    const tasks = seed.tasks || [];
+    const rewards = seed.rewards || [];
+
+    this.save(STORAGE_KEYS.FAMILIES, families);
+    this.save(STORAGE_KEYS.USERS, users);
+    this.save(STORAGE_KEYS.TASKS, tasks);
+    this.save(STORAGE_KEYS.REWARDS, rewards);
+
+    const masterSyllabus = (typeof MasterDataLoader !== 'undefined') ? MasterDataLoader.getSyllabus() : {
       kerala: DEFAULT_KERALA_SYLLABUS,
       cbse: DEFAULT_CBSE_SYLLABUS
-    });
-    this.save(STORAGE_KEYS.CATEGORIES, DEFAULT_TASK_CATEGORIES);
+    };
+    const masterCats = (typeof MasterDataLoader !== 'undefined') ? MasterDataLoader.getCategories() : DEFAULT_TASK_CATEGORIES;
+
+    this.save(STORAGE_KEYS.SYLLABUS, masterSyllabus);
+    this.save(STORAGE_KEYS.CATEGORIES, masterCats);
+
     if (CloudSync.isReady()) {
-      SEED_FAMILIES.forEach(f => CloudSync.setDoc('families', f.id, f));
-      SEED_USERS.forEach(u => CloudSync.setDoc('users', u.id, u));
-      SEED_TASKS.forEach(t => CloudSync.setDoc('tasks', t.id, t));
-      SEED_REWARDS.forEach(r => CloudSync.setDoc('rewards', r.id, r));
+      families.forEach(f => CloudSync.setDoc('families', f.id, f));
+      users.forEach(u => CloudSync.setDoc('users', u.id, u));
+      tasks.forEach(t => CloudSync.setDoc('tasks', t.id, t));
+      rewards.forEach(r => CloudSync.setDoc('rewards', r.id, r));
     }
     this.logout();
     if (typeof renderApp === 'function') renderApp();

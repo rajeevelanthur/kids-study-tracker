@@ -1,0 +1,217 @@
+{
+  "families": [
+    {
+      "id": "fam_101",
+      "name": "Rajeev's Family",
+      "code": "KIDS101",
+      "parentEmail": "kidsstudytracker@gmail.com",
+      "createdAt": "2026-11-25T05:19:04.018Z"
+    },
+    {
+      "id": "fam_202",
+      "name": "Anand's Family",
+      "code": "KIDS202",
+      "parentEmail": "anand.parent@gmail.com",
+      "createdAt": "2026-11-25T05:19:04.031Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "user_parent",
+      "familyId": "fam_101",
+      "name": "Rajeev (Parent)",
+      "email": "kidsstudytracker@gmail.com",
+      "role": "parent",
+      "pin": "9999",
+      "avatar": "👨‍👩‍👧‍👦"
+    },
+    {
+      "id": "user_child_1",
+      "familyId": "fam_101",
+      "name": "Arjun",
+      "role": "child",
+      "pin": "1234",
+      "grade": 7,
+      "syllabus": "Kerala State Syllabus",
+      "avatar": "👦",
+      "weeklyPoints": 65,
+      "totalPoints": 240
+    },
+    {
+      "id": "user_child_2",
+      "familyId": "fam_101",
+      "name": "Meera",
+      "role": "child",
+      "pin": "1111",
+      "grade": 4,
+      "syllabus": "Kerala State Syllabus",
+      "avatar": "👧",
+      "weeklyPoints": 50,
+      "totalPoints": 190
+    },
+    {
+      "id": "user_parent_2",
+      "familyId": "fam_202",
+      "name": "Anand (Parent)",
+      "email": "anand.parent@gmail.com",
+      "role": "parent",
+      "pin": "8888",
+      "avatar": "👨‍🏫"
+    },
+    {
+      "id": "user_child_3",
+      "familyId": "fam_202",
+      "name": "Appu",
+      "role": "child",
+      "pin": "5555",
+      "grade": 5,
+      "syllabus": "CBSE",
+      "avatar": "🧒",
+      "weeklyPoints": 40,
+      "totalPoints": 120
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t_1",
+      "familyId": "fam_101",
+      "childId": "user_child_1",
+      "subjectName": "Mathematics",
+      "subjectIcon": "📐",
+      "taskType": "homework",
+      "taskTypeName": "Homework / Writing Exercise",
+      "title": "Chapter 3: Complete Exercise 3.2 (Problems 1 to 5)",
+      "points": 10,
+      "date": "2026-11-25",
+      "status": "completed",
+      "submittedAt": "2026-11-25T04:12:24.031Z",
+      "completedAt": "2026-11-25T04:19:04.031Z"
+    },
+    {
+      "id": "t_2",
+      "familyId": "fam_101",
+      "childId": "user_child_1",
+      "subjectName": "Malayalam I (Adisthana Padavali)",
+      "subjectIcon": "📖",
+      "taskType": "reading",
+      "taskTypeName": "Reading & Understanding",
+      "title": "Read Lesson 4 aloud & note difficult words",
+      "points": 5,
+      "date": "2026-11-25",
+      "status": "submitted",
+      "submittedAt": "2026-11-25T04:49:04.031Z",
+      "completedAt": null
+    },
+    {
+      "id": "t_3",
+      "familyId": "fam_101",
+      "childId": "user_child_1",
+      "subjectName": "Basic Science",
+      "subjectIcon": "🔬",
+      "taskType": "examprep",
+      "taskTypeName": "Exam / Test Preparation",
+      "title": "Prepare Chapter 2 for class quiz (Pending from yesterday)",
+      "points": 15,
+      "date": "2026-11-24",
+      "status": "pending",
+      "submittedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "t_4",
+      "familyId": "fam_101",
+      "childId": "user_child_2",
+      "subjectName": "English",
+      "subjectIcon": "📘",
+      "taskType": "homework",
+      "taskTypeName": "Homework / Writing Exercise",
+      "title": "Complete English handwriting practice (Page 14)",
+      "points": 10,
+      "date": "2026-11-25",
+      "status": "completed",
+      "sticker": "⭐",
+      "stickerText": "Neat Handwriting!",
+      "parentRemark": "Very neat and clean handwriting! Proud of you! 🌟",
+      "submittedAt": "2026-11-25T03:14:04.031Z",
+      "completedAt": "2026-11-25T03:19:04.031Z"
+    },
+    {
+      "id": "t_5",
+      "familyId": "fam_101",
+      "childId": "user_child_2",
+      "subjectName": "Environmental Studies",
+      "subjectIcon": "🌱",
+      "taskType": "reading",
+      "taskTypeName": "Reading & Understanding",
+      "title": "Read Lesson 2 on Plants and answer questions",
+      "points": 5,
+      "date": "2026-11-25",
+      "status": "pending",
+      "submittedAt": null,
+      "completedAt": null
+    },
+    {
+      "id": "t_6",
+      "familyId": "fam_202",
+      "childId": "user_child_3",
+      "subjectName": "Environmental Studies",
+      "subjectIcon": "🌍",
+      "taskType": "homework",
+      "taskTypeName": "Homework / Writing Exercise",
+      "title": "Draw the water cycle diagram in science record book",
+      "points": 10,
+      "date": "2026-11-25",
+      "status": "pending",
+      "submittedAt": null,
+      "completedAt": null
+    }
+  ],
+  "rewards": [
+    {
+      "id": "r_1",
+      "familyId": "fam_101",
+      "childId": "user_child_1",
+      "prizeName": "Weekend Ice Cream & Park Outing 🍦",
+      "targetPoints": 100,
+      "status": "active"
+    },
+    {
+      "id": "r_hist_1",
+      "familyId": "fam_101",
+      "childId": "user_child_1",
+      "prizeName": "Lego Creator Mini Kit 🧱",
+      "targetPoints": 100,
+      "pointsAchieved": 110,
+      "status": "rewarded",
+      "weekLabel": "Week ending 15 Nov 2026",
+      "rewardedAt": "2026-11-18T05:19:04.031Z"
+    },
+    {
+      "id": "r_2",
+      "familyId": "fam_101",
+      "childId": "user_child_2",
+      "prizeName": "Favorite Storybook & Art Kit 🎨",
+      "targetPoints": 80,
+      "status": "active"
+    },
+    {
+      "id": "r_hist_2",
+      "familyId": "fam_101",
+      "childId": "user_child_2",
+      "prizeName": "Color Pencil Set & Sketchpad 🖍️",
+      "targetPoints": 80,
+      "pointsAchieved": 85,
+      "status": "rewarded",
+      "weekLabel": "Week ending 15 Nov 2026",
+      "rewardedAt": "2026-11-18T05:19:04.031Z"
+    },
+    {
+      "id": "r_3",
+      "familyId": "fam_202",
+      "childId": "user_child_3",
+      "prizeName": "Sunday Pizza & Movie Night 🍕",
+      "targetPoints": 80,
+      "status": "active"
+    }
+  ]
+}

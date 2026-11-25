@@ -1,0 +1,32 @@
+[
+  {
+    "id": "reading",
+    "label": "Reading & Understanding",
+    "icon": "📖",
+    "defaultPoints": 5
+  },
+  {
+    "id": "homework",
+    "label": "Homework / Writing Exercise",
+    "icon": "✍️",
+    "defaultPoints": 10
+  },
+  {
+    "id": "examprep",
+    "label": "Exam / Test Preparation",
+    "icon": "🎯",
+    "defaultPoints": 15
+  },
+  {
+    "id": "revision",
+    "label": "Revision & Memorization",
+    "icon": "🧠",
+    "defaultPoints": 5
+  },
+  {
+    "id": "project",
+    "label": "Project / Activity",
+    "icon": "🎨",
+    "defaultPoints": 10
+  }
+]
