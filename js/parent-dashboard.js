@@ -11,13 +11,15 @@
 
 function getPageHeading(tab) {
   switch (tab) {
+    case 'dashboard': return 'Executive Dashboard';
     case 'tasks': return 'Daily Tasks';
     case 'add': return 'Assign New Task';
     case 'report': return 'Detailed Reports';
     case 'reward': return 'Weekend Prize & Goals';
     case 'settings': return 'Curriculum & Categories';
     case 'help': return 'Help & User Guide';
-    default: return 'Dashboard';
+    case 'support': return 'Contact Support';
+    default: return 'Executive Dashboard';
   }
 }
 
@@ -51,7 +53,9 @@ function renderParentView(container) {
   }
 
   let tabContent = '';
-  if (activeTab === 'tasks') {
+  if (activeTab === 'dashboard') {
+    tabContent = renderParentDashboardTab(currentChild);
+  } else if (activeTab === 'tasks') {
     tabContent = renderParentTasksTab(currentChild);
   } else if (activeTab === 'add') {
     tabContent = renderParentAddTaskTab(currentChild);
@@ -83,8 +87,13 @@ function renderParentView(container) {
         </div>
 
         <nav class="sidebar-nav">
-          <div class="sidebar-section-title">Navigation</div>
+          <div class="sidebar-section-title">Overview &amp; Tracking</div>
           
+          <button class="nav-item ${activeTab === 'dashboard' ? 'active' : ''}" onclick="switchTab('dashboard')">
+            <span class="nav-item-icon">📊</span>
+            <span>Executive Dashboard</span>
+          </button>
+
           <button class="nav-item ${activeTab === 'tasks' ? 'active' : ''}" onclick="switchTab('tasks')">
             <span class="nav-item-icon">📋</span>
             <span>Daily Tasks</span>
@@ -154,6 +163,9 @@ function renderParentView(container) {
                 <div class="topbar-family-row">
                   <span class="topbar-family-name">🏡 ${escapeHtml(currentFamily.name)}</span>
                   <span class="family-code-badge">${currentFamily.code}</span>
+                  <span class="topbar-date-badge" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: var(--text-main); background: var(--bg-surface-alt); border: 1px solid var(--border-color); padding: 2px 10px; border-radius: 99px; font-size: 11.5px;" title="Today's Date">
+                    📅 ${getTodayFormattedLong()}
+                  </span>
                   ${typeof CURRENT_ENV_CONFIG !== 'undefined' ? `
                     <span class="topbar-env-badge" style="color: ${CURRENT_ENV_CONFIG.color}; background: ${CURRENT_ENV_CONFIG.bgColor}; border: 1px solid ${CURRENT_ENV_CONFIG.borderColor};" title="Connected to ${CURRENT_ENV_CONFIG.projectId}">
                       ${CURRENT_ENV_CONFIG.badge}
@@ -227,6 +239,348 @@ function renderParentView(container) {
   `;
 }
 
+// =========================================================
+// EXECUTIVE PARENT DASHBOARD TAB (Analytics & Health Center)
+// =========================================================
+function renderParentDashboardTab(child) {
+  const currentUser = store.getCurrentUser();
+  if (!child) {
+    return `
+      <div class="empty-state" style="padding: 60px 20px; text-align: center;">
+        <div style="font-size: 50px; margin-bottom: 12px;">👨‍👩‍👧‍👦</div>
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Welcome to Parent Executive Dashboard!</h3>
+        <p style="font-size: 13.5px; color: var(--text-muted); max-width: 440px; margin: 0 auto 16px;">Add your children's profiles to assign study tasks, monitor subject balance, and celebrate weekly achievements.</p>
+        <button type="button" class="btn btn-primary" onclick="openAddChildModal()" style="padding: 10px 24px; font-weight: 700;">
+          ➕ Add First Child Profile
+        </button>
+      </div>
+    `;
+  }
+
+  const taskData = getChildWeeklyTaskData(child.id);
+  const { currentWeek, carriedOverTasks, activeTasks, completedThisWeekTasks, dashboardAllTasks, submittedTasks, allTasks } = taskData;
+  const reward = store.getRewardForChild(child.id);
+  const rewardHistory = store.getRewardHistoryForChild(child.id);
+
+  const weeklyPts = child.weeklyPoints || 0;
+  const targetPts = reward ? reward.targetPoints : 100;
+  const progressPct = Math.min(100, Math.round((weeklyPts / targetPts) * 100));
+
+  // Completion percentage
+  const totalWeeklyTasks = dashboardAllTasks.length;
+  const completedCount = completedThisWeekTasks.length;
+  const completionPct = totalWeeklyTasks > 0 ? Math.round((completedCount / totalWeeklyTasks) * 100) : 0;
+
+  // Today's tasks
+  const todayTasks = (allTasks || []).filter(t => t.date === TODAY_STR);
+  const todayCompleted = todayTasks.filter(t => t.status === 'completed');
+  const todayPending = todayTasks.filter(t => t.status !== 'completed');
+
+  // Subjects assigned vs Syllabus
+  const assignedSubjectSet = new Set(dashboardAllTasks.map(t => t.subjectName).filter(Boolean));
+  const syllabusType = child.syllabus && child.syllabus.includes('CBSE') ? 'cbse' : 'kerala';
+  const gradeSubjects = store.getSubjectsForGrade(child.grade || 7, syllabusType) || [];
+  const missedSubjects = gradeSubjects.filter(sub => !assignedSubjectSet.has(sub.name));
+
+  // Subject distribution
+  const subjectMap = {};
+  (dashboardAllTasks || []).forEach(t => {
+    const key = t.subjectName || 'Other';
+    if (!subjectMap[key]) {
+      subjectMap[key] = {
+        name: key,
+        icon: t.subjectIcon || '📚',
+        total: 0,
+        completed: 0,
+        points: 0
+      };
+    }
+    subjectMap[key].total++;
+    if (t.status === 'completed') {
+      subjectMap[key].completed++;
+      subjectMap[key].points += (t.points || 0);
+    }
+  });
+
+  const subjectList = Object.values(subjectMap).sort((a, b) => b.total - a.total || b.completed - a.completed);
+
+  // SVG Donut slices
+  const SLICE_COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#06b6d4', '#ec4899', '#8b5cf6', '#f97316', '#3b82f6', '#14b8a6', '#84cc16'];
+  let accumulatedOffset = 0;
+  const circumference = 289.027; // 2 * PI * 46
+  const donutSlicesSvg = subjectList.map((s, idx) => {
+    s.color = SLICE_COLORS[idx % SLICE_COLORS.length];
+    const sliceLen = totalWeeklyTasks > 0 ? (s.total / totalWeeklyTasks) * circumference : 0;
+    const strokeDash = `${sliceLen} ${circumference - sliceLen}`;
+    const offset = -accumulatedOffset;
+    accumulatedOffset += sliceLen;
+    return `<circle cx="65" cy="65" r="46" fill="none" stroke="${s.color}" stroke-width="18" stroke-dasharray="${strokeDash}" stroke-dashoffset="${offset}" style="transition: all 0.4s ease;"></circle>`;
+  }).join('');
+
+  return `
+    <!-- Executive Welcome & Date Bar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 26px;">👋</span>
+        <div>
+          <div style="font-size: 15px; font-weight: 800; color: var(--text-main); line-height: 1.2;">
+            Welcome, ${escapeHtml(currentUser ? currentUser.name : 'Parent')}!
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">
+            Study dashboard for <strong style="color: var(--primary);">${escapeHtml(child.name)}</strong> (${getGradeLabel(child.grade)})
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="display: inline-flex; align-items: center; gap: 6px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-glow); padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 800; box-shadow: var(--shadow-sm);">
+          <span>📅</span>
+          <span>Today: ${getTodayFormattedLong()}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top KPI Executive Metrics Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px;">
+      
+      <!-- Metric 1: Weekly Study Completion Rate -->
+      <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 14px; border-radius: var(--radius-md);">
+        <div style="position: relative; width: 60px; height: 60px; flex-shrink: 0;">
+          <svg width="60" height="60" viewBox="0 0 60 60" style="transform: rotate(-90deg);">
+            <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border-color)" stroke-width="6"></circle>
+            <circle cx="30" cy="30" r="24" fill="none" stroke="var(--primary)" stroke-width="6" stroke-dasharray="150.8" stroke-dashoffset="${150.8 * (1 - (completionPct / 100))}" stroke-linecap="round"></circle>
+          </svg>
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--text-main);">
+            ${completionPct}%
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Weekly Completion</div>
+          <div style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 2px 0;">${completedCount} of ${totalWeeklyTasks} Done</div>
+          <div style="font-size: 11.5px; color: var(--text-muted);">${currentWeek.displayLabel}</div>
+        </div>
+      </div>
+
+      <!-- Metric 2: Awaiting Parent Review & Approval -->
+      <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 14px; border-radius: var(--radius-md); border-left: 4px solid ${submittedTasks.length > 0 ? '#9333ea' : 'var(--border-color)'};">
+        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: ${submittedTasks.length > 0 ? '#faf5ff' : 'var(--bg-surface-alt)'}; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+          🔔
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Needs Approval</div>
+          <div style="font-size: 16px; font-weight: 800; color: ${submittedTasks.length > 0 ? '#7e22ce' : 'var(--text-main)'}; margin: 2px 0;">
+            ${submittedTasks.length} ${submittedTasks.length === 1 ? 'Task' : 'Tasks'}
+          </div>
+          <div style="font-size: 11.5px; color: var(--text-muted);">
+            ${submittedTasks.length > 0 ? 'Ready for your review' : 'No pending submissions'}
+          </div>
+        </div>
+      </div>
+
+      <!-- Metric 3: Today's Tasks Focus -->
+      <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 14px; border-radius: var(--radius-md);">
+        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--bg-surface-alt); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+          📅
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Today's Focus</span>
+            <span style="font-size: 10px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 1px 7px; border-radius: 99px;">${formatDisplayDate(TODAY_STR)}</span>
+          </div>
+          <div style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 2px 0;">
+            ${todayPending.length} Pending
+          </div>
+          <div style="font-size: 11.5px; color: #16a34a; font-weight: 600;">
+            ✓ ${todayCompleted.length} Completed today
+          </div>
+        </div>
+      </div>
+
+      <!-- Metric 4: Weekend Goal Progress -->
+      <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 14px; border-radius: var(--radius-md);">
+        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: #fffbeb; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+          🏆
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Weekend Target</div>
+          <div style="font-size: 15px; font-weight: 800; color: var(--text-main); margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${reward ? escapeHtml(reward.prizeName) : 'Weekend Treat'}
+          </div>
+          <div style="font-size: 11.5px; color: #d97706; font-weight: 700;">
+            ⭐ ${weeklyPts} / ${targetPts} pts (${progressPct}%)
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section 2: Actionable Pending Approvals Feed (If any submitted tasks) -->
+    ${submittedTasks.length > 0 ? `
+      <div class="card" style="padding: 18px; margin-bottom: 20px; border-radius: var(--radius-md); background: #fdf4ff; border: 1.5px solid #d8b4fe;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 22px;">📬</span>
+            <div>
+              <h3 style="font-size: 15px; font-weight: 800; color: #6b21a8; margin: 0;">
+                ${escapeHtml(child.name)} Submitted ${submittedTasks.length} ${submittedTasks.length === 1 ? 'Task' : 'Tasks'} for Approval!
+              </h3>
+              <span style="font-size: 12px; color: #7e22ce;">
+                Review the completed study work and award reward stars &amp; stickers:
+              </span>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="switchTab('tasks')" style="background: #9333ea; font-size: 12px; padding: 6px 14px;">
+            Open in Task List ➔
+          </button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          ${submittedTasks.map(t => `
+            <div style="background: #ffffff; border: 1px solid #e9d5ff; border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
+                <span style="font-size: 20px;">${t.subjectIcon || '📚'}</span>
+                <div>
+                  <div style="font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3;">
+                    ${escapeHtml(t.title)}
+                  </div>
+                  <div style="font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                    <span>${escapeHtml(t.subjectName)}</span>
+                    <span>•</span>
+                    <span>Assigned for: ${formatDisplayDate(t.date)}</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 12px; font-weight: 800; color: #d97706; background: #fffbeb; border: 1px solid #fde68a; padding: 3px 8px; border-radius: 99px;">
+                  ⭐ +${t.points} pts
+                </span>
+                <button class="btn btn-primary" onclick="openParentApproveModal('${t.id}')" style="background: #16a34a; font-size: 12.5px; padding: 6px 14px; font-weight: 700;">
+                  ✅ Review &amp; Approve
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : ''}
+
+    <!-- Section 3: Subject Health & Missed Curriculum Alert (Split 2-Column Grid) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 20px;">
+      
+      <!-- Column 1: Subject Study Distribution Donut -->
+      <div class="card" style="padding: 18px; margin: 0; border-radius: var(--radius-md); display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <h3 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0;">📊 Subject Study Distribution</h3>
+            <span style="font-size: 12px; color: var(--text-muted);">Assigned &amp; completed tasks across subjects this week</span>
+          </div>
+          <span style="font-size: 11px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 99px;">
+            ${totalWeeklyTasks} Total
+          </span>
+        </div>
+
+        ${totalWeeklyTasks === 0 ? `
+          <div style="text-align: center; padding: 28px 12px; background: var(--bg-surface-alt); border-radius: var(--radius-sm); border: 1px dashed var(--border-color); font-size: 13px; color: var(--text-muted);">
+            <span>No study tasks assigned for ${escapeHtml(child.name)} yet this week.</span>
+          </div>
+        ` : `
+          <div style="display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 16px; padding: 4px 0;">
+            <!-- SVG Donut -->
+            <div style="position: relative; width: 120px; height: 120px; flex-shrink: 0;">
+              <svg width="120" height="120" viewBox="0 0 130 130" style="transform: rotate(-90deg);">
+                <circle cx="65" cy="65" r="46" fill="none" stroke="var(--border-color)" stroke-width="18"></circle>
+                ${donutSlicesSvg}
+              </svg>
+              <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none;">
+                <span style="font-size: 18px; font-weight: 800; color: var(--text-main); line-height: 1;">${completedCount} / ${totalWeeklyTasks}</span>
+                <span style="font-size: 9.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 2px;">Completed</span>
+              </div>
+            </div>
+
+            <!-- Subject Legend -->
+            <div style="flex: 1; min-width: 170px; max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 4px;">
+              ${subjectList.map(s => {
+                const pct = totalWeeklyTasks > 0 ? Math.round((s.total / totalWeeklyTasks) * 100) : 0;
+                return `
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 3px 6px; border-radius: var(--radius-sm); background: var(--bg-surface-alt); min-height: 24px;">
+                    <div style="display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1;">
+                      <span style="width: 8px; height: 8px; border-radius: 2px; background: ${s.color}; flex-shrink: 0;"></span>
+                      <span style="font-size: 12px;">${s.icon}</span>
+                      <span style="font-size: 11.5px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(s.name)}</span>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); flex-shrink: 0;">
+                      ${s.completed}/${s.total} (${pct}%)
+                    </span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `}
+      </div>
+
+      <!-- Column 2: Curriculum Balance & Missed Subjects Alert -->
+      <div class="card" style="padding: 18px; margin: 0; border-radius: var(--radius-md); display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div>
+            <h3 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0;">⚠️ Curriculum Balance &amp; Focus</h3>
+            <span style="font-size: 12px; color: var(--text-muted);">${syllabusType === 'cbse' ? 'CBSE' : 'Kerala State'} • Class ${child.grade}</span>
+          </div>
+          <span style="font-size: 11px; font-weight: 700; color: ${missedSubjects.length > 0 ? '#b45309' : '#15803d'}; background: ${missedSubjects.length > 0 ? '#fffbeb' : '#ecfdf5'}; padding: 2px 8px; border-radius: 99px;">
+            ${missedSubjects.length > 0 ? `${missedSubjects.length} Unattended` : 'All Covered ✓'}
+          </span>
+        </div>
+
+        ${missedSubjects.length > 0 ? `
+          <div style="background: #fffbeb; border: 1px dashed #f59e0b; border-radius: var(--radius-sm); padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 13px; font-weight: 800; color: #92400e; margin-bottom: 4px;">
+              ⚠️ Subjects without tasks this week:
+            </div>
+            <div style="font-size: 12px; color: #b45309; line-height: 1.4; margin-bottom: 8px;">
+              ${escapeHtml(child.name)} hasn't received any study assignments for these syllabus subjects:
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              ${missedSubjects.slice(0, 5).map(m => `
+                <span style="background: #ffffff; border: 1px solid #fde68a; color: #78350f; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 99px;">
+                  ${m.icon || '📚'} ${escapeHtml(m.name)}
+                </span>
+              `).join('')}
+              ${missedSubjects.length > 5 ? `<span style="font-size: 11px; color: #92400e; align-self: center;">+${missedSubjects.length - 5} more</span>` : ''}
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="switchTab('add')" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 700;">
+            ➕ Assign Study Task for Missed Subjects ➔
+          </button>
+        ` : `
+          <div style="text-align: center; padding: 24px 12px; background: #ecfdf5; border-radius: var(--radius-sm); border: 1px solid #a7f3d0;">
+            <div style="font-size: 28px; margin-bottom: 4px;">🎉</div>
+            <div style="font-size: 14px; font-weight: 800; color: #065f46; margin-bottom: 4px;">
+              Great Curriculum Balance!
+            </div>
+            <div style="font-size: 12px; color: #047857;">
+              Tasks have been assigned across all prescribed curriculum subjects for ${escapeHtml(child.name)}.
+            </div>
+          </div>
+        `}
+      </div>
+
+    </div>
+
+    <!-- Section 4: Quick Operational Navigation Bar -->
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <button class="btn btn-primary" onclick="switchTab('tasks')" style="flex: 1; min-width: 180px; padding: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <span>📋 View Daily Tasks List</span> <span>➔</span>
+      </button>
+      <button class="btn btn-outline-primary" onclick="switchTab('add')" style="flex: 1; min-width: 180px; padding: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <span>➕ Assign New Task</span>
+      </button>
+      <button class="btn btn-outline-primary" onclick="switchTab('report')" style="flex: 1; min-width: 180px; padding: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <span>📊 Academic Performance Report</span>
+      </button>
+    </div>
+  `;
+}
+
 // Clean & Organized Task Tab (Active/Pending by default to prevent clutter)
 function renderParentTasksTab(child) {
   if (!child) {
@@ -257,7 +611,7 @@ function renderParentTasksTab(child) {
         <span class="week-icon">📅</span>
         <div>
           <span class="week-title">Current Study Week (Mon – Fri)</span>
-          <span class="week-dates">${currentWeek.displayLabel}</span>
+          <span class="week-dates">${currentWeek.displayLabel} • <strong style="color: var(--primary);">Today: ${getTodayFormattedLong()}</strong></span>
         </div>
       </div>
       <div class="week-stats-pill">
@@ -2148,11 +2502,55 @@ function renderParentHelpTab() {
       </div>
     </div>
 
-    <!-- Topic 2: Daily Study Routine & Carryover -->
+    <!-- Topic 2: Executive Dashboard & Real-Time Monitoring -->
+    <div class="help-topic-card">
+      <div class="help-topic-header">
+        <span style="font-size: 22px;">📊</span>
+        <h3 class="help-topic-title">2. Executive Dashboard &amp; Real-Time Monitoring</h3>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+        Get an instant executive birds-eye view of your child's weekly momentum, pending approvals, and syllabus health.
+      </p>
+
+      <div class="help-step-list">
+        <div class="help-step-item">
+          <span class="help-step-num">1</span>
+          <div>
+            <strong>4 Top KPI Health Cards:</strong>
+            <ul style="margin: 4px 0 0 16px; padding: 0; font-size: 12.5px; color: var(--text-muted); line-height: 1.5;">
+              <li><strong>Weekly Completion:</strong> Visual circular gauge displaying completion percentage and total tasks done this study week.</li>
+              <li><strong>Needs Approval Alert:</strong> Real-time counter of study tasks submitted by the student ready for your review.</li>
+              <li><strong>Today's Focus:</strong> Pending vs completed count for today's scheduled study sessions with today's date badge.</li>
+              <li><strong>Weekend Target:</strong> Active weekend reward goal and percentage of target stars accumulated so far.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">2</span>
+          <div>
+            <strong>One-Click 'Needs Approval' Action Feed:</strong> When a child submits written homework, a dedicated review card appears directly on the executive dashboard. Click <strong>"✅ Review &amp; Approve"</strong> to inspect their work, write encouragement, and award stars &amp; stickers without switching tabs.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">3</span>
+          <div>
+            <strong>Subject Study Distribution (SVG Donut Chart):</strong> Analyzes where your child spends study time across Malayalam, English, Mathematics, Science, and Social Studies. Color-coded slices and percentages help prevent subject imbalance.
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="help-step-num">4</span>
+          <div>
+            <strong>Curriculum Balance &amp; Missed Subjects Alert:</strong> The dashboard automatically cross-checks your child's class syllabus against active tasks and flags unattended subjects (e.g. Hindi, Science). Click <strong>"➕ Assign Study Task for Missed Subjects"</strong> to instantly schedule lessons for neglected areas.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic 3: Daily Study Routine & Carryover -->
     <div class="help-topic-card">
       <div class="help-topic-header">
         <span style="font-size: 22px;">📋</span>
-        <h3 class="help-topic-title">2. Assigning Daily Tasks &amp; Habits</h3>
+        <h3 class="help-topic-title">3. Assigning Daily Tasks &amp; Habits</h3>
       </div>
       <div class="help-step-list">
         <div class="help-step-item">
@@ -2176,11 +2574,11 @@ function renderParentHelpTab() {
       </div>
     </div>
 
-    <!-- Topic 3: Student Submission & Parent Approval -->
+    <!-- Topic 4: Student Submission & Parent Approval -->
     <div class="help-topic-card">
       <div class="help-topic-header">
         <span style="font-size: 22px;">📬</span>
-        <h3 class="help-topic-title">3. Student Submission &amp; Parent Approval</h3>
+        <h3 class="help-topic-title">4. Student Submission &amp; Parent Approval</h3>
       </div>
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
         Maintain high study standards with two-way verification before points are credited to the student's wallet.
@@ -2207,11 +2605,11 @@ function renderParentHelpTab() {
       </div>
     </div>
 
-    <!-- Topic 4: Weekend Prizes & Goals -->
+    <!-- Topic 5: Weekend Prizes & Goals -->
     <div class="help-topic-card">
       <div class="help-topic-header">
         <span style="font-size: 22px;">🏆</span>
-        <h3 class="help-topic-title">4. Weekend Prizes, Target Stars &amp; Trophies</h3>
+        <h3 class="help-topic-title">5. Weekend Prizes, Target Stars &amp; Trophies</h3>
       </div>
       <div class="help-step-list">
         <div class="help-step-item">
@@ -2235,11 +2633,11 @@ function renderParentHelpTab() {
       </div>
     </div>
 
-    <!-- Topic 5: Mobile App Installation (PWA) -->
+    <!-- Topic 6: Mobile App Installation (PWA) -->
     <div class="help-topic-card">
       <div class="help-topic-header">
         <span style="font-size: 22px;">📱</span>
-        <h3 class="help-topic-title">5. Install as Mobile App (Android &amp; iOS)</h3>
+        <h3 class="help-topic-title">6. Install as Mobile App (Android &amp; iOS)</h3>
       </div>
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
         You don't need app stores. This web app installs directly onto your phone screen with full offline caching!
@@ -2267,11 +2665,11 @@ function renderParentHelpTab() {
       </div>
     </div>
 
-    <!-- Topic 6: Contact Support & Help Desk -->
+    <!-- Topic 7: Contact Support & Help Desk -->
     <div class="help-topic-card">
       <div class="help-topic-header">
         <span style="font-size: 22px;">🎧</span>
-        <h3 class="help-topic-title">6. Contact Support &amp; Help Desk</h3>
+        <h3 class="help-topic-title">7. Contact Support &amp; Help Desk</h3>
       </div>
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
         Have a question about routines, point allocations, or spotted an issue? Our direct helpdesk is built right into your dashboard.
@@ -2305,11 +2703,11 @@ function renderParentHelpTab() {
       </div>
     </div>
 
-    <!-- Topic 7: Frequently Asked Questions (FAQ) -->
+    <!-- Topic 8: Frequently Asked Questions (FAQ) -->
     <div class="help-topic-card">
       <div class="help-topic-header">
         <span style="font-size: 22px;">❓</span>
-        <h3 class="help-topic-title">7. Frequently Asked Questions (FAQ)</h3>
+        <h3 class="help-topic-title">8. Frequently Asked Questions (FAQ)</h3>
       </div>
 
       <div class="help-faq-item">

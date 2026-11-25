@@ -187,6 +187,16 @@ function formatDisplayDate(dateStr) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function getTodayFormattedLong(d = new Date()) {
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dayName = dayNames[d.getDay()];
+  const monthName = monthNames[d.getMonth()];
+  const dateNum = d.getDate();
+  const year = d.getFullYear();
+  return `${dayName}, ${monthName} ${dateNum}, ${year}`;
+}
+
 function formatDisplayDateTime(isoStr) {
   if (!isoStr) return '';
   const d = new Date(isoStr);

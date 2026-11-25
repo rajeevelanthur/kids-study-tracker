@@ -6,7 +6,7 @@
  */
 
 // Global State
-var activeTab = 'tasks'; // 'tasks' | 'add' | 'report' | 'reward' | 'settings'
+var activeTab = 'dashboard'; // 'dashboard' | 'tasks' | 'add' | 'report' | 'reward' | 'settings'
 var activeChildId = null;
 var taskViewMode = 'active'; // 'active' (pending + submitted + overdue) | 'completed' | 'all'
 var selectedSettingsGrade = 7;
