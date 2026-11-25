@@ -77,29 +77,50 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      padding-bottom: 24px;
+      box-sizing: border-box;
       z-index: 1;
     }
 
     .slide {
       position: absolute;
-      width: 90%;
-      max-width: 1150px;
-      height: 82vh;
-      max-height: 720px;
-      padding: 48px 56px;
-      background: rgba(17, 24, 39, 0.7);
+      width: 92%;
+      max-width: 1180px;
+      height: 86vh;
+      max-height: calc(100vh - 85px);
+      padding: 22px 34px 18px 34px;
+      background: rgba(17, 24, 39, 0.78);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--card-border);
-      border-radius: 24px;
+      border-radius: 20px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
       opacity: 0;
       pointer-events: none;
       transform: translateY(24px) scale(0.98);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Custom Sleek Scrollbar for Slides */
+    .slide::-webkit-scrollbar {
+      width: 5px;
+    }
+    .slide::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+    }
+    .slide::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+    }
+    .slide::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
     }
 
     .slide.active {
@@ -112,99 +133,101 @@
     .slide-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
+      gap: 5px;
+      font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.1px;
       color: var(--primary-light);
       background: rgba(99, 102, 241, 0.12);
       border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 4px 12px;
+      padding: 2px 9px;
       border-radius: 99px;
-      margin-bottom: 12px;
+      margin-bottom: 4px;
     }
 
     .slide-title {
-      font-size: 36px;
+      font-size: clamp(19px, 2.7vh, 26px);
       font-weight: 900;
-      letter-spacing: -0.8px;
-      line-height: 1.2;
+      letter-spacing: -0.5px;
+      line-height: 1.18;
       color: #ffffff;
-      margin-bottom: 10px;
+      margin-bottom: 4px;
     }
 
     .slide-subtitle {
-      font-size: 16px;
+      font-size: clamp(12px, 1.5vh, 13.5px);
       color: var(--text-muted);
-      line-height: 1.5;
-      max-width: 800px;
+      line-height: 1.35;
+      max-width: 820px;
+      margin: 0;
     }
 
     /* Slide Content Grids */
     .slide-body {
       flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin: 24px 0;
+      margin: 10px 0;
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      gap: 18px;
     }
 
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 14px;
     }
 
     .grid-4 {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      gap: 12px;
     }
 
     .feature-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      padding: 22px;
+      padding: 13px 15px;
       transition: transform 0.2s ease, border-color 0.2s ease;
     }
 
     .feature-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-2px);
       border-color: rgba(255, 255, 255, 0.25);
     }
 
     .feature-icon {
-      font-size: 32px;
-      margin-bottom: 12px;
+      font-size: 24px;
+      margin-bottom: 6px;
       display: inline-block;
     }
 
     .feature-title {
-      font-size: 17px;
+      font-size: 14.5px;
       font-weight: 800;
       color: #ffffff;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .feature-desc {
-      font-size: 13.5px;
+      font-size: 12px;
       color: var(--text-muted);
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
     /* Special Highlight Cards */
     .hero-stat-card {
       background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%);
       border: 1px solid rgba(99, 102, 241, 0.4);
-      padding: 24px;
+      padding: 15px 18px;
       border-radius: var(--radius);
       display: flex;
       flex-direction: column;
@@ -214,66 +237,66 @@
     /* Embedded UI Screenshots */
     .slide-screenshot-mockup {
       width: 100%;
-      max-height: 380px;
+      max-height: clamp(165px, 25vh, 230px);
       object-fit: cover;
       object-position: top;
-      border-radius: 14px;
+      border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
       transition: transform 0.25s ease, border-color 0.25s ease;
       background: #111827;
       display: block;
     }
     .slide-screenshot-mockup:hover {
-      transform: scale(1.02);
+      transform: scale(1.015);
       border-color: var(--primary);
     }
 
     /* Workflow Timeline */
     .demo-step {
       display: flex;
-      align-items: flex-start;
-      gap: 16px;
+      align-items: center;
+      gap: 10px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 14px 18px;
-      margin-bottom: 12px;
+      border-radius: 10px;
+      padding: 6px 12px;
+      margin-bottom: 6px;
     }
 
     .step-number {
       background: var(--primary);
       color: white;
       font-weight: 900;
-      font-size: 14px;
-      width: 28px;
-      height: 28px;
+      font-size: 11px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      margin-top: 2px;
     }
 
     .step-title {
-      font-size: 15px;
+      font-size: 12.5px;
       font-weight: 800;
       color: #fff;
     }
 
     .step-desc {
-      font-size: 13px;
+      font-size: 11px;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 1px;
+      line-height: 1.3;
     }
 
     .step-tag {
       margin-left: auto;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       background: rgba(255, 255, 255, 0.08);
-      padding: 3px 10px;
+      padding: 2px 7px;
       border-radius: 99px;
       white-space: nowrap;
       align-self: center;
@@ -284,10 +307,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 16px;
+      padding-top: 10px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 12.5px;
+      font-size: 11px;
       color: var(--text-muted);
+      flex-shrink: 0;
     }
 
     /* Bottom Control Bar */
@@ -410,13 +434,60 @@
       transform: translateY(-2px);
     }
 
-    @media (max-width: 768px) {
+    @media (max-height: 800px) {
       .slide {
-        padding: 24px 20px;
-        height: 90vh;
+        height: 86vh;
+        max-height: calc(100vh - 85px);
+        padding: 16px 28px 14px 28px;
       }
-      .slide-title { font-size: 26px; }
-      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .slide-title { font-size: 20px; margin-bottom: 3px; }
+      .slide-subtitle { font-size: 12px; }
+      .slide-body { margin: 6px 0; }
+      .slide-screenshot-mockup { max-height: 180px; }
+      .feature-card { padding: 8px 12px; }
+      .demo-step { padding: 5px 10px; margin-bottom: 5px; }
+      .slide-footer { padding-top: 8px; font-size: 10px; }
+    }
+
+    @media (max-height: 680px) {
+      .slide {
+        height: 88vh;
+        max-height: calc(100vh - 75px);
+        padding: 16px 24px;
+      }
+      .slide-title { font-size: 20px; }
+      .slide-screenshot-mockup { max-height: 160px; }
+      .feature-icon { font-size: 20px; margin-bottom: 4px; }
+      .feature-title { font-size: 13.5px; margin-bottom: 3px; }
+      .feature-desc { font-size: 11px; }
+      .slide-footer { padding-top: 8px; font-size: 10.5px; }
+    }
+
+    @media (max-width: 900px) {
+      .slide {
+        width: 94%;
+        height: 88vh;
+        max-height: calc(100vh - 80px);
+        padding: 20px 18px 24px 18px;
+      }
+      .slide-title { font-size: 22px; }
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .slide-screenshot-mockup {
+        max-height: 200px;
+      }
+      .deck-controls {
+        bottom: 10px;
+        padding: 6px 14px;
+        gap: 8px;
+      }
+      .notes-drawer {
+        width: 92%;
+        bottom: 65px;
+        padding: 14px 16px;
+      }
     }
   </style>
 </head>
@@ -438,10 +509,10 @@
     <div class="slide active" data-notes="Welcome everyone! Today I am thrilled to introduce the Kids Study & Rewards Tracker—a digital companion built to transform daily study time from a battle of wills into a positive, habit-building adventure for families.">
       <div>
         <div class="slide-badge">🚀 Live Product Presentation</div>
-        <h1 class="slide-title" style="font-size: 46px; margin-top: 10px; background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <h1 class="slide-title" style="font-size: clamp(28px, 4.5vh, 40px); margin-top: 6px; background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
           Kids Study &amp; Rewards Tracker
         </h1>
-        <p class="slide-subtitle" style="font-size: 19px; margin-top: 12px; color: #cbd5e1;">
+        <p class="slide-subtitle" style="font-size: clamp(14px, 2vh, 17px); margin-top: 6px; color: #cbd5e1;">
           Empowering children to build consistent learning habits through positive reinforcement, gamified milestones, and friction-free accountability.
         </p>
       </div>
@@ -507,14 +578,14 @@
 
       <div class="slide-footer">
         <div>Problem Statement: Replacing friction with gamified collaboration</div>
-        <div>Slide 2 of 12</div>
+        <div>Slide 2 of 13</div>
       </div>
     </div>
 
     <!-- SLIDE 3: The Solution & Core Philosophy -->
     <div class="slide" data-notes="Our core philosophy is simple: celebrate progress. We focus on Monday-to-Friday study habits, freeing weekends for celebration. Children are motivated by tangible weekend goals, while parents retain full oversight.">
       <div>
-        <div class="slide-badge" style="color: #34d399; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3);">💡 The Solution</div>
+        <div class="slide-badge" style="color: #34d399; background: rgba(168, 85, 247, 0.12); border-color: rgba(16, 185, 129, 0.3);">💡 The Solution</div>
         <h2 class="slide-title">Core Philosophy: Positive Reinforcement &amp; Habits</h2>
         <p class="slide-subtitle">A balanced system designed around how children learn and stay motivated.</p>
       </div>
@@ -541,7 +612,7 @@
 
       <div class="slide-footer">
         <div>Architecture: Gamification + Human Encouragement</div>
-        <div>Slide 3 of 12</div>
+        <div>Slide 3 of 13</div>
       </div>
     </div>
 
@@ -560,22 +631,22 @@
             <div class="feature-title">1. Student Portal</div>
             <div class="feature-desc">
               <ul style="padding-left: 18px; margin-top: 8px; line-height: 1.6; font-size: 13px;">
-                <li>Zero-password 4-digit PIN login</li>
-                <li>Visual checklist &amp; point badges</li>
-                <li>One-click <em>Submit for Approval</em></li>
-                <li>Confetti milestone animations</li>
+                <li>Zero-password PIN login &amp; top date</li>
+                <li>7-Day Study Journey &amp; streak tracker</li>
+                <li>SVG Donut Chart for subject focus</li>
+                <li>Activity Progress Ring &amp; Trophy Case</li>
               </ul>
             </div>
           </div>
           <div class="feature-card" style="border-top: 4px solid #a855f7;">
             <div class="feature-icon">👩‍🏫</div>
-            <div class="feature-title">2. Parent Command Center</div>
+            <div class="feature-title">2. Parent Executive Center</div>
             <div class="feature-desc">
               <ul style="padding-left: 18px; margin-top: 8px; line-height: 1.6; font-size: 13px;">
-                <li>Multi-child routine management</li>
-                <li>Review queue with sticker awards</li>
-                <li>Weekend prize goal tracker</li>
-                <li>In-App Contact Support Desk</li>
+                <li>4-KPI Health Cards &amp; today's focus</li>
+                <li>Subject Study Donut &amp; syllabus audit</li>
+                <li>One-click review &amp; sticker awards</li>
+                <li>In-App Contact Support Helpdesk</li>
               </ul>
             </div>
           </div>
@@ -596,62 +667,129 @@
 
       <div class="slide-footer">
         <div>Powered by Google Firebase Cloud Sync (Real-Time)</div>
-        <div>Slide 4 of 12</div>
+        <div>Slide 4 of 13</div>
       </div>
     </div>
 
     <!-- SLIDE 5: Student Experience -->
-    <div class="slide" data-notes="Let's look at the student experience. A child opens the app on their tablet or phone, enters their family code like KIDS101 and their personal 4-digit PIN. No complex passwords. They see today's tasks clearly.">
+    <div class="slide" data-notes="Let's explore the brand-new gamified Student Dashboard. We've eliminated clutter with a dual-tab architecture: 'My Dashboard' for weekly momentum and 'All Tasks' for the complete checklist. Children see their 7-Day Study Journey with active day glow, fire streaks, an SVG Subject Donut chart, and an Activity Progress ring with their Up Next featured task.">
       <div>
         <div class="slide-badge">🧒 Student Experience</div>
-        <h2 class="slide-title">Delightful, Child-First Study Dashboard</h2>
-        <p class="slide-subtitle">Designed to give young students autonomy and pride in their daily accomplishments.</p>
+        <h2 class="slide-title">Gamified, Clutter-Free Student Dashboard</h2>
+        <p class="slide-subtitle">Engaging children through visual streaks, 7-day study journeys, and subject focus charts.</p>
       </div>
 
       <div class="slide-body">
         <div class="grid-2" style="align-items: center;">
-          <div style="display: flex; flex-direction: column; gap: 14px;">
-            <div class="feature-card" style="padding: 16px 20px;">
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                <span style="font-size: 24px;">🔑</span>
-                <span class="feature-title" style="margin: 0;">Friction-Free Student PIN</span>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="feature-card" style="padding: 6px 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                <span style="font-size: 16px;">🗓️</span>
+                <span class="feature-title" style="margin: 0; font-size: 13px;">7-Day Study Journey &amp; Streaks 🔥</span>
               </div>
-              <div class="feature-desc">Kids enter Family Code (e.g. <code>KIDS-101</code>) &amp; 4-digit PIN (<code>1234</code>). Zero complex passwords.</div>
+              <div class="feature-desc" style="font-size: 11px; line-height: 1.3;">Visual Mon–Sun momentum strip with active day glow, weekend rest badges, and consecutive study streaks.</div>
             </div>
 
-            <div class="feature-card" style="padding: 16px 20px;">
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                <span style="font-size: 24px;">📬</span>
-                <span class="feature-title" style="margin: 0;">One-Click Homework Submission</span>
+            <div class="feature-card" style="padding: 6px 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                <span style="font-size: 16px;">🍩</span>
+                <span class="feature-title" style="margin: 0; font-size: 13px;">Subject Study Focus (SVG Donut Chart)</span>
               </div>
-              <div class="feature-desc">Completing a task is celebrated with <strong>"Submit for Approval (+15 pts)"</strong> sending instant parent alerts.</div>
+              <div class="feature-desc" style="font-size: 11px; line-height: 1.3;">Real-time color-coded breakdown of study time across Malayalam, English, Math, and Science.</div>
             </div>
 
-            <div class="feature-card" style="padding: 16px 20px;">
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                <span style="font-size: 24px;">🌟</span>
-                <span class="feature-title" style="margin: 0;">Visual Progress &amp; Trophy Count</span>
+            <div class="feature-card" style="padding: 6px 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                <span style="font-size: 16px;">🎯</span>
+                <span class="feature-title" style="margin: 0; font-size: 13px;">Today's Activity Ring &amp; 'Up Next' Card</span>
               </div>
-              <div class="feature-desc">Dynamic star meters (e.g. 75/120 pts) keep children motivated to build study consistency all week.</div>
+              <div class="feature-desc" style="font-size: 11px; line-height: 1.3;">Circular progress meter with today's % completion plus immediate focus task card to prevent overwhelm.</div>
+            </div>
+
+            <div class="feature-card" style="padding: 6px 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                <span style="font-size: 16px;">🏆</span>
+                <span class="feature-title" style="margin: 0; font-size: 13px;">Trophy Cabinet &amp; Dual-Tab Layout</span>
+              </div>
+              <div class="feature-desc" style="font-size: 11px; line-height: 1.3;">Trophy case gateway on weekend goal bar, with clean tabs for <strong>📊 My Dashboard</strong> and <strong>📋 All Tasks</strong>.</div>
             </div>
           </div>
 
           <div>
             <img src="demo-images/02-student-dashboard.png" alt="Student Dashboard UI" class="slide-screenshot-mockup" title="Student Dashboard Live Screen">
-            <div style="text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 8px;">
-              Live Student Dashboard View (Arjun &bull; Class 7 Kerala Syllabus)
+            <div style="text-align: center; font-size: 10.5px; color: var(--text-muted); margin-top: 5px;">
+              Live Student Dashboard View (Arjun &bull; Class 7 Kerala Syllabus &bull; 7-Day Journey, Streaks &amp; Donut Chart)
             </div>
           </div>
         </div>
       </div>
 
       <div class="slide-footer">
-        <div>Designed for Independent Child Use</div>
-        <div>Slide 5 of 12</div>
+        <div>Designed for Independent, Gamified Child Learning</div>
+        <div>Slide 5 of 13</div>
       </div>
     </div>
 
-    <!-- SLIDE 6: Parent Review & Stickers -->
+    <!-- SLIDE 6: Parent Executive Dashboard -->
+    <div class="slide" data-notes="Now let's examine our major new addition: the Parent Executive Dashboard. Designed as a high-level operational command center, it equips parents with 4 top KPI health cards, an actionable one-click homework review feed, an SVG Subject Study Distribution Donut chart, and a Curriculum Balance widget that alerts parents to missed syllabus subjects.">
+      <div>
+        <div class="slide-badge" style="color: #a855f7; background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.3);">📊 Executive Command</div>
+        <h2 class="slide-title">Parent Executive Dashboard &amp; Curriculum Health</h2>
+        <p class="slide-subtitle">Real-time birds-eye visibility into weekly momentum, pending approvals, and syllabus balance.</p>
+      </div>
+
+      <div class="slide-body">
+        <div class="grid-2" style="align-items: center;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="feature-card" style="padding: 6px 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                <span style="font-size: 16px;">📈</span>
+                <span class="feature-title" style="margin: 0; font-size: 13px;">4 Top Executive KPI Health Cards</span>
+              </div>
+              <div class="feature-desc" style="font-size: 11px; line-height: 1.3;">Circular weekly completion ring, live pending approvals counter, today's status, and weekend prize target.</div>
+            </div>
+
+            <div class="feature-card" style="padding: 6px 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                <span style="font-size: 16px;">📬</span>
+                <span class="feature-title" style="margin: 0; font-size: 13px;">Actionable 'Needs Approval' Action Feed</span>
+              </div>
+              <div class="feature-desc" style="font-size: 11px; line-height: 1.3;">Live banner alert when homework is submitted with direct 1-click <strong>✅ Review &amp; Approve</strong>.</div>
+            </div>
+
+            <div class="feature-card" style="padding: 6px 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                <span style="font-size: 16px;">🍩</span>
+                <span class="feature-title" style="margin: 0; font-size: 13px;">Subject Study Distribution (SVG Donut)</span>
+              </div>
+              <div class="feature-desc" style="font-size: 11px; line-height: 1.3;">Color-coded SVG donut analytics with compact subject breakdown to monitor syllabus balance.</div>
+            </div>
+
+            <div class="feature-card" style="padding: 6px 12px;">
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+                <span style="font-size: 16px;">⚠️</span>
+                <span class="feature-title" style="margin: 0; font-size: 13px;">Curriculum Balance &amp; Missed Subjects Alert</span>
+              </div>
+              <div class="feature-desc" style="font-size: 11px; line-height: 1.3;">Audits syllabus against assigned tasks to flag unattended subjects with a direct <strong>➕ Assign Task</strong> shortcut.</div>
+            </div>
+          </div>
+
+          <div>
+            <img src="demo-images/04-parent-command-center.png" alt="Parent Executive Dashboard UI" class="slide-screenshot-mockup" title="Parent Executive Dashboard Screen">
+            <div style="text-align: center; font-size: 10.5px; color: var(--text-muted); margin-top: 5px;">
+              Live Parent Executive Dashboard (Raj Family &bull; 4 KPI Cards, Subject Donut &amp; Curriculum Balance)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <div>Parent Executive Command &bull; Real-Time Health Center</div>
+        <div>Slide 6 of 13</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Parent Review & Stickers -->
     <div class="slide" data-notes="Parents retain full control. Points are not awarded automatically. The parent inspects the work, clicks Approve, picks an encouragement sticker like Gold Star or Super Effort, and adds a personal note.">
       <div>
         <div class="slide-badge">👩‍🏫 Parent Control</div>
@@ -698,11 +836,11 @@
 
       <div class="slide-footer">
         <div>Parent-Guided Accountability</div>
-        <div>Slide 6 of 12</div>
+        <div>Slide 7 of 13</div>
       </div>
     </div>
 
-    <!-- SLIDE 7: Weekend Prizes & Trophy Case -->
+    <!-- SLIDE 8: Weekend Prizes & Trophy Case -->
     <div class="slide" data-notes="The reward milestone is what powers child enthusiasm. Once the Friday target is unlocked, fireworks and confetti trigger! The parent marks the reward given, and it enters the permanent Trophy Case.">
       <div>
         <div class="slide-badge">🏆 Motivation Engine</div>
@@ -745,11 +883,11 @@
 
       <div class="slide-footer">
         <div>Long-term Habit Reinforcement</div>
-        <div>Slide 7 of 12</div>
+        <div>Slide 8 of 13</div>
       </div>
     </div>
 
-    <!-- SLIDE 8: Syllabus & Offline PWA -->
+    <!-- SLIDE 9: Syllabus & Offline PWA -->
     <div class="slide" data-notes="We understand regional requirements. The app is pre-configured with Kerala State Syllabus and CBSE curricula for Classes 1 to 12 (Plus Two). Plus, with PWA technology, it installs like a native mobile app without app store downloads.">
       <div>
         <div class="slide-badge">📱 Localized &amp; Mobile-Ready</div>
@@ -779,11 +917,11 @@
 
       <div class="slide-footer">
         <div>Zero App Store Dependency &bull; Universal Web Access</div>
-        <div>Slide 8 of 12</div>
+        <div>Slide 9 of 13</div>
       </div>
     </div>
 
-    <!-- SLIDE 9: Support Desk & Email Integration -->
+    <!-- SLIDE 10: Support Desk & Email Integration -->
     <div class="slide" data-notes="Our newest major addition is the direct In-App Support Desk. Parents can raise queries directly. The Super Admin has a dedicated tab to manage inquiries and reply via Gmail with one click.">
       <div>
         <div class="slide-badge" style="color: #a855f7; background: rgba(168, 85, 247, 0.12); border-color: rgba(168, 85, 247, 0.3);">🎧 In-App Support System</div>
@@ -822,12 +960,12 @@
 
       <div class="slide-footer">
         <div>Complete Customer Care Cycle Built-In</div>
-        <div>Slide 9 of 12</div>
+        <div>Slide 10 of 13</div>
       </div>
     </div>
 
-    <!-- SLIDE 10: Live Demo Workflow -->
-    <div class="slide" data-notes="Here is the exact live demonstration flow we are about to see in action. In under 5 minutes, we will show the full loop from parent task creation to child submission, approval, and support desk resolution.">
+    <!-- SLIDE 11: Live Demo Workflow -->
+    <div class="slide" data-notes="Here is the exact live demonstration flow we are about to see in action. In under 5 minutes, we will show the full loop from parent executive dashboard monitoring to child gamified study tracking, homework submission, approval, and support desk resolution.">
       <div>
         <div class="slide-badge">⚡ Live Demo Script</div>
         <h2 class="slide-title">The 5-Minute Live Product Walkthrough</h2>
@@ -837,45 +975,45 @@
       <div class="slide-body">
         <div class="demo-step">
           <div class="step-number">1</div>
-          <div>
-            <div class="step-title">Parent Login &amp; Task Assignment</div>
-            <div class="step-desc">Parent signs in (<code>KIDS101</code> / PIN <code>9999</code>), schedules today's Math &amp; Science tasks, and sets weekend prize goal.</div>
+          <div style="flex: 1;">
+            <div class="step-title">Parent Executive Dashboard &amp; Task Assignment</div>
+            <div class="step-desc">Parent signs in (<code>KIDS101</code> / PIN <code>9999</code>), checks 4-KPI cards &amp; Donut, schedules today's tasks &amp; weekend prize.</div>
           </div>
-          <span class="step-tag" style="color: #818cf8;">Parent View</span>
+          <span class="step-tag" style="color: #818cf8;">Executive View</span>
         </div>
 
         <div class="demo-step">
           <div class="step-number">2</div>
-          <div>
-            <div class="step-title">Student Login &amp; Homework Submission</div>
-            <div class="step-desc">Child logs in with 4-digit PIN (<code>1234</code>), checks today's tasks, and clicks <em>Submit for Approval</em>.</div>
+          <div style="flex: 1;">
+            <div class="step-title">Student Gamified Dashboard &amp; Homework Submission</div>
+            <div class="step-desc">Child logs in with 4-digit PIN (<code>1234</code>), views 7-Day Journey, completes tasks, and submits for parent approval.</div>
           </div>
           <span class="step-tag" style="color: #38bdf8;">Student View</span>
         </div>
 
         <div class="demo-step">
           <div class="step-number">3</div>
-          <div>
-            <div class="step-title">Parent Approval with Gold Star Sticker</div>
-            <div class="step-desc">Parent receives live notification banner, verifies homework, awards a ⭐ Gold Star and praise remark.</div>
+          <div style="flex: 1;">
+            <div class="step-title">Parent 1-Click Review &amp; Gold Star Sticker</div>
+            <div class="step-desc">Parent sees live banner on Executive Dashboard, verifies homework, awards a ⭐ Gold Star and praise note.</div>
           </div>
           <span class="step-tag" style="color: #34d399;">Parent Review</span>
         </div>
 
         <div class="demo-step">
           <div class="step-number">4</div>
-          <div>
-            <div class="step-title">Confetti Celebration &amp; Trophy Archive</div>
-            <div class="step-desc">Points unlock the weekend reward with confetti; parent awards prize into the permanent Trophy Case.</div>
+          <div style="flex: 1;">
+            <div class="step-title">Confetti Celebration &amp; Permanent Trophy Archive</div>
+            <div class="step-desc">Points unlock weekend reward with celebratory confetti; parent awards prize into permanent Trophy Case.</div>
           </div>
           <span class="step-tag" style="color: #f59e0b;">Milestone</span>
         </div>
 
         <div class="demo-step">
           <div class="step-number">5</div>
-          <div>
+          <div style="flex: 1;">
             <div class="step-title">Support Ticket Creation &amp; Admin Reply</div>
-            <div class="step-desc">Parent submits inquiry; Super Admin views in separated Helpdesk tab and opens 1-click Gmail reply.</div>
+            <div class="step-desc">Parent submits inquiry from Contact tab; Super Admin manages ticket in Helpdesk &amp; opens 1-click Gmail reply.</div>
           </div>
           <span class="step-tag" style="color: #ec4899;">Admin Helpdesk</span>
         </div>
@@ -883,11 +1021,11 @@
 
       <div class="slide-footer">
         <div>Ready to switch to live browser demo</div>
-        <div>Slide 10 of 12</div>
+        <div>Slide 11 of 13</div>
       </div>
     </div>
 
-    <!-- SLIDE 11: Tech Stack -->
+    <!-- SLIDE 12: Tech Stack -->
     <div class="slide" data-notes="A quick note on technology: The entire app is crafted in ultra-fast vanilla JavaScript with zero heavy build steps. Google Firebase powers authentication and Firestore real-time synchronization, with dual hosting environments.">
       <div>
         <div class="slide-badge">💻 Under the Hood</div>
@@ -922,22 +1060,22 @@
 
       <div class="slide-footer">
         <div>Robust, Scalable, Zero-Maintenance Architecture</div>
-        <div>Slide 11 of 12</div>
+        <div>Slide 12 of 13</div>
       </div>
     </div>
 
-    <!-- SLIDE 12: Conclusion & Q&A -->
+    <!-- SLIDE 13: Conclusion & Q&A -->
     <div class="slide" data-notes="Thank you for your time! Both our Demo and Live environments are active and ready. Let's open the floor to questions and begin the hands-on demonstration.">
-      <div style="text-align: center; margin-top: 10px;">
+      <div style="text-align: center; margin-top: 4px;">
         <div class="slide-badge">🚀 Experience It Live</div>
-        <h2 class="slide-title" style="font-size: 40px; margin-top: 10px;">Ready to Transform Study Routines?</h2>
-        <p class="slide-subtitle" style="margin: 0 auto; font-size: 16px;">
+        <h2 class="slide-title" style="font-size: clamp(24px, 3.8vh, 34px); margin-top: 6px;">Ready to Transform Study Routines?</h2>
+        <p class="slide-subtitle" style="margin: 0 auto; font-size: clamp(13px, 1.8vh, 15px);">
           Try the live application right now on any phone, tablet, or laptop.
         </p>
       </div>
 
-      <div class="slide-body" style="align-items: center; justify-content: center;">
-        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px;">
+      <div class="slide-body" style="align-items: center; justify-content: center; margin: 12px 0;">
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px;">
           <a href="https://kids-study-tracker.web.app" target="_blank" class="btn-live-demo">
             🚀 Open Live Production App
           </a>
@@ -946,9 +1084,9 @@
           </a>
         </div>
 
-        <div class="feature-card" style="max-width: 650px; text-align: center;">
-          <div style="font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 6px;">Demo Credentials:</div>
-          <div style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+        <div class="feature-card" style="max-width: 650px; text-align: center; padding: 14px 20px;">
+          <div style="font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 4px;">Demo Credentials:</div>
+          <div style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5;">
             <strong>Family Code:</strong> <code style="color: var(--primary-light);">KIDS101</code> &bull; 
             <strong>Parent PIN:</strong> <code style="color: var(--primary-light);">9999</code> &bull; 
             <strong>Student PIN:</strong> <code style="color: var(--primary-light);">1234</code><br>
@@ -977,7 +1115,7 @@
   <!-- Bottom Floating Control Bar -->
   <div class="deck-controls">
     <button class="btn-ctrl" onclick="prevSlide()" title="Previous (Left Arrow)">◀</button>
-    <div class="slide-counter" id="slideCounter">1 / 12</div>
+    <div class="slide-counter" id="slideCounter">1 / 13</div>
     <button class="btn-ctrl" onclick="nextSlide()" title="Next (Right Arrow)">▶</button>
     <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.15); margin: 0 4px;"></div>
     <button class="btn-ctrl" onclick="toggleNotes()" title="Speaker Notes (S)">
