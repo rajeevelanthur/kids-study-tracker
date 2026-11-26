@@ -632,6 +632,58 @@ function handleCancelPendingRegistration() {
   renderApp();
 }
 
+// ========================================================
+// EMAILJS WELCOME EMAIL SERVICE (Family Code & PIN Dispatch)
+// ========================================================
+const EMAILJS_CONFIG = {
+  serviceId: 'service_f9rdh4v',
+  templateId: 'template_pvi7u1k',
+  publicKey: 'WKCA6lwhBJqlnGCCD'
+};
+
+async function sendWelcomeFamilyEmail({ familyName, parentName, parentEmail, familyCode, pin }) {
+  if (!parentEmail || !EMAILJS_CONFIG.serviceId) return false;
+
+  const appUrl = window.location.origin || 'https://kids-study-tracker.web.app';
+  const payload = {
+    service_id: EMAILJS_CONFIG.serviceId,
+    template_id: EMAILJS_CONFIG.templateId,
+    user_id: EMAILJS_CONFIG.publicKey,
+    template_params: {
+      parent_name: parentName,
+      to_name: parentName,
+      parent_email: parentEmail,
+      to_email: parentEmail,
+      family_name: familyName,
+      family_code: familyCode,
+      parent_pin: pin,
+      app_url: appUrl
+    }
+  };
+
+  try {
+    const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      console.log('✅ Welcome email dispatched via EmailJS to', parentEmail);
+      return true;
+    } else {
+      const errText = await response.text();
+      console.warn('⚠️ EmailJS API response status:', response.status, errText);
+      return false;
+    }
+  } catch (err) {
+    console.warn('⚠️ EmailJS fetch exception (offline or blocked):', err);
+    return false;
+  }
+}
+
 function completeFamilyRegistration(regData) {
   if (verificationPollingInterval) {
     clearInterval(verificationPollingInterval);
@@ -657,8 +709,29 @@ function completeFamilyRegistration(regData) {
 
   showToast(`🎉 Family "${result.family.name}" verified & created! Code: ${result.family.code}`, 'success');
 
-  // Show welcome modal informing parent of their code
+  // Asynchronously dispatch welcome email with Family Code & PIN via EmailJS
+  sendWelcomeFamilyEmail({
+    familyName,
+    parentName,
+    parentEmail,
+    familyCode: result.family.code,
+    pin
+  }).then(sent => {
+    if (sent) {
+      showToast(`📩 Welcome email sent to ${parentEmail}!`, 'success');
+    }
+  }).catch(() => {});
+
+  // Show welcome modal informing parent of their code & PIN
   setTimeout(() => {
+    const waShareText = encodeURIComponent(
+      `🏡 Kids Study Tracker - Family Login Details\n` +
+      `Family: ${result.family.name}\n` +
+      `Family Code: ${result.family.code}\n` +
+      `Parent PIN: ${pin}\n` +
+      `Login URL: ${window.location.origin}`
+    );
+
     openModal({
       title: '🏡 Family Workspace Ready!',
       content: `
@@ -669,15 +742,25 @@ function completeFamilyRegistration(regData) {
           </h3>
           <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 18px;">
             Your dedicated workspace has been verified with <strong>${escapeHtml(parentEmail || '')}</strong> and initialized!
+            ${parentEmail ? `<br><span style="color: #059669; font-weight: 600; font-size: 12px;">📩 A copy has also been dispatched to your email!</span>` : ''}
           </p>
 
-          <div style="background: #ede9fe; border: 2px dashed #8b5cf6; border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px;">
+          <div style="background: #ede9fe; border: 2px dashed #8b5cf6; border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px;">
             <div style="font-size: 12px; font-weight: 700; color: #6d28d9; text-transform: uppercase; margin-bottom: 4px;">
               Your Unique Family Code
             </div>
-            <div style="font-size: 28px; font-weight: 900; color: #5b21b6; letter-spacing: 2px;">
+            <div style="font-size: 28px; font-weight: 900; color: #5b21b6; letter-spacing: 2px; margin-bottom: 6px;">
               ${result.family.code}
             </div>
+            <div style="font-size: 13px; font-weight: 700; color: #7c3aed;">
+              Parent PIN: <strong style="font-family: monospace; font-size: 16px; letter-spacing: 2px; color: #5b21b6;">${escapeHtml(pin)}</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 18px;">
+            <a href="https://wa.me/?text=${waShareText}" target="_blank" rel="noopener noreferrer" class="btn" style="background: #25D366; color: white; font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: var(--radius-sm); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+              <span>📲</span> Save to WhatsApp
+            </a>
           </div>
 
           <p style="font-size: 13px; color: var(--slate-600); text-align: left; margin-bottom: 20px; line-height: 1.5;">
