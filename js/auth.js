@@ -57,41 +57,43 @@ function renderLandingAuthPage(container) {
   const selectedUser = store.getUserById(selectedLoginUserId) || familyUsers[0] || null;
 
   container.innerHTML = `
-    <div class="auth-wrapper">
-      ${(typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo') ? `
-        <div style="display: flex; justify-content: center; margin-bottom: 14px;">
-          <span style="font-size: 11px; font-weight: 700; color: #d97706; background: #fffbeb; border: 1px solid #fde68a; padding: 4px 12px; border-radius: 99px;">
-            🧪 Showcase &amp; Staging Portal (Demo Environment)
-          </span>
+    <div class="auth-page-container">
+      <div class="auth-wrapper">
+        ${(typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo') ? `
+          <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+            <span style="font-size: 11px; font-weight: 700; color: #d97706; background: #fffbeb; border: 1px solid #fde68a; padding: 2px 10px; border-radius: 99px;">
+              🧪 Showcase &amp; Staging Portal (Demo Environment)
+            </span>
+          </div>
+        ` : ''}
+
+        <div class="landing-hero">
+          <div class="landing-icon">🎓</div>
+          <h2 class="landing-title">Kids Study Tracker</h2>
+          <p class="landing-subtitle">Kerala State &amp; CBSE Syllabus (Classes 1 - 12 / Plus Two) • Multi-Family Study &amp; Rewards Portal</p>
+
+          <div class="auth-tabs-nav">
+            <button class="auth-tab-btn ${authTab === 'signin' ? 'active' : ''}" onclick="switchAuthTab('signin')">
+              🔑 Sign In
+            </button>
+            <button class="auth-tab-btn ${authTab === 'register_family' ? 'active' : ''}" onclick="switchAuthTab('register_family')">
+              🏡 Register Family
+            </button>
+          </div>
         </div>
-      ` : ''}
 
-      <div class="landing-hero">
-        <div class="landing-icon">🎓</div>
-        <h2 class="landing-title">Kids Study Tracker</h2>
-        <p class="landing-subtitle">Kerala State &amp; CBSE Syllabus (Classes 1 - 12 / Plus Two) • Multi-Family Study &amp; Rewards Portal</p>
+        ${pendingRegistration
+          ? renderEmailVerificationPendingCard()
+          : (authTab === 'signin' 
+              ? renderSignInView(currentFamily, familyUsers, selectedUser) 
+              : renderRegisterFamilyCard())
+        }
 
-        <div class="auth-tabs-nav">
-          <button class="auth-tab-btn ${authTab === 'signin' ? 'active' : ''}" onclick="switchAuthTab('signin')">
-            🔑 Sign In
-          </button>
-          <button class="auth-tab-btn ${authTab === 'register_family' ? 'active' : ''}" onclick="switchAuthTab('register_family')">
-            🏡 Register Family
+        <div style="margin-top: 10px; padding-top: 6px; text-align: center;">
+          <button type="button" onclick="openSuperAdminLoginModal()" style="background: none; border: none; cursor: pointer; font-size: 11.5px; color: var(--slate-400); font-weight: 600; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--slate-400)'">
+            <span>🛡️</span> <span>Platform Super Admin</span>
           </button>
         </div>
-      </div>
-
-      ${pendingRegistration
-        ? renderEmailVerificationPendingCard()
-        : (authTab === 'signin' 
-            ? renderSignInView(currentFamily, familyUsers, selectedUser) 
-            : renderRegisterFamilyCard())
-      }
-
-      <div style="margin-top: 24px; padding-top: 14px; text-align: center;">
-        <button type="button" onclick="openSuperAdminLoginModal()" style="background: none; border: none; cursor: pointer; font-size: 12px; color: var(--slate-400); font-weight: 600; display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--slate-400)'">
-          <span>🛡️</span> <span>Platform Super Admin</span>
-        </button>
       </div>
     </div>
   `;
@@ -139,41 +141,41 @@ function renderFamilyCodeEntryCard() {
 
   return `
     <div class="auth-card" style="max-width: 440px; margin: 0 auto; text-align: center;">
-      <div style="font-size: 38px; margin-bottom: 8px;">🏡</div>
-      <h3 style="font-size: 18px; font-weight: 800; color: var(--slate-900); margin-bottom: 6px;">
+      <div style="font-size: 28px; margin-bottom: 4px;">🏡</div>
+      <h3 style="font-size: 16px; font-weight: 800; color: var(--slate-900); margin-bottom: 4px;">
         Enter Your Family Code
       </h3>
-      <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 20px; line-height: 1.5;">
+      <p style="font-size: 12px; color: var(--slate-600); margin-bottom: 12px; line-height: 1.4;">
         Please enter the code given by your parent to access your private study portal.
       </p>
 
       <form onsubmit="handleVerifyFamilyCode(event)">
-        <div class="form-group" style="margin-bottom: 16px;">
+        <div class="form-group" style="margin-bottom: 12px;">
           <input 
             type="text" 
             id="family-code-input-field" 
             class="form-input" 
-            style="text-align: center; font-size: 20px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 12px; border: 2px solid var(--primary);" 
+            style="text-align: center; font-size: 18px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 9px 12px; border: 2px solid var(--primary);" 
             placeholder="${isDemo ? 'e.g. KIDS101' : 'Enter Family Code'}" 
             required 
             autofocus 
           />
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 15px; font-weight: 700;">
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px; font-size: 14px; font-weight: 700;">
           Continue to Family Portal ➔
         </button>
       </form>
 
       ${isDemo ? `
-        <div style="margin-top: 20px; padding: 12px; background: #fffbeb; border-radius: var(--radius-sm); border: 1px dashed #f59e0b; font-size: 12px; color: #92400e; line-height: 1.5; text-align: left;">
+        <div style="margin-top: 12px; padding: 8px 10px; background: #fffbeb; border-radius: var(--radius-sm); border: 1px dashed #f59e0b; font-size: 11.5px; color: #92400e; line-height: 1.4; text-align: left;">
           💡 <strong>Demo Codes for Testing:</strong><br/>
           • Enter <strong>KIDS101</strong> (Rajeev's Family - Arjun &amp; Ananya)<br/>
           • Enter <strong>KIDS202</strong> (Anand's Family - Rahul)
         </div>
       ` : ''}
 
-      <div style="margin-top: 18px; font-size: 13px; color: var(--slate-600);">
+      <div style="margin-top: 12px; font-size: 12px; color: var(--slate-600);">
         Don't have a family workspace yet? 
         <a href="javascript:void(0)" onclick="switchAuthTab('register_family')" style="color: var(--primary); font-weight: 700; text-decoration: none;">
           Register Here
@@ -190,17 +192,17 @@ function renderFamilyProfilesCard(currentFamily, familyUsers, selectedUser) {
   return `
     <div class="auth-card">
       <!-- Verified Family Banner with Change Code Option -->
-      <div class="family-info-banner" style="margin-bottom: 18px;">
+      <div class="family-info-banner" style="margin-bottom: 10px;">
         <div>
-          <span style="font-size: 11px; font-weight: 700; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px;">Family Workspace</span>
-          <div style="font-size: 17px; font-weight: 800; color: #14532d;">🏡 ${escapeHtml(currentFamily.name)}</div>
+          <span style="font-size: 10.5px; font-weight: 700; color: #15803d; text-transform: uppercase; letter-spacing: 0.5px;">Family Workspace</span>
+          <div style="font-size: 15px; font-weight: 800; color: #14532d;">🏡 ${escapeHtml(currentFamily.name)}</div>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 6px;">
           <span class="family-code-badge">${currentFamily.code}</span>
           <button 
             type="button" 
             class="btn btn-outline-primary" 
-            style="padding: 4px 10px; font-size: 11px; background: #ffffff;" 
+            style="padding: 3px 8px; font-size: 10.5px; background: #ffffff;" 
             onclick="handleChangeFamilyCode()" 
             title="Switch or enter a different Family Code"
           >
@@ -210,13 +212,13 @@ function renderFamilyProfilesCard(currentFamily, familyUsers, selectedUser) {
       </div>
 
       <!-- Member Profile Selection -->
-      <h3 style="font-size: 15px; font-weight: 700; color: var(--slate-900); margin-bottom: 6px;">
-        Select Profile to Sign In
-      </h3>
+      <div style="font-size: 12.5px; font-weight: 700; color: var(--slate-900); margin-bottom: 4px;">
+        Select Profile to Sign In:
+      </div>
 
       ${familyUsers.length === 0 ? `
-        <div style="text-align: center; padding: 24px 16px; background: var(--slate-50); border-radius: var(--radius-md); border: 1px dashed var(--slate-300); margin: 12px 0;">
-          <p style="font-size: 13px; color: var(--slate-500); margin: 0;">No profiles found for this family. Please register or switch family.</p>
+        <div style="text-align: center; padding: 16px 12px; background: var(--slate-50); border-radius: var(--radius-sm); border: 1px dashed var(--slate-300); margin: 8px 0;">
+          <p style="font-size: 12px; color: var(--slate-500); margin: 0;">No profiles found for this family. Please register or switch family.</p>
         </div>
       ` : `
         <div class="user-select-grid">
@@ -224,7 +226,7 @@ function renderFamilyProfilesCard(currentFamily, familyUsers, selectedUser) {
             <div class="user-select-card ${selectedUser && u.id === selectedUser.id ? 'selected' : ''}" onclick="selectLoginUser('${u.id}')">
               <div class="user-select-avatar">${u.avatar || '👤'}</div>
               <div class="user-select-name">${escapeHtml(u.name)}</div>
-              <span class="user-select-badge">${u.role === 'parent' ? '👨‍👩‍👧 Parent Admin' : `Class ${u.grade} • ${u.syllabus && u.syllabus.includes('CBSE') ? 'CBSE' : 'Kerala'}`}</span>
+              <span class="user-select-badge">${u.role === 'parent' ? '👨‍👩‍👧 Parent' : `Class ${u.grade}`}</span>
             </div>
           `).join('')}
         </div>
@@ -233,20 +235,16 @@ function renderFamilyProfilesCard(currentFamily, familyUsers, selectedUser) {
       <!-- PIN Verification -->
       ${selectedUser ? `
         <form onsubmit="handleSignInSubmit(event)">
-          <h3 style="font-size: 15px; font-weight: 700; color: var(--slate-900); margin-bottom: 4px;">
-            Enter 4-digit PIN for ${escapeHtml(selectedUser.name)}
-          </h3>
-          ${(typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo') ? `
-            <div style="margin-bottom: 12px;">
-              <span style="font-size: 12px; color: #b45309; background: #fffbeb; padding: 4px 10px; border-radius: 6px; border: 1px dashed #f59e0b; display: inline-block;">
-                💡 Demo PIN: <strong>${selectedUser.pin || '1234'}</strong>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 12.5px; font-weight: 700; color: var(--slate-900);">
+              Enter 4-digit PIN for ${escapeHtml(selectedUser.name)}:
+            </span>
+            ${(typeof CURRENT_ENV_KEY !== 'undefined' && CURRENT_ENV_KEY === 'demo') ? `
+              <span style="font-size: 11px; color: #b45309; background: #fffbeb; padding: 2px 7px; border-radius: 4px; border: 1px dashed #f59e0b;">
+                PIN: <strong>${selectedUser.pin || '1234'}</strong>
               </span>
-            </div>
-          ` : `
-            <p style="font-size: 12px; color: var(--slate-500); margin-bottom: 12px;">
-              Enter your private 4-digit PIN to access dashboard.
-            </p>
-          `}
+            ` : ''}
+          </div>
 
           <div class="pin-input-box">
             <input 
@@ -262,15 +260,11 @@ function renderFamilyProfilesCard(currentFamily, familyUsers, selectedUser) {
             />
           </div>
 
-          <button type="submit" class="btn btn-primary" style="font-size: 16px; padding: 14px; width: 100%;">
+          <button type="submit" class="btn btn-primary" style="font-size: 14px; font-weight: 700; padding: 11px; width: 100%; border-radius: var(--radius-sm); box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);">
             🚀 Sign In as ${escapeHtml(selectedUser.name)}
           </button>
         </form>
       ` : ''}
-
-      <div style="margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--slate-200); text-align: center; font-size: 12px; color: var(--slate-500);">
-        💡 Children can be added or managed anytime by signing in as Parent Admin.
-      </div>
     </div>
   `;
 }

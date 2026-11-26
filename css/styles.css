@@ -1000,56 +1000,74 @@ body {
 }
 
 /* =========================================================
-   LANDING / AUTH SCREEN STYLES (Clean centered card)
+   LANDING / AUTH SCREEN STYLES (Zero-Scroll Viewport Best Fit)
    ========================================================= */
+.auth-page-container {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 16px;
+  box-sizing: border-box;
+}
+
 .auth-wrapper {
-  max-width: 520px;
-  margin: 40px auto;
-  padding: 0 16px;
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .landing-hero {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 }
 
 .landing-icon {
-  font-size: 52px;
-  margin-bottom: 6px;
+  font-size: 32px;
+  margin-bottom: 2px;
   display: inline-block;
   animation: bounce 2s infinite ease-in-out;
 }
 
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50% { transform: translateY(-4px); }
 }
 
 .landing-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--slate-900);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  line-height: 1.2;
 }
 
 .landing-subtitle {
-  font-size: 13px;
+  font-size: 11.5px;
   color: var(--slate-600);
+  line-height: 1.35;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .auth-tabs-nav {
   display: flex;
   background: var(--slate-200);
-  padding: 4px;
+  padding: 3px;
   border-radius: var(--radius-md);
-  margin: 18px 0;
-  gap: 6px;
+  margin: 8px auto 10px;
+  max-width: 300px;
+  gap: 4px;
 }
 
 .auth-tab-btn {
   flex: 1;
-  padding: 10px;
-  font-size: 14px;
+  padding: 6px 10px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--slate-600);
   background: transparent;
@@ -1069,23 +1087,23 @@ body {
 .auth-card {
   background: #ffffff;
   border: 1px solid var(--slate-200);
-  border-radius: var(--radius-lg);
-  padding: 24px;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
   box-shadow: var(--shadow-md);
 }
 
 .user-select-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 12px;
-  margin: 14px 0 20px;
+  grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+  gap: 8px;
+  margin: 6px 0 10px;
 }
 
 .user-select-card {
   background: var(--slate-50);
   border: 2px solid var(--slate-200);
-  border-radius: var(--radius-md);
-  padding: 14px 8px;
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1093,53 +1111,57 @@ body {
 
 .user-select-card:hover {
   border-color: var(--slate-300);
-  transform: translateY(-2px);
 }
 
 .user-select-card.selected {
   border-color: var(--primary);
   background: var(--primary-light);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
 }
 
 .user-select-avatar {
-  font-size: 38px;
-  margin-bottom: 4px;
+  font-size: 26px;
+  line-height: 1;
+  margin-bottom: 2px;
 }
 
 .user-select-name {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 11.5px;
+  font-weight: 800;
   color: var(--slate-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-select-badge {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 9.5px;
+  font-weight: 700;
   color: var(--slate-600);
   background: rgba(0,0,0,0.05);
-  padding: 2px 6px;
+  padding: 1px 5px;
   border-radius: 99px;
-  margin-top: 4px;
+  margin-top: 2px;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .pin-input-box {
   background: var(--slate-50);
   border: 1px solid var(--slate-200);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  margin-bottom: 16px;
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
 .pin-display-input {
-  font-size: 24px;
-  letter-spacing: 10px;
+  font-size: 20px;
+  letter-spacing: 8px;
   text-align: center;
   font-weight: 800;
-  width: 170px;
-  padding: 8px;
+  width: 140px;
+  padding: 6px 8px;
   border: 2px solid var(--primary);
   border-radius: var(--radius-sm);
   background: #ffffff;
