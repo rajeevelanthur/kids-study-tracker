@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reel 02B – Install on iPhone (Safari) · 15s 9:16</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@500;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #0b0b1a; overflow: hidden; }
+  body { font-family: 'Poppins', 'Noto Sans Malayalam', 'Nirmala UI', system-ui, sans-serif; }
+  .ml { font-family: 'Noto Sans Malayalam', 'Nirmala UI', 'Poppins', sans-serif; }
+  .ios { font-family: -apple-system, 'SF Pro Text', 'Segoe UI', 'Poppins', sans-serif; }
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #stage { width: 540px; height: 960px; position: relative; overflow: hidden; flex: none; transform-origin: center;
+    background: linear-gradient(160deg, #0ea5e9 0%, #4f46e5 50%, #db2777 100%); }
+  .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: .4; }
+  .b1 { width: 300px; height: 300px; background: #a5f3fc; top: -80px; left: -90px; animation: drift 6s ease-in-out infinite alternate; }
+  .b2 { width: 320px; height: 320px; background: #facc15; bottom: -110px; right: -120px; opacity: .28; animation: drift 7s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { to { transform: translate(40px, 30px) scale(1.1); } }
+
+  #flow { position: absolute; top: 26px; left: 18px; right: 18px; display: flex; align-items: flex-start; z-index: 5; }
+  .fs { flex: 1; text-align: center; color: #fff; opacity: 0; transform: translateY(-14px); transition: opacity .4s, transform .4s; }
+  #flow.show .fs { opacity: .55; transform: none; }
+  #flow.show .fs:nth-child(3) { transition-delay: .15s; } #flow.show .fs:nth-child(5) { transition-delay: .3s; } #flow.show .fs:nth-child(7) { transition-delay: .45s; }
+  .fs .dot { width: 46px; height: 46px; margin: 0 auto 6px; border-radius: 50%; background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.5);
+    display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; transition: all .35s; }
+  .fs .lb { font-size: 11.5px; font-weight: 700; line-height: 1.25; }
+  #flow.show .fs.on { opacity: 1; } #flow.show .fs.done { opacity: .95; }
+  .fs.on .dot { background: #fff; border-color: #fff; transform: scale(1.18); box-shadow: 0 0 0 6px rgba(255,255,255,.25), 0 0 24px rgba(255,255,255,.7); }
+  .fs.done .dot { background: #22c55e; border-color: #bbf7d0; }
+  .ln { flex: 0 0 18px; height: 3px; margin-top: 22px; background: rgba(255,255,255,.25); border-radius: 3px; transition: background .4s; }
+  .ln.on { background: #fff; }
+
+  #phone { position: absolute; left: 50%; top: 126px; width: 318px; height: 620px; margin-left: -159px; background: #0f0f17; border-radius: 48px; padding: 10px; z-index: 4;
+    box-shadow: 0 30px 60px rgba(0,0,0,.45), inset 0 0 0 2px #2a2a3a; opacity: 0; transform: translateY(60px) scale(.92);
+    transition: opacity .5s, transform .6s cubic-bezier(.34,1.4,.64,1); }
+  #phone.show { opacity: 1; transform: none; }
+  .island { position: absolute; top: 19px; left: 50%; width: 86px; height: 24px; margin-left: -43px; background: #000; border-radius: 20px; z-index: 40; }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 38px; background: #000; overflow: hidden; }
+  .sbar { position: absolute; top: 0; left: 0; right: 0; height: 34px; padding: 6px 24px 0; display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; font-weight: 700; z-index: 30; color: #fff; transition: color .3s, background .3s; }
+  .sbar.dark { color: #000; background: #fff; }
+  .sbar.app { color: #fff; background: #4f46e5; }
+  .layer { position: absolute; inset: 0; opacity: 0; transform: scale(.94); transition: opacity .35s, transform .35s; display: none; }
+  .layer.show { display: block; opacity: 1; transform: none; }
+
+  /* iOS home */
+  .wall { position: absolute; inset: 0; background: radial-gradient(circle at 80% 10%, #fda4af 0, transparent 45%), radial-gradient(circle at 10% 80%, #67e8f9 0, transparent 45%), linear-gradient(170deg, #312e81, #9d174d); }
+  .widget { position: absolute; top: 48px; left: 18px; right: 18px; height: 92px; border-radius: 20px; background: rgba(255,255,255,.2); backdrop-filter: blur(10px);
+    color: #fff; padding: 12px 14px; }
+  .widget b { font-size: 30px; font-weight: 300; display: block; line-height: 1.1; } .widget small { font-size: 10px; opacity: .9; }
+  .grid { position: absolute; top: 160px; left: 16px; right: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 8px; }
+  .app { text-align: center; position: relative; }
+  .ic { width: 52px; height: 52px; margin: 0 auto; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 25px; background: #fff;
+    box-shadow: 0 3px 8px rgba(0,0,0,.25); position: relative; overflow: hidden; }
+  .ic img { width: 100%; height: 100%; display: block; }
+  .app span { display: block; font-size: 9.5px; color: #fff; margin-top: 4px; text-shadow: 0 1px 3px rgba(0,0,0,.5); font-weight: 500; }
+  .safari { background: linear-gradient(#fff, #e5e5ea); }
+  .safari::before { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: radial-gradient(circle, #5ac8fa, #007aff); }
+  .safari::after { content: ''; position: absolute; left: 50%; top: 50%; width: 5px; height: 34px; margin: -17px 0 0 -2.5px; background: linear-gradient(#ff3b30 50%, #fff 50%);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); transform: rotate(45deg); }
+  .dots { position: absolute; bottom: 104px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+  .dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.5); } .dots i:first-child { background: #fff; }
+  .dock { position: absolute; left: 10px; right: 10px; bottom: 12px; height: 80px; border-radius: 28px; background: rgba(255,255,255,.25); backdrop-filter: blur(12px);
+    display: flex; justify-content: space-around; align-items: center; }
+  #newApp { opacity: 0; transform: scale(0); transition: opacity .3s, transform .55s cubic-bezier(.34,1.8,.64,1); }
+  #newApp.in { opacity: 1; transform: none; }
+  #newApp.in .ic { animation: glowI 1.1s ease-in-out infinite; overflow: visible; }
+  #newApp .ic img { border-radius: 13px; }
+  @keyframes glowI { 50% { box-shadow: 0 0 0 6px rgba(250,204,21,.45), 0 0 24px rgba(250,204,21,.8); } }
+  .spark { position: absolute; top: -9px; right: -6px; font-size: 16px; animation: tw .9s ease-in-out infinite; }
+  @keyframes tw { 50% { transform: scale(1.4) rotate(20deg); } }
+
+  /* Safari */
+  #browser { background: #fff; }
+  .page { position: absolute; top: 34px; left: 0; right: 0; bottom: 96px; overflow: hidden; background: #f4f6fb; }
+  #ntp { position: absolute; inset: 0; background: #f2f2f7; padding: 22px 18px; transition: opacity .3s; }
+  #ntp h6 { font-size: 15px; font-weight: 700; color: #000; margin-bottom: 14px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; text-align: center; }
+  .tile { width: 52px; height: 52px; margin: 0 auto; border-radius: 12px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .tiles small { display: block; font-size: 8.5px; color: #3c3c43; margin-top: 4px; }
+  #site { position: absolute; inset: 0; opacity: 0; transition: opacity .35s; }
+  #site.in { opacity: 1; }
+  .sbot { position: absolute; left: 0; right: 0; bottom: 0; height: 96px; background: rgba(249,249,249,.97); border-top: 1px solid #d1d1d6; }
+  .url { position: absolute; left: 12px; right: 12px; top: 8px; height: 36px; border-radius: 12px; background: #e5e5ea; display: flex; align-items: center; justify-content: center;
+    padding: 0 10px; font-size: 11px; color: #000; gap: 5px; white-space: nowrap; overflow: hidden; border: 1.5px solid transparent; transition: border-color .2s, background .2s; }
+  .url.focus { border-color: #007aff; background: #fff; justify-content: flex-start; }
+  .url .aa { position: absolute; left: 10px; font-size: 11px; font-weight: 600; } .url .rl { position: absolute; right: 10px; font-size: 12px; }
+  .ph { color: #8e8e93; }
+  .caret { display: none; width: 1.5px; height: 15px; background: #007aff; animation: blink 1s steps(1) infinite; }
+  .focus .caret { display: inline-block; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .prog { position: absolute; left: 12px; top: 42px; height: 2px; width: 0; background: #007aff; transition: width .45s ease-out; border-radius: 2px; }
+  .tool { position: absolute; left: 0; right: 0; top: 50px; height: 40px; display: flex; justify-content: space-around; align-items: center; color: #007aff; font-size: 20px; }
+  .tool span { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background .15s; }
+  .tool .dim { color: #b4b4b9; }
+
+  /* mini site */
+  .mini { padding: 14px; }
+  .app-h { text-align: center; margin-bottom: 9px; }
+  .logo { font-weight: 800; color: #3730a3; font-size: 15px; } .sub { font-size: 9px; color: #64748b; margin-top: 2px; }
+  .tabs { display: flex; background: #e2e8f0; border-radius: 10px; padding: 3px; margin-bottom: 10px; }
+  .tab { flex: 1; text-align: center; padding: 6px 0; font-size: 10.5px; border-radius: 8px; color: #475569; font-weight: 600; } .tab.on { background: #fff; color: #4338ca; }
+  .card { background: #fff; border-radius: 14px; padding: 12px; box-shadow: 0 4px 14px rgba(15,23,42,.08); }
+  .fam { background: linear-gradient(90deg, #ecfdf5, #e0f2fe); border: 1px solid #a7f3d0; border-radius: 11px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .fam small { display: block; font-size: 8px; color: #047857; font-weight: 800; letter-spacing: 1px; } .fam b { font-size: 12.5px; color: #064e3b; }
+  .badge { background: #ede9fe; color: #5b21b6; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 20px; border: 1px solid #c4b5fd; }
+  .lbl { font-size: 11px; font-weight: 700; color: #0f172a; margin: 10px 0 7px; }
+  .profiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .pf { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 8px 2px 7px; text-align: center; }
+  .pf .av { font-size: 24px; line-height: 1.1; } .pf .nm { font-size: 10px; font-weight: 700; color: #0f172a; margin-top: 2px; }
+  .pf .meta { font-size: 7.5px; color: #475569; background: #f1f5f9; border-radius: 8px; padding: 1px 4px; display: inline-block; margin-top: 2px; }
+  .pf.sel { border-color: #4f46e5; background: #eef2ff; }
+  .pins { display: flex; gap: 12px; justify-content: center; padding: 11px 0; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 10px; }
+  .pd { width: 13px; height: 13px; border-radius: 50%; border: 2px solid #c7d2fe; }
+  .sbtn { margin-top: 10px; height: 38px; border-radius: 11px; background: #4338ca; color: #fff; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+
+  /* share sheet */
+  #dim { position: absolute; inset: 0; background: rgba(0,0,0,.35); opacity: 0; transition: opacity .3s; z-index: 11; pointer-events: none; }
+  #dim.on { opacity: 1; }
+  #share { position: absolute; left: 0; right: 0; bottom: 0; height: 372px; background: #f2f2f7; border-radius: 16px 16px 0 0; z-index: 12;
+    transform: translateY(105%); transition: transform .4s cubic-bezier(.2,.9,.3,1); padding: 12px 12px 0; }
+  #share.open { transform: none; }
+  .shead { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #d1d1d6; }
+  .shead img { width: 38px; height: 38px; border-radius: 9px; }
+  .shead b { display: block; font-size: 11.5px; color: #000; } .shead small { font-size: 9.5px; color: #8e8e93; }
+  .shead .cx { margin-left: auto; width: 24px; height: 24px; border-radius: 50%; background: #e3e3e8; color: #8e8e93; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .sapps { display: flex; justify-content: space-between; padding: 12px 2px; }
+  .sapps div { text-align: center; font-size: 8.5px; color: #3c3c43; }
+  .sapps i { font-style: normal; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 21px; margin: 0 auto 4px; background: #fff; }
+  #actWrap { height: 214px; overflow: hidden; position: relative; }
+  #actList { transition: transform .45s ease-out; }
+  .grp { background: #fff; border-radius: 11px; margin-bottom: 10px; overflow: hidden; }
+  .act { height: 34px; padding: 0 12px; display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #000; border-bottom: 1px solid #ececf0; }
+  .act:last-child { border-bottom: 0; }
+  .act svg { flex: none; }
+  .act.hl { background: #e5f0ff; color: #007aff; font-weight: 700; animation: hlp .7s ease-in-out infinite; }
+  @keyframes hlp { 50% { background: #cfe3ff; } }
+
+  /* add to home screen page */
+  #addScr { position: absolute; inset: 0; background: #f2f2f7; z-index: 13; transform: translateY(100%); transition: transform .4s cubic-bezier(.2,.9,.3,1); padding-top: 40px; }
+  #addScr.open { transform: none; }
+  .anav { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px 12px; font-size: 12px; }
+  .anav span { color: #007aff; } .anav b { font-size: 12.5px; color: #000; }
+  #btnAdd { font-weight: 700; padding: 4px 8px; border-radius: 8px; transition: background .15s; }
+  .acard { margin: 0 14px; background: #fff; border-radius: 12px; padding: 12px; display: flex; gap: 12px; align-items: center; }
+  .acard img { width: 60px; height: 60px; border-radius: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.15); }
+  .acard .fld { flex: 1; } .acard .nm { font-size: 13px; color: #000; padding-bottom: 6px; border-bottom: 1px solid #e5e5ea; font-weight: 500; }
+  .acard small { display: block; font-size: 9.5px; color: #8e8e93; margin-top: 6px; }
+  .anote { margin: 10px 18px; font-size: 9.5px; color: #6d6d72; line-height: 1.5; }
+
+  #splash { background: #4f46e5; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+  #splash img { width: 92px; height: 92px; border-radius: 22px; box-shadow: 0 10px 30px rgba(0,0,0,.3); animation: zoomIn .5s cubic-bezier(.34,1.6,.64,1); }
+  #splash b { margin-top: 14px; font-size: 16px; }
+  @keyframes zoomIn { from { transform: scale(.4); opacity: 0; } }
+  #appL { background: #f4f6fb; } #appL .mini { padding-top: 46px; }
+
+  .press { transform: scale(.9) !important; filter: brightness(1.15); }
+  .tapbg { background: rgba(0,122,255,.15) !important; }
+
+  #finger { position: absolute; left: 150px; top: 640px; width: 34px; height: 34px; margin: -17px 0 0 -17px; z-index: 35; opacity: 0; pointer-events: none;
+    transition: left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1), opacity .25s; }
+  #finger.slow { transition: left .45s ease-out, top .45s ease-out, opacity .25s; }
+  #finger .core { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.75); border: 3px solid rgba(79,70,229,.95); box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: transform .12s; }
+  #finger .ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid #6366f1; opacity: 0; }
+  #finger.tap .core { transform: scale(.75); } #finger.tap .ring { animation: ripple .5s ease-out; }
+  @keyframes ripple { from { opacity: .9; transform: scale(.6); } to { opacity: 0; transform: scale(2.4); } }
+
+  #caption { position: absolute; left: 22px; right: 22px; top: 770px; min-height: 140px; z-index: 6; text-align: center; transition: opacity .18s, transform .18s; }
+  #caption.swap { opacity: 0; transform: translateY(8px); }
+  .cap-step { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 2px; color: #1e1b4b; background: #facc15; padding: 4px 12px; border-radius: 20px; margin-bottom: 8px; }
+  .cap-step:empty { display: none; }
+  .cap-text { color: #fff; font-size: 23px; font-weight: 800; line-height: 1.45; text-shadow: 0 3px 12px rgba(0,0,0,.35); }
+
+  .overlay { position: absolute; inset: 0; z-index: 8; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff;
+    opacity: 0; pointer-events: none; transition: opacity .45s; padding: 0 30px; }
+  .overlay.show { opacity: 1; }
+  .platform { background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.45); padding: 7px 16px; border-radius: 30px; font-size: 15px; font-weight: 700; margin-bottom: 26px; }
+  .hrow { display: flex; align-items: center; gap: 22px; }
+  .store { position: relative; text-align: center; }
+  .sic { width: 92px; height: 92px; border-radius: 22px; background: linear-gradient(#1ac8fc, #1d6ff2); display: flex; align-items: center; justify-content: center;
+    font-size: 54px; font-weight: 800; color: #fff; box-shadow: 0 10px 24px rgba(0,0,0,.25); font-family: Georgia, serif; }
+  .store small, .ours small { display: block; margin-top: 8px; font-size: 13px; font-weight: 700; }
+  .x { position: absolute; top: -12px; right: -12px; width: 44px; height: 44px; border-radius: 50%; background: #ef4444; color: #fff; font-size: 24px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; transform: scale(0); box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+  #hook.show .x { animation: popX .4s .6s cubic-bezier(.34,1.8,.64,1) forwards; }
+  #hook.show .sic { animation: fadeS .4s .8s forwards; }
+  @keyframes popX { to { transform: scale(1); } } @keyframes fadeS { to { filter: grayscale(1); opacity: .55; } }
+  .harrow { font-size: 34px; opacity: 0; } #hook.show .harrow { animation: fadeIn .3s 1s forwards; }
+  .ours { opacity: 0; transform: scale(.4); } #hook.show .ours { animation: popO .5s 1.1s cubic-bezier(.34,1.7,.64,1) forwards; }
+  .ours img { width: 100px; height: 100px; border-radius: 24px; box-shadow: 0 0 0 6px rgba(255,255,255,.3), 0 0 34px rgba(250,204,21,.8); }
+  @keyframes popO { to { opacity: 1; transform: none; } } @keyframes fadeIn { to { opacity: 1; } }
+  #hook h1 { font-size: 40px; line-height: 1.35; font-weight: 800; margin-top: 26px; text-shadow: 0 4px 16px rgba(0,0,0,.3); }
+  #hook h1 span { color: #fde047; }
+  #outro { background: linear-gradient(160deg, rgba(14,165,233,.94), rgba(219,39,119,.94)); }
+  #outro .box { background: #fff; color: #1e1b4b; border-radius: 26px; padding: 26px 22px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,.35); transform: translateY(40px) scale(.9); transition: transform .55s cubic-bezier(.34,1.5,.64,1); }
+  #outro.show .box { transform: none; }
+  #outro img { width: 80px; height: 80px; border-radius: 20px; }
+  #outro h2 { font-size: 22px; font-weight: 800; margin-top: 6px; }
+  #outro .tag { font-size: 13px; color: #64748b; margin-top: 4px; font-weight: 600; }
+  #outro .cta { font-size: 25px; font-weight: 800; color: #db2777; margin: 14px 0 10px; }
+  #outro .url2 { display: inline-block; background: #4338ca; color: #fff; padding: 11px 16px; border-radius: 14px; font-size: 15px; font-weight: 700; animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(67,56,202,.2); } }
+  #outro .steps { margin-top: 14px; font-size: 13px; color: #334155; font-weight: 700; }
+  #confetti { position: absolute; inset: 0; z-index: 9; pointer-events: none; }
+
+  #controls { position: fixed; bottom: 10px; left: 10px; z-index: 100; display: flex; gap: 8px; align-items: center; font: 600 12px Poppins, sans-serif; color: #e2e8f0; }
+  #controls button { background: #4338ca; color: #fff; border: 0; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; }
+  #controls .k { opacity: .7; }
+  #clock { min-width: 52px; background: #1e1b4b; padding: 6px 10px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+  body.rec #controls { display: none; }
+</style>
+</head>
+<body>
+<div id="controls"><button onclick="play()">▶ Play / Replay</button><span id="clock">0.0s</span><span class="k">R = replay · H = hide controls · L = loop</span></div>
+<div id="wrap"><div id="stage"></div></div>
+
+<template id="tpl">
+  <div class="blob b1"></div><div class="blob b2"></div>
+
+  <div id="flow" class="ml">
+    <div class="fs" id="fs1"><div class="dot">🧭</div><div class="lb">Safari-യിൽ<br>തുറക്കുക</div></div><div class="ln" id="ln1"></div>
+    <div class="fs" id="fs2"><div class="dot">⬆️</div><div class="lb">Share<br>അമർത്തുക</div></div><div class="ln" id="ln2"></div>
+    <div class="fs" id="fs3"><div class="dot">➕</div><div class="lb">Home<br>Screen</div></div><div class="ln" id="ln3"></div>
+    <div class="fs" id="fs4"><div class="dot">✅</div><div class="lb">ആപ്പ്<br>റെഡി!</div></div>
+  </div>
+
+  <div id="phone"><div class="island"></div><div id="screen" class="ios">
+    <div class="sbar" id="sbar"><span>9:41</span><span>📶 🔋</span></div>
+
+    <!-- HOME -->
+    <div class="layer" id="home">
+      <div class="wall"></div>
+      <div class="widget"><small>Wednesday</small><b>25</b><small>☀️ Kochi · 29°</small></div>
+      <div class="grid">
+        <div class="app"><div class="ic" style="background:#25d366">💬</div><span>WhatsApp</span></div>
+        <div class="app"><div class="ic">📷</div><span>Camera</span></div>
+        <div class="app"><div class="ic">🌸</div><span>Photos</span></div>
+        <div class="app"><div class="ic" style="background:#ff0000;color:#fff;font-size:20px">▶</div><span>YouTube</span></div>
+        <div class="app"><div class="ic">🗺️</div><span>Maps</span></div>
+        <div class="app"><div class="ic">📅</div><span>Calendar</span></div>
+        <div class="app"><div class="ic" style="background:#8e8e93">⚙️</div><span>Settings</span></div>
+        <div class="app"><div class="ic" style="background:linear-gradient(#1ac8fc,#1d6ff2);color:#fff;font-family:Georgia,serif;font-weight:800">A</div><span>App Store</span></div>
+        <div class="app" id="newApp"><div class="ic" id="newIc"><img src="../icons/apple-touch-icon.png" alt=""><span class="spark">✨</span></div><span>Study Tracker</span></div>
+      </div>
+      <div class="dots"><i></i><i></i></div>
+      <div class="dock">
+        <div class="app"><div class="ic" style="background:#34c759">📞</div></div>
+        <div class="app"><div class="ic safari" id="safariIcon"></div></div>
+        <div class="app"><div class="ic" style="background:#34c759">💬</div></div>
+        <div class="app"><div class="ic" style="background:#fc3c44">🎵</div></div>
+      </div>
+    </div>
+
+    <!-- SAFARI -->
+    <div class="layer" id="browser">
+      <div class="page">
+        <div id="ntp"><h6>Favourites</h6>
+          <div class="tiles"><div><div class="tile">🍎</div><small>Apple</small></div><div><div class="tile">🔍</div><small>Google</small></div><div><div class="tile">▶️</div><small>YouTube</small></div><div><div class="tile">📰</div><small>News</small></div></div>
+        </div>
+        <div id="site"><div class="mini">
+          <div class="app-h"><div class="logo">📚 Kids Study Tracker</div><div class="sub">Kerala State &amp; CBSE · Study &amp; Rewards Portal</div></div>
+          <div class="tabs"><div class="tab on">🔑 Sign In</div><div class="tab">🏡 Register Family</div></div>
+          <div class="card">
+            <div class="fam"><div><small>FAMILY WORKSPACE</small><b>🏡 Rajeev's Family</b></div><span class="badge">KIDS-101</span></div>
+            <div class="lbl">Select Profile to Sign In</div>
+            <div class="profiles">
+              <div class="pf sel"><div class="av">👦</div><div class="nm">Arjun</div><div class="meta">Class 7 • Kerala</div></div>
+              <div class="pf"><div class="av">👧</div><div class="nm">Meera</div><div class="meta">Class 4 • Kerala</div></div>
+              <div class="pf"><div class="av">👨‍👩‍👧</div><div class="nm">Rajeev</div><div class="meta">Parent</div></div>
+            </div>
+            <div class="pins"><div class="pd"></div><div class="pd"></div><div class="pd"></div><div class="pd"></div></div>
+            <div class="sbtn">🚀 Sign In as Arjun</div>
+          </div>
+        </div></div>
+      </div>
+      <div class="sbot">
+        <div class="url" id="url"><span class="aa" id="aa" style="display:none">aA</span><span id="lock" style="display:none">🔒</span><span id="urlText"><span class="ph">Search or enter website</span></span><span class="caret"></span><span class="rl" id="rl" style="display:none">↻</span></div>
+        <div class="prog" id="prog"></div>
+        <div class="tool">
+          <span>‹</span><span class="dim">›</span>
+          <span id="btnShare"><svg width="20" height="24" viewBox="0 0 20 24" fill="none" stroke="#007aff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15V2M5.5 6.5 10 2l4.5 4.5"/><path d="M6.5 10H4a1.5 1.5 0 0 0-1.5 1.5v9A1.5 1.5 0 0 0 4 22h12a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 16 10h-2.5"/></svg></span>
+          <span>📖</span><span>⧉</span>
+        </div>
+      </div>
+
+      <div id="dim"></div>
+      <div id="share">
+        <div class="shead"><img src="../icons/apple-touch-icon.png" alt=""><div><b>Kids Study &amp; Rewards Tracker</b><small>kids-study-tracker-demo.web.app</small></div><span class="cx">✕</span></div>
+        <div class="sapps"><div><i>📡</i>AirDrop</div><div><i style="background:#34c759">💬</i>Messages</div><div><i style="background:#1e90ff">✉️</i>Mail</div><div><i style="background:#25d366">🟢</i>WhatsApp</div><div><i>•••</i>More</div></div>
+        <div id="actWrap" class="ios"><div id="actList">
+          <div class="grp">
+            <div class="act">Copy <span>⧉</span></div>
+            <div class="act">Add to Reading List <span>👓</span></div>
+            <div class="act">Add Bookmark <span>📖</span></div>
+            <div class="act">Add to Favourites <span>☆</span></div>
+            <div class="act">Find on Page <span>🔍</span></div>
+          </div>
+          <div class="grp">
+            <div class="act" id="aths">Add to Home Screen <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2.5" y="2.5" width="17" height="17" rx="4.5"/><path d="M11 7v8M7 11h8"/></svg></div>
+            <div class="act">Markup <span>✏️</span></div>
+            <div class="act">Print <span>🖨️</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <div id="addScr">
+        <div class="anav"><span>Cancel</span><b>Add to Home Screen</b><span id="btnAdd">Add</span></div>
+        <div class="acard"><img src="../icons/apple-touch-icon.png" alt=""><div class="fld"><div class="nm">Study Tracker</div><small>https://kids-study-tracker-demo.web.app</small></div></div>
+        <div class="anote">An icon will be added to your Home Screen so you can quickly access this website.</div>
+      </div>
+    </div>
+
+    <div class="layer" id="splash"><img src="../icons/apple-touch-icon.png" alt=""><b>Study Tracker</b></div>
+    <div class="layer" id="appL"><div class="mini">
+      <div class="app-h"><div class="logo">📚 Kids Study Tracker</div><div class="sub">Kerala State &amp; CBSE · Study &amp; Rewards Portal</div></div>
+      <div class="tabs"><div class="tab on">🔑 Sign In</div><div class="tab">🏡 Register Family</div></div>
+      <div class="card">
+        <div class="fam"><div><small>FAMILY WORKSPACE</small><b>🏡 Rajeev's Family</b></div><span class="badge">KIDS-101</span></div>
+        <div class="lbl">Select Profile to Sign In</div>
+        <div class="profiles">
+          <div class="pf sel"><div class="av">👦</div><div class="nm">Arjun</div><div class="meta">Class 7 • Kerala</div></div>
+          <div class="pf"><div class="av">👧</div><div class="nm">Meera</div><div class="meta">Class 4 • Kerala</div></div>
+          <div class="pf"><div class="av">👨‍👩‍👧</div><div class="nm">Rajeev</div><div class="meta">Parent</div></div>
+        </div>
+        <div class="pins"><div class="pd"></div><div class="pd"></div><div class="pd"></div><div class="pd"></div></div>
+        <div class="sbtn">🚀 Sign In as Arjun</div>
+      </div>
+    </div></div>
+
+    <div id="finger"><div class="ring"></div><div class="core"></div></div>
+  </div></div>
+
+  <div id="caption" class="ml"><div class="cap-step" id="capStep"></div><div class="cap-text" id="capText"></div></div>
+
+  <div id="hook" class="overlay ml">
+    <div class="platform">🍎 iPhone / iPad · Safari</div>
+    <div class="hrow">
+      <div class="store"><div class="sic">A</div><small>App Store</small><div class="x">✕</div></div>
+      <div class="harrow">➜</div>
+      <div class="ours"><img src="../icons/apple-touch-icon.png" alt=""><small>Study Tracker</small></div>
+    </div>
+    <h1>App Store <span>വേണ്ട!</span></h1>
+  </div>
+
+  <div id="outro" class="overlay ml"><div class="box">
+    <img src="../icons/apple-touch-icon.png" alt="">
+    <h2>Kids Study &amp; Rewards Tracker</h2>
+    <div class="tag">🌴 Kerala State &amp; 🏛️ CBSE · Classes 1–10</div>
+    <div class="cta">ഇന്നുതന്നെ ഇൻസ്റ്റാൾ ചെയ്യൂ! 📲</div>
+    <div class="url2">🔗 kids-study-tracker-demo.web.app</div>
+    <div class="steps">Safari → Share ⬆️ → Add to Home Screen</div>
+  </div></div>
+
+  <canvas id="confetti" width="540" height="960"></canvas>
+</template>
+
+<script>
+  const W = 540, H = 960, DURATION = 15000, SCROLL = 104;
+  const stage = document.getElementById('stage');
+  const $ = id => document.getElementById(id);
+  let scale = 1, timers = [], t0 = 0, loop = false, rafClock = 0, confettiRaf = 0;
+
+  function fit() { scale = Math.min(innerWidth / W, innerHeight / H); stage.style.transform = `scale(${scale})`; }
+  addEventListener('resize', fit); fit();
+  const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+  function reset() { timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(confettiRaf); stage.innerHTML = $('tpl').innerHTML; }
+
+  function posIn(el, anc) { let x = 0, y = 0, n = el; while (n && n !== anc) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; } return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 }; }
+  function moveTo(id, dy = 0) { const f = $('finger'), p = posIn($(id), $('screen')); f.style.left = p.x + 'px'; f.style.top = (p.y + dy) + 'px'; f.style.opacity = 1; }
+  function tap() { const f = $('finger'); f.classList.remove('tap'); void f.offsetWidth; f.classList.add('tap'); }
+  function press(id) { const e = $(id); e.classList.add('press'); setTimeout(() => e.classList.remove('press'), 180); }
+  function hideFinger() { $('finger').style.opacity = 0; }
+  function layer(id) { ['home', 'browser', 'splash', 'appL'].forEach(l => $(l).classList.toggle('show', l === id)); }
+  function sbar(mode) { $('sbar').className = 'sbar' + (mode ? ' ' + mode : ''); }
+  function flow(n) { for (let i = 1; i <= 4; i++) { $('fs' + i).classList.toggle('on', i === n); $('fs' + i).classList.toggle('done', i < n); if (i < 4) $('ln' + i).classList.toggle('on', i < n); } }
+  function setCap(step, text) { const c = $('caption'); c.classList.add('swap'); setTimeout(() => { $('capStep').textContent = step; $('capText').textContent = text; c.classList.remove('swap'); }, 170); }
+  function type(id, text, start, step) { [...text].forEach((_, i) => at(start + i * step, () => { $(id).textContent = text.slice(0, i + 1); })); }
+
+  function confetti() {
+    const cv = $('confetti'), ctx = cv.getContext('2d');
+    const colors = ['#facc15', '#22c55e', '#38bdf8', '#f472b6', '#a78bfa', '#fb923c', '#ffffff'];
+    const ps = Array.from({ length: 160 }, () => ({ x: W / 2 + (Math.random() - .5) * 80, y: 430, vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 5,
+      s: Math.random() * 7 + 4, r: Math.random() * 6, vr: (Math.random() - .5) * .3, c: colors[(Math.random() * colors.length) | 0] }));
+    const start = performance.now();
+    (function frame(now) {
+      ctx.clearRect(0, 0, W, H);
+      ps.forEach(p => { p.vy += .38; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); });
+      if (now - start < 3000) confettiRaf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    })(start);
+  }
+  function clock() { const t = Math.min((performance.now() - t0) / 1000, DURATION / 1000); const c = $('clock'); if (c) c.textContent = t.toFixed(1) + 's'; if (t < DURATION / 1000) rafClock = requestAnimationFrame(clock); }
+
+  function play() {
+    reset(); t0 = performance.now(); cancelAnimationFrame(rafClock); clock();
+
+    /* 0.0 – 2.0s HOOK */
+    at(30, () => { $('hook').classList.add('show'); setCap('', 'App Store ഇല്ലാതെ ഐഫോണിൽ ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യാം! 🤩'); });
+    at(900, () => $('flow').classList.add('show'));
+
+    /* 2.0 – 5.0s STEP 1: open in Safari */
+    at(2000, () => { $('hook').classList.remove('show'); $('phone').classList.add('show'); layer('home'); sbar(''); flow(1); setCap('iPHONE · STEP 1', 'Safari-യിൽ നമ്മുടെ സൈറ്റ് തുറക്കുക 🧭'); });
+    at(2350, () => moveTo('safariIcon'));
+    at(2650, () => { tap(); press('safariIcon'); });
+    at(2800, () => { layer('browser'); sbar('dark'); });
+    at(3100, () => moveTo('url'));
+    at(3300, () => { tap(); $('url').classList.add('focus'); $('urlText').textContent = ''; });
+    type('urlText', 'kids-study-tracker-demo.web.app', 3380, 28);
+    at(4300, () => { $('url').classList.remove('focus'); $('lock').style.display = ''; $('aa').style.display = ''; $('rl').style.display = ''; $('urlText').textContent = 'kids-study-tracker-demo.web.app'; $('prog').style.width = 'calc(100% - 24px)'; hideFinger(); });
+    at(4650, () => { $('ntp').style.opacity = 0; $('site').classList.add('in'); $('prog').style.opacity = 0; });
+
+    /* 5.0 – 7.0s STEP 2: Share */
+    at(5000, () => { flow(2); setCap('iPHONE · STEP 2', 'താഴെയുള്ള Share ⬆️ ബട്ടൺ അമർത്തുക'); });
+    at(5300, () => moveTo('btnShare'));
+    at(5650, () => { tap(); $('btnShare').classList.add('tapbg'); });
+    at(5800, () => { $('btnShare').classList.remove('tapbg'); $('dim').classList.add('on'); $('share').classList.add('open'); hideFinger(); });
+
+    /* 7.0 – 9.6s STEP 3: scroll → Add to Home Screen → Add */
+    at(6700, () => { flow(3); setCap('iPHONE · STEP 3', '"Add to Home Screen" ➕ കൊടുത്ത് "Add" അമർത്തുക'); });
+    at(6800, () => moveTo('aths', -10));
+    at(7150, () => { const f = $('finger'); f.classList.add('slow'); f.style.top = (parseFloat(f.style.top) - SCROLL) + 'px'; $('actList').style.transform = `translateY(-${SCROLL}px)`; });
+    at(7650, () => { $('finger').classList.remove('slow'); moveTo('aths', -SCROLL); $('aths').classList.add('hl'); });
+    at(8050, () => tap());
+    at(8200, () => { $('addScr').classList.add('open'); });
+    at(8650, () => moveTo('btnAdd'));
+    at(9050, () => { tap(); $('btnAdd').classList.add('tapbg'); });
+
+    /* 9.4 – 13.0s STEP 4: icon on home → open as app */
+    at(9400, () => { layer('home'); sbar(''); hideFinger(); flow(4); setCap('READY ✅', 'ഹോം സ്ക്രീനിൽ ആപ്പ് റെഡി! ഒറ്റ ടാപ്പിൽ തുറക്കാം 🎉'); });
+    at(9700, () => { $('newApp').classList.add('in'); confetti(); });
+    at(10500, () => moveTo('newIc'));
+    at(10850, () => { tap(); press('newIc'); });
+    at(11000, () => { layer('splash'); sbar('app'); hideFinger(); });
+    at(11700, () => layer('appL'));
+
+    /* 13.0 – 15.0s CTA */
+    at(13000, () => { $('outro').classList.add('show'); setCap('', ''); });
+    at(DURATION + 600, () => { if (loop) play(); });
+  }
+
+  addEventListener('keydown', e => { const k = e.key.toLowerCase(); if (k === 'r' || k === ' ') { e.preventDefault(); play(); } if (k === 'h') document.body.classList.toggle('rec'); if (k === 'l') loop = !loop; });
+  reset(); setTimeout(play, 700);
+</script>
+</body>
+</html>

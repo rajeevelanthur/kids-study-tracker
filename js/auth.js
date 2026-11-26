@@ -1,5 +1,5 @@
 /**
- * Kids Study & Rewards Tracker - Authentication & Profile Management
+ * Kids Study Tracker - Authentication & Profile Management
  * - Production-Grade Multi-Family Login Flow
  * - Private Family Code Entry (Zero visibility between different families)
  * - Remembers active Family Code per device/browser

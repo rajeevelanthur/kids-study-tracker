@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reel 04 – Task Creation, Submission & Approval (15s 9:16)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@500;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #0b0b1a; overflow: hidden; }
+  body { font-family: 'Poppins', 'Noto Sans Malayalam', 'Nirmala UI', system-ui, sans-serif; }
+  .ml { font-family: 'Noto Sans Malayalam', 'Nirmala UI', 'Poppins', sans-serif; }
+
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #stage {
+    width: 540px; height: 960px; position: relative; overflow: hidden; flex: none;
+    background: linear-gradient(160deg, #312e81 0%, #4338ca 45%, #d97706 100%);
+    transform-origin: center center;
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: .4; }
+  .b1 { width: 320px; height: 320px; background: #38bdf8; top: -80px; left: -90px; animation: drift 6s ease-in-out infinite alternate; }
+  .b2 { width: 340px; height: 340px; background: #fbbf24; bottom: -110px; right: -120px; opacity: .3; animation: drift 7s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { to { transform: translate(40px, 30px) scale(1.1); } }
+
+  /* Workflow strip */
+  #flow { position: absolute; top: 24px; left: 16px; right: 16px; display: flex; align-items: flex-start; z-index: 10; }
+  .fs { flex: 1; text-align: center; color: #fff; opacity: 0; transform: translateY(-14px); transition: opacity .4s, transform .4s; }
+  #flow.show .fs { opacity: .55; transform: none; }
+  #flow.show .fs:nth-child(3) { transition-delay: .15s; }
+  #flow.show .fs:nth-child(5) { transition-delay: .3s; }
+  #flow.show .fs:nth-child(7) { transition-delay: .45s; }
+  .fs .dot { width: 44px; height: 44px; margin: 0 auto 5px; border-radius: 50%; background: rgba(255,255,255,.18);
+    border: 2px solid rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; font-size: 19px; transition: all .35s; }
+  .fs .lb { font-size: 10.5px; font-weight: 700; line-height: 1.25; }
+  #flow.show .fs.on { opacity: 1; }
+  .fs.on .dot { background: #fff; color: #1e1b4b; border-color: #fff; transform: scale(1.18); box-shadow: 0 0 0 6px rgba(255,255,255,.25), 0 0 24px rgba(255,255,255,.7); }
+  #flow.show .fs.done { opacity: .95; }
+  .fs.done .dot { background: #f59e0b; border-color: #fde68a; }
+  .ln { flex: 0 0 16px; height: 3px; margin-top: 21px; background: rgba(255,255,255,.25); border-radius: 3px; transition: background .4s; }
+  .ln.on { background: #fff; }
+
+  /* Phone */
+  #phone {
+    position: absolute; left: 50%; top: 122px; width: 320px; height: 626px; margin-left: -160px;
+    background: #0f0f17; border-radius: 46px; padding: 10px; z-index: 5;
+    box-shadow: 0 30px 60px rgba(0,0,0,.5), inset 0 0 0 2px #2a2a3a;
+    opacity: 0; transform: translateY(60px) scale(.92);
+    transition: opacity .5s, transform .6s cubic-bezier(.34,1.4,.64,1);
+  }
+  #phone.show { opacity: 1; transform: none; }
+  .notch { position: absolute; top: 18px; left: 50%; width: 92px; height: 24px; margin-left: -46px; background: #0f0f17; border-radius: 20px; z-index: 30; }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 36px; background: #f4f6fb; overflow: hidden; padding: 46px 12px 14px; }
+
+  .scr { position: absolute; inset: 0; padding: 46px 12px 14px; display: none; opacity: 0; transform: translateX(30px); transition: opacity .35s, transform .35s; }
+  .scr.active { display: block; opacity: 1; transform: none; }
+
+  /* Profile Switch / Login Card */
+  .fam-tag { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .fam-tag small { font-size: 8px; color: #047857; font-weight: 800; display: block; }
+  .fam-tag b { font-size: 11px; color: #064e3b; }
+  .profiles-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; }
+  .pf-box { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 8px 4px; text-align: center; transition: all .2s; }
+  .pf-box.selected { border-color: #4f46e5; background: #eef2ff; transform: scale(1.04); box-shadow: 0 0 0 3px rgba(79,70,229,.15); }
+  .pf-box .av { font-size: 26px; line-height: 1; }
+  .pf-box .nm { font-size: 11px; font-weight: 700; color: #0f172a; margin-top: 3px; }
+  .pf-box .sub { font-size: 8px; color: #64748b; }
+  .pin-row { display: flex; gap: 8px; justify-content: center; padding: 8px 0; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 8px; }
+  .pin-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #c7d2fe; }
+  .pin-dot.filled { background: #4f46e5; border-color: #4f46e5; }
+  .btn-sign { width: 100%; height: 34px; border-radius: 9px; background: #4f46e5; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Role Bar */
+  .role-bar { display: flex; justify-content: space-between; align-items: center; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 10px; padding: 6px 10px; margin-bottom: 8px; font-size: 10px; font-weight: 700; color: #3730a3; }
+  .card { background: #fff; border-radius: 14px; padding: 12px; box-shadow: 0 3px 12px rgba(15,23,42,.06); margin-bottom: 8px; border: 1px solid #f1f5f9; }
+  .btn-add { background: #4f46e5; color: #fff; font-size: 10.5px; font-weight: 700; border-radius: 8px; padding: 5px 9px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+
+  /* Task Card */
+  .task-box { background: linear-gradient(135deg, #eef2ff 0%, #faf5ff 100%); border: 1.5px solid #c7d2fe; border-radius: 14px; padding: 12px; }
+  .task-sub { font-size: 9px; font-weight: 800; color: #4338ca; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 2px; }
+  .task-title { font-size: 13px; font-weight: 800; color: #1e1b4b; }
+  .task-pts { font-size: 10.5px; font-weight: 800; color: #d97706; background: #fef3c7; border: 1px solid #fde68a; padding: 2px 7px; border-radius: 10px; display: inline-block; margin: 6px 0 10px; }
+  .btn-submit { width: 100%; height: 36px; border-radius: 10px; background: #4f46e5; color: #fff; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .2s; }
+  .btn-submit.submitted { background: #059669; }
+
+  /* Approval Feed */
+  .feed-item { background: #fff; border-radius: 12px; padding: 10px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.04); }
+  .feed-meta b { display: block; font-size: 11px; color: #0f172a; }
+  .feed-meta small { font-size: 9px; color: #64748b; }
+  .btn-review { background: #10b981; color: #fff; font-size: 10.5px; font-weight: 700; border-radius: 8px; padding: 6px 9px; cursor: pointer; }
+
+  /* Modals */
+  .modal-overlay { position: absolute; inset: 0; background: rgba(15,23,42,.5); display: flex; align-items: flex-end; opacity: 0; transition: opacity .3s; z-index: 20; pointer-events: none; }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .sheet { width: 100%; background: #fff; border-radius: 20px 20px 0 0; padding: 14px 14px 16px; transform: translateY(100%); transition: transform .35s cubic-bezier(.2,.9,.3,1); }
+  .modal-overlay.open .sheet { transform: none; }
+  .sheet h4 { font-size: 13px; color: #1e1b4b; margin-bottom: 8px; font-weight: 800; }
+  .fld { margin-bottom: 8px; }
+  .fld label { display: block; font-size: 9px; font-weight: 700; color: #475569; margin-bottom: 3px; }
+  .fld-val { height: 32px; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0 9px; display: flex; align-items: center; font-size: 11.5px; font-weight: 600; color: #0f172a; background: #f8fafc; }
+
+  /* Stickers */
+  .stickers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0; }
+  .st-card { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 6px 2px; text-align: center; cursor: pointer; transition: all .2s; }
+  .st-card .em { font-size: 20px; line-height: 1; }
+  .st-card .lbl { font-size: 8px; font-weight: 700; color: #334155; margin-top: 2px; }
+  .st-card.selected { border-color: #f59e0b; background: #fffbeb; transform: scale(1.08); box-shadow: 0 0 0 3px rgba(245,158,11,.2); }
+
+  .toast { position: absolute; top: 46px; left: 12px; right: 12px; background: #059669; color: #fff; border-radius: 10px; padding: 9px 12px; font-size: 11.5px; font-weight: 700; transform: translateY(-160%); opacity: 0; transition: transform .4s cubic-bezier(.34,1.5,.64,1), opacity .3s; z-index: 25; text-align: center; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
+  .toast.in { transform: none; opacity: 1; }
+
+  /* Student Celebration Stats */
+  .stats-circle { width: 86px; height: 86px; margin: 12px auto 8px; border-radius: 50%; border: 6px solid #10b981; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f0fdf4; box-shadow: 0 0 0 6px rgba(16,185,129,.15); }
+  .stats-circle b { font-size: 19px; font-weight: 800; color: #065f46; }
+  .stats-circle small { font-size: 8px; font-weight: 700; color: #047857; }
+  .award-box { background: #fffbeb; border: 1.5px dashed #f59e0b; border-radius: 12px; padding: 9px; text-align: center; margin-top: 8px; }
+
+  /* Tap finger */
+  #finger { position: absolute; left: 150px; top: 640px; width: 34px; height: 34px; margin: -17px 0 0 -17px; z-index: 60; opacity: 0; pointer-events: none;
+    transition: left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1), opacity .25s; }
+  #finger .core { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.8); border: 3px solid rgba(79,70,229,.95); box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: transform .12s; }
+  #finger .ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid #6366f1; opacity: 0; }
+  #finger.tap .core { transform: scale(.75); }
+  #finger.tap .ring { animation: ripple .5s ease-out; }
+  @keyframes ripple { from { opacity: .9; transform: scale(.6); } to { opacity: 0; transform: scale(2.4); } }
+  .press { transform: scale(.93) !important; filter: brightness(1.15); }
+
+  /* Caption */
+  #caption { position: absolute; left: 22px; right: 22px; top: 766px; min-height: 140px; z-index: 10; text-align: center; transition: opacity .18s, transform .18s; }
+  #caption.swap { opacity: 0; transform: translateY(8px); }
+  .cap-step { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #1e1b4b; background: #fbbf24; padding: 4px 12px; border-radius: 20px; margin-bottom: 7px; }
+  .cap-step:empty { display: none; }
+  .cap-text { color: #fff; font-size: 21.5px; font-weight: 800; line-height: 1.45; text-shadow: 0 3px 12px rgba(0,0,0,.4); }
+
+  /* Overlays */
+  .overlay { position: absolute; inset: 0; z-index: 12; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff;
+    opacity: 0; pointer-events: none; transition: opacity .45s; padding: 0 30px; }
+  .overlay.show { opacity: 1; }
+  #hook .em { font-size: 80px; animation: bounce 1s ease-in-out infinite; }
+  @keyframes bounce { 50% { transform: translateY(-12px); } }
+  #hook h1 { font-size: 38px; line-height: 1.35; font-weight: 800; margin-top: 10px; text-shadow: 0 4px 16px rgba(0,0,0,.35); transform: scale(.6); transition: transform .5s cubic-bezier(.34,1.7,.64,1); }
+  #hook.show h1 { transform: none; }
+  #hook h1 span { color: #fde047; }
+  #hook .pill { margin-top: 16px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: 700; }
+
+  #outro { background: linear-gradient(160deg, rgba(49,46,129,.95), rgba(217,119,6,.95)); }
+  #outro .box { background: #fff; color: #1e1b4b; border-radius: 24px; padding: 24px 20px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,.35); transform: translateY(40px) scale(.9); transition: transform .55s cubic-bezier(.34,1.5,.64,1); }
+  #outro.show .box { transform: none; }
+  #outro .lg { font-size: 48px; }
+  #outro h2 { font-size: 21px; font-weight: 800; margin-top: 4px; }
+  #outro .tag { font-size: 12.5px; color: #64748b; margin-top: 3px; font-weight: 600; }
+  #outro .cta { font-size: 24px; font-weight: 800; color: #d97706; margin: 14px 0 10px; }
+  #outro .url { display: inline-block; background: #4f46e5; color: #fff; padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 700; }
+
+  #confetti { position: absolute; inset: 0; z-index: 15; pointer-events: none; }
+
+  /* Controls */
+  #controls { position: fixed; bottom: 10px; left: 10px; z-index: 100; display: flex; gap: 8px; align-items: center; font: 600 12px Poppins, sans-serif; color: #e2e8f0; }
+  #controls button { background: #4f46e5; color: #fff; border: 0; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; }
+  #controls .k { opacity: .7; }
+  #clock { min-width: 52px; background: #1e1b4b; padding: 6px 10px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+  body.rec #controls { display: none; }
+</style>
+</head>
+<body>
+<div id="controls">
+  <button onclick="play()">▶ Play / Replay</button>
+  <span id="clock">0.0s</span>
+  <span class="k">R = replay · H = hide controls · L = loop</span>
+</div>
+
+<div id="wrap"><div id="stage"></div></div>
+
+<template id="tpl">
+  <div class="blob b1"></div><div class="blob b2"></div>
+
+  <div id="flow" class="ml">
+    <div class="fs" id="fs1"><div class="dot">👨‍👩‍👧</div><div class="lb">പാരന്റ്<br>ടാസ്ക്</div></div>
+    <div class="ln" id="ln1"></div>
+    <div class="fs" id="fs2"><div class="dot">👦</div><div class="lb">കുട്ടി<br>സബ്മിറ്റ്</div></div>
+    <div class="ln" id="ln2"></div>
+    <div class="fs" id="fs3"><div class="dot">⭐</div><div class="lb">പാരന്റ്<br>അപ്രൂവൽ</div></div>
+    <div class="ln" id="ln3"></div>
+    <div class="fs" id="fs4"><div class="dot">🎉</div><div class="lb">വിജയം!</div></div>
+  </div>
+
+  <div id="phone">
+    <div class="notch"></div>
+    <div id="screen">
+
+      <!-- 1. Parent Assign Task Screen -->
+      <div class="scr" id="sParentAssign">
+        <div class="role-bar">
+          <span>👨‍👩‍👧 Rajeev (Parent Admin)</span>
+          <span class="btn-add" id="btnOpenAssign">➕ Assign Task</span>
+        </div>
+        <div class="card">
+          <div style="font-size:11px;font-weight:700;color:#0f172a;margin-bottom:4px;">Parent Command Center</div>
+          <div style="font-size:9.5px;color:#64748b;">Assigning study missions for Arjun (Class 7)</div>
+        </div>
+
+        <div id="modalAssign" class="modal-overlay">
+          <div class="sheet">
+            <h4>➕ Create Study Task</h4>
+            <div class="fld"><label>Subject</label><div class="fld-val">📘 Mathematics</div></div>
+            <div class="fld"><label>Task Description</label><div class="fld-val" id="fTaskName">Chapter 3 Exercise</div></div>
+            <div class="fld"><label>Reward Points</label><div class="fld-val" style="color:#d97706;font-weight:800;">⭐ +20 Points</div></div>
+            <div class="btn-submit" id="btnSaveTask" style="margin-top:6px;height:34px;">💾 Assign to Arjun</div>
+          </div>
+        </div>
+        <div class="toast" id="toastAssigned">✅ Maths Chapter 3 assigned to Arjun!</div>
+      </div>
+
+      <!-- 2. Switch to Child Profile Screen -->
+      <div class="scr" id="sSwitchChild">
+        <div class="fam-tag">
+          <div><small>SWITCH PROFILE</small><b>🏡 Rajeev's Family</b></div>
+          <span style="font-size:9px;color:#047857;font-weight:800;">KIDS-101</span>
+        </div>
+        <div style="font-size:10.5px;font-weight:700;color:#0f172a;margin-bottom:6px;">Select Student Profile:</div>
+        <div class="profiles-row">
+          <div class="pf-box">
+            <div class="av">👨‍👩‍👧</div>
+            <div class="nm">Rajeev</div>
+            <div class="sub">Parent Admin</div>
+          </div>
+          <div class="pf-box selected" id="pfArjunChild">
+            <div class="av">👦</div>
+            <div class="nm">Arjun</div>
+            <div class="sub">Class 7 · Kerala</div>
+          </div>
+        </div>
+        <div style="font-size:9.5px;font-weight:700;color:#475569;margin-bottom:4px;">Student PIN (1234):</div>
+        <div class="pin-row">
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+        </div>
+        <div class="btn-sign" id="btnSignChild" style="background:#059669;">🚀 Sign In as Arjun (Student)</div>
+      </div>
+
+      <!-- 3. Student Dashboard & Submit -->
+      <div class="scr" id="sStudentSubmit">
+        <div class="role-bar" style="background:#ecfdf5;border-color:#a7f3d0;color:#047857;">
+          <span>👦 Arjun's Dashboard (Class 7)</span>
+          <span style="color:#059669;">🔥 5 Days</span>
+        </div>
+        <div class="task-box">
+          <div class="task-sub">📘 Mathematics · Assigned by Parent</div>
+          <div class="task-title">Chapter 3 Exercise</div>
+          <div class="task-pts">⭐ +20 Reward Points</div>
+          <div class="btn-submit" id="btnChildSubmit">✓ Complete &amp; Submit for Approval</div>
+        </div>
+        <div class="toast" id="toastSubmitted">📬 Submitted for Parent Approval!</div>
+      </div>
+
+      <!-- 4. Switch back to Parent Screen -->
+      <div class="scr" id="sSwitchParent">
+        <div class="fam-tag">
+          <div><small>SWITCH PROFILE</small><b>🏡 Rajeev's Family</b></div>
+          <span style="font-size:9px;color:#047857;font-weight:800;">KIDS-101</span>
+        </div>
+        <div style="font-size:10.5px;font-weight:700;color:#0f172a;margin-bottom:6px;">Parent Login to Approve:</div>
+        <div class="profiles-row">
+          <div class="pf-box selected" id="pfParentAdmin">
+            <div class="av">👨‍👩‍👧</div>
+            <div class="nm">Rajeev</div>
+            <div class="sub">Parent Admin</div>
+          </div>
+          <div class="pf-box">
+            <div class="av">👦</div>
+            <div class="nm">Arjun</div>
+            <div class="sub">Class 7 · Kerala</div>
+          </div>
+        </div>
+        <div style="font-size:9.5px;font-weight:700;color:#475569;margin-bottom:4px;">Parent PIN (9999):</div>
+        <div class="pin-row">
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+        </div>
+        <div class="btn-sign" id="btnSignParent">🚀 Sign In as Parent Admin</div>
+      </div>
+
+      <!-- 5. Parent Approval & Stickers Feed -->
+      <div class="scr" id="sParentApprove">
+        <div class="role-bar">
+          <span>👨‍👩‍👧 Rajeev (Parent Admin)</span>
+          <span style="color:#dc2626;background:#fee2e2;padding:2px 6px;border-radius:6px;font-size:9px;">1 Pending</span>
+        </div>
+        <div style="font-size:11px;font-weight:800;color:#1e1b4b;margin-bottom:6px;">Homework Approval Feed</div>
+        <div class="feed-item">
+          <div class="feed-meta">
+            <b>📘 Maths: Chapter 3 Exercise</b>
+            <small>Submitted by Arjun</small>
+          </div>
+          <span class="btn-review" id="btnOpenApprove">✅ Review</span>
+        </div>
+
+        <div id="modalApprove" class="modal-overlay">
+          <div class="sheet">
+            <h4>⭐ Approve Task &amp; Send Sticker</h4>
+            <div style="font-size:9px;color:#64748b;">Award Arjun for completing Maths homework:</div>
+            <div class="stickers-grid">
+              <div class="st-card selected" id="stStar"><div class="em">⭐</div><div class="lbl">Star Student!</div></div>
+              <div class="st-card"><div class="em">🚀</div><div class="lbl">Super Fast!</div></div>
+              <div class="st-card"><div class="em">🏆</div><div class="lbl">Champion!</div></div>
+              <div class="st-card"><div class="em">💯</div><div class="lbl">100% Perfect</div></div>
+              <div class="st-card"><div class="em">🧠</div><div class="lbl">Brilliant!</div></div>
+              <div class="st-card"><div class="em">✍️</div><div class="lbl">Neat Work!</div></div>
+            </div>
+            <div class="btn-submit" id="btnConfirmApprove" style="background:#10b981;height:34px;">✓ Approve &amp; Credit 20 Pts</div>
+          </div>
+        </div>
+        <div class="toast" id="toastApproved">⭐ Approved! Star Student sticker sent!</div>
+      </div>
+
+      <!-- 6. Celebration on Student Dashboard -->
+      <div class="scr" id="sCelebration">
+        <div class="role-bar" style="background:#ecfdf5;border-color:#a7f3d0;color:#065f46;">
+          <span>👦 Arjun's Study Progress</span>
+          <span style="color:#059669;font-weight:800;">🎉 100% Done</span>
+        </div>
+        <div class="stats-circle">
+          <b>100%</b>
+          <small>GOAL MET</small>
+        </div>
+        <div class="award-box">
+          <div style="font-size:26px;">⭐</div>
+          <div style="font-size:12px;font-weight:800;color:#92400e;">"Star Student!"</div>
+          <div style="font-size:9px;color:#78350f;margin-top:2px;">Awarded by Parent + 20 Points Credited!</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <div style="flex:1;background:#fff;border-radius:10px;padding:7px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,.04);">
+            <div style="font-size:15px;font-weight:800;color:#d97706;">🔥 6 Days</div>
+            <div style="font-size:7.5px;color:#64748b;">Daily Streak</div>
+          </div>
+          <div style="flex:1;background:#fff;border-radius:10px;padding:7px;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,.04);">
+            <div style="font-size:15px;font-weight:800;color:#4f46e5;">140 ⭐</div>
+            <div style="font-size:7.5px;color:#64748b;">Total Stars</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="finger"><div class="ring"></div><div class="core"></div></div>
+    </div>
+  </div>
+
+  <div id="caption" class="ml"><div class="cap-step" id="capStep"></div><div class="cap-text" id="capText"></div></div>
+
+  <div id="hook" class="overlay ml">
+    <div class="em">📚</div>
+    <h1>പഠനവും ഹോംവർക്കും<br><span>ഹാപ്പിയായി തീരും!</span></h1>
+    <div class="pill">⚡ ടാസ്ക് നൽകൽ ➔ കുട്ടി സബ്മിഷൻ ➔ പാരന്റ് അപ്രൂവൽ</div>
+  </div>
+
+  <div id="outro" class="overlay ml">
+    <div class="box">
+      <div class="lg">🏆</div>
+      <h2>Kids Study &amp; Rewards Tracker</h2>
+      <div class="tag">Motivate Kids Daily · Kerala State &amp; CBSE</div>
+      <div class="cta">ഇന്നുതന്നെ ട്രൈ ചെയ്യൂ! 📲</div>
+      <div class="url">🔗 kids-study-tracker-demo.web.app</div>
+    </div>
+  </div>
+
+  <canvas id="confetti" width="540" height="960"></canvas>
+</template>
+
+<script>
+  const W = 540, H = 960, DURATION = 15000;
+  const stage = document.getElementById('stage');
+  const $ = id => document.getElementById(id);
+  let scale = 1, timers = [], t0 = 0, loop = false, rafClock = 0, confettiRaf = 0;
+
+  function fit() {
+    scale = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = `scale(${scale})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  function reset() {
+    timers.forEach(clearTimeout); timers = [];
+    cancelAnimationFrame(confettiRaf);
+    stage.innerHTML = $('tpl').innerHTML;
+  }
+
+  function posIn(el, anc) {
+    let x = 0, y = 0, n = el;
+    while (n && n !== anc) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
+  }
+  function moveTo(id, dy = 0) {
+    const f = $('finger'), p = posIn($(id), $('screen'));
+    f.style.left = p.x + 'px'; f.style.top = (p.y + dy) + 'px'; f.style.opacity = 1;
+  }
+  function tap() {
+    const f = $('finger'); f.classList.remove('tap'); void f.offsetWidth; f.classList.add('tap');
+  }
+  function press(id) { const e = $(id); e.classList.add('press'); setTimeout(() => e.classList.remove('press'), 180); }
+  function hideFinger() { $('finger').style.opacity = 0; }
+
+  function showScreen(id) {
+    document.querySelectorAll('.scr').forEach(s => {
+      s.classList.toggle('active', s.id === id);
+    });
+  }
+  function flow(n) {
+    for (let i = 1; i <= 4; i++) {
+      $('fs' + i).classList.toggle('on', i === n);
+      $('fs' + i).classList.toggle('done', i < n);
+      if (i < 4) $('ln' + i).classList.toggle('on', i < n);
+    }
+  }
+  function setCap(step, text) {
+    const c = $('caption'); c.classList.add('swap');
+    setTimeout(() => { $('capStep').textContent = step; $('capText').textContent = text; c.classList.remove('swap'); }, 160);
+  }
+
+  function confetti() {
+    const cv = $('confetti'), ctx = cv.getContext('2d');
+    const colors = ['#f59e0b', '#10b981', '#38bdf8', '#ef4444', '#a855f7', '#ffffff'];
+    const ps = Array.from({ length: 160 }, () => ({
+      x: W / 2 + (Math.random() - .5) * 80, y: 420,
+      vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 5,
+      s: Math.random() * 7 + 4, r: Math.random() * 6, vr: (Math.random() - .5) * .3,
+      c: colors[(Math.random() * colors.length) | 0]
+    }));
+    const start = performance.now();
+    (function frame(now) {
+      ctx.clearRect(0, 0, W, H);
+      ps.forEach(p => {
+        p.vy += .38; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore();
+      });
+      if (now - start < 3200) confettiRaf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    })(start);
+  }
+
+  function clock() {
+    const t = Math.min((performance.now() - t0) / 1000, DURATION / 1000);
+    const c = document.getElementById('clock'); if (c) c.textContent = t.toFixed(1) + 's';
+    if (t < DURATION / 1000) rafClock = requestAnimationFrame(clock);
+  }
+
+  function play() {
+    reset(); t0 = performance.now(); cancelAnimationFrame(rafClock); clock();
+
+    /* 0.0 – 2.0s : HOOK */
+    at(30, () => { $('hook').classList.add('show'); setCap('', 'മക്കൾക്ക് ദിവസവും പഠന ടാസ്കുകൾ നൽകാം 📘'); });
+    at(600, () => $('flow').classList.add('show'));
+
+    /* 2.0 – 4.5s : STEP 1 – Parent Assigns Task */
+    at(2000, () => {
+      $('hook').classList.remove('show'); $('phone').classList.add('show');
+      showScreen('sParentAssign'); flow(1);
+      setCap('STEP 1: PARENT ASSIGNS TASK', 'പാരന്റ് ഡാഷ്‌ബോർഡിൽ നിന്ന് കുട്ടിക്ക് ടാസ്ക് നൽകുന്നു 👨‍👩‍👧');
+    });
+    at(2300, () => moveTo('btnOpenAssign'));
+    at(2600, () => { tap(); press('btnOpenAssign'); $('modalAssign').classList.add('open'); });
+    at(3000, () => moveTo('btnSaveTask'));
+    at(3400, () => { tap(); press('btnSaveTask'); });
+    at(3600, () => { $('modalAssign').classList.remove('open'); $('toastAssigned').classList.add('in'); hideFinger(); });
+
+    /* 4.5 – 6.2s : SWITCH TO CHILD */
+    at(4500, () => {
+      showScreen('sSwitchChild'); flow(2);
+      setCap('SWITCH TO CHILD', 'ഇനി കുട്ടി സ്വന്തം പ്രൊഫൈലിലേക്ക് ലോഗിൻ ചെയ്യുന്നു 👦');
+    });
+    at(4900, () => moveTo('btnSignChild'));
+    at(5400, () => { tap(); press('btnSignChild'); });
+
+    /* 6.2 – 8.5s : STEP 2 – Student Submits Task */
+    at(6000, () => {
+      showScreen('sStudentSubmit');
+      setCap('STEP 2: STUDENT SUBMITS', 'പഠനം കഴിഞ്ഞ് കുട്ടി ഒറ്റ ക്ലിക്കിൽ അപ്രൂവലിനായി അയക്കുന്നു 📬');
+    });
+    at(6500, () => moveTo('btnChildSubmit'));
+    at(7000, () => {
+      tap(); press('btnChildSubmit');
+      $('btnChildSubmit').classList.add('submitted');
+      $('btnChildSubmit').textContent = '✓ Submitted to Parent 📬';
+    });
+    at(7200, () => { $('toastSubmitted').classList.add('in'); hideFinger(); });
+
+    /* 8.5 – 10.2s : SWITCH BACK TO PARENT */
+    at(8300, () => {
+      showScreen('sSwitchParent'); flow(3);
+      setCap('SWITCH TO PARENT', 'രക്ഷിതാവ് വീണ്ടും ലോഗിൻ ചെയ്ത് ഹോംവർക്ക് പരിശോധിക്കുന്നു 👨‍👩‍👧');
+    });
+    at(8700, () => moveTo('btnSignParent'));
+    at(9200, () => { tap(); press('btnSignParent'); });
+
+    /* 10.2 – 12.5s : STEP 3 – Parent Approves with Sticker */
+    at(9800, () => {
+      showScreen('sParentApprove');
+      setCap('STEP 3: PARENT APPROVES', 'സ്റ്റിക്കറുകളും പോയിന്റുകളും നൽകി പാരന്റ് അപ്രൂവ് ചെയ്യുന്നു ⭐');
+    });
+    at(10200, () => moveTo('btnOpenApprove'));
+    at(10600, () => { tap(); press('btnOpenApprove'); $('modalApprove').classList.add('open'); });
+    at(11000, () => moveTo('stStar'));
+    at(11300, () => { tap(); $('stStar').classList.add('selected'); });
+    at(11600, () => moveTo('btnConfirmApprove'));
+    at(12000, () => { tap(); press('btnConfirmApprove'); });
+    at(12200, () => { $('modalApprove').classList.remove('open'); $('toastApproved').classList.add('in'); hideFinger(); });
+
+    /* 12.5 – 13.8s : STEP 4 – Celebration & Streak */
+    at(12500, () => {
+      showScreen('sCelebration'); flow(4);
+      setCap('SUCCESS 🎉', 'ഹോംവർക്കുകൾ ഇനി ഹാപ്പിയായി തീരും! 100% Complete 🔥');
+      confetti();
+    });
+
+    /* 13.8 – 15.0s : CTA */
+    at(13800, () => { $('outro').classList.add('show'); setCap('', ''); });
+    at(DURATION + 600, () => { if (loop) play(); });
+  }
+
+  addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if (k === 'r' || k === ' ') { e.preventDefault(); play(); }
+    if (k === 'h') document.body.classList.toggle('rec');
+    if (k === 'l') { loop = !loop; }
+  });
+
+  reset();
+  setTimeout(play, 600);
+</script>
+</body>
+</html>

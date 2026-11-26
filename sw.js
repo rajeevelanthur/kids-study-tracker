@@ -1,5 +1,5 @@
 /**
- * Kids Study & Rewards Tracker - PWA Service Worker
+ * Kids Study Tracker - PWA Service Worker
  * Handles offline caching, fast launch, and full-screen installation
  */
 

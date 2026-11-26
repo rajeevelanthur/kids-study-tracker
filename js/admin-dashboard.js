@@ -1,5 +1,5 @@
 /**
- * Kids Study & Rewards Tracker - Super Admin Management Console
+ * Kids Study Tracker - Super Admin Management Console
  * - Full visibility of all registered families and their students
  * - Edit / Modify / Delete family and student records
  * - Provision new families directly

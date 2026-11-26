@@ -1,5 +1,5 @@
 /**
- * Kids Study & Rewards Tracker - Application Conductor & Router
+ * Kids Study Tracker - Application Conductor & Router
  * - Global Application State
  * - Navigation & View Routing
  * - App Lifecycle Bootstrap

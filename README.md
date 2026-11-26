@@ -1,4 +1,4 @@
-# 🎓 Kids Study & Rewards Tracker ⭐
+# 🎓 Kids Study Tracker ⭐
 
 A modern, responsive, cloud-synced Progressive Web Application (PWA) designed for parents to assign, monitor, approve, and reward children's daily study routines for **Kerala State Syllabus** and **CBSE** (Standards 1 to 10).
 

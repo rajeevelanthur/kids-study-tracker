@@ -1,5 +1,5 @@
 /**
- * Kids Study & Rewards Tracker - Utilities & Core Engines
+ * Kids Study Tracker - Utilities & Core Engines
  * - Multi-Theme Engine
  * - Monday-to-Friday Study Week Engine
  * - In-App Modals & Dialogs (Confirm & Toast Notifications)

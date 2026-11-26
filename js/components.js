@@ -1,5 +1,5 @@
 /**
- * Kids Study & Rewards Tracker - Reusable UI Components
+ * Kids Study Tracker - Reusable UI Components
  * - Common Task Card Renderer (Parent View vs Child View)
  */
 
@@ -25,14 +25,18 @@ function renderTaskCard(task, isParent) {
             isSubmitted ? `
               <span class="badge-status submitted">🔔 Awaiting Approval</span>
             ` : (
-              isCarriedOver ? `
-                <span class="badge-status overdue">⚠️ Carried Over (${formatDisplayDate(task.date)})</span>
+              task.revisionReason ? `
+                <span class="badge-status" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">🔄 Revision Needed</span>
               ` : (
-                isOverdue ? `
-                  <span class="badge-status overdue">⚠️ Pending from ${formatDisplayDate(task.date)}</span>
-                ` : `
-                  <span class="badge-status pending-today">⏳ Due Today</span>
-                `
+                isCarriedOver ? `
+                  <span class="badge-status overdue">⚠️ Carried Over (${formatDisplayDate(task.date)})</span>
+                ` : (
+                  isOverdue ? `
+                    <span class="badge-status overdue">⚠️ Pending from ${formatDisplayDate(task.date)}</span>
+                  ` : `
+                    <span class="badge-status pending-today">⏳ Due Today</span>
+                  `
+                )
               )
             )
           )}
@@ -46,6 +50,20 @@ function renderTaskCard(task, isParent) {
       <div class="task-title">
         ${task.title}
       </div>
+
+      ${!isCompleted && !isSubmitted && task.revisionReason ? `
+        <div style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: var(--radius-sm); padding: 9px 12px; margin: 8px 0; display: flex; align-items: flex-start; gap: 8px;">
+          <span style="font-size: 20px; line-height: 1;">🔄</span>
+          <div style="flex: 1; font-size: 12.5px;">
+            <div style="font-size: 11px; font-weight: 800; color: #b45309; text-transform: uppercase; letter-spacing: 0.5px;">
+              Parent Requested Revision:
+            </div>
+            <div style="font-size: 13px; font-weight: 700; color: #78350f; margin-top: 2px;">
+              "${escapeHtml(task.revisionReason)}"
+            </div>
+          </div>
+        </div>
+      ` : ''}
 
       <div class="task-date-info">
         <span>📅 Assigned for: <strong>${formatDisplayDate(task.date)}</strong></span>

@@ -1,6 +1,6 @@
-# 📖 Kids Study & Rewards Tracker — Complete User Guide & Manual
+# 📖 Kids Study Tracker — Complete User Guide & Manual
 
-Welcome to the **Kids Study & Rewards Tracker**! This guide provides comprehensive, step-by-step instructions for both parents and students to get the most out of the application.
+Welcome to **Kids Study Tracker**! This guide provides comprehensive, step-by-step instructions for both parents and students to get the most out of the application.
 
 ---
 
@@ -23,7 +23,7 @@ Welcome to the **Kids Study & Rewards Tracker**! This guide provides comprehensi
 
 ## 1. Overview & Philosophy
 
-The **Kids Study & Rewards Tracker** is designed to transform daily homework and study time from a battle of wills into a positive, habit-forming adventure. 
+The **Kids Study Tracker** is designed to transform daily homework and study time from a battle of wills into a positive, habit-forming adventure. 
 
 * **Habit-Building, Not Nagging:** Instead of repeated reminders, children have a clear daily checklist of achievable tasks.
 * **Positive Reinforcement:** Completing tasks earns reward stars towards an agreed-upon weekend reward (such as a park visit, special treat, or hobby time).
@@ -251,4 +251,4 @@ If you ever encounter an issue, need help configuring a curriculum, or have a su
 
 ---
 
-*Kids Study & Rewards Tracker — Empowering Children through Organized Habits and Positive Encouragement.*
+*Kids Study Tracker — Empowering Children through Organized Habits and Positive Encouragement.*

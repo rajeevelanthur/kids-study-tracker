@@ -1,5 +1,5 @@
 /**
- * Kids Study & Rewards Tracker - Parent Dashboard Engine
+ * Kids Study Tracker - Parent Dashboard Engine
  * - Classic Sidebar Navigation Layout (Daily Tasks, Assign Task, Detailed Reports, Weekend Prize, Curriculum & Settings)
  * - Task Creation & Editing Modals
  * - Child Profile Management Modals
@@ -81,7 +81,7 @@ function renderParentView(container) {
         <div class="sidebar-header">
           <span class="sidebar-logo-icon">🎓</span>
           <div>
-            <div class="sidebar-brand-name">Study Tracker</div>
+            <div class="sidebar-brand-name">Kids Study Tracker</div>
             <div class="sidebar-brand-sub">Kerala &amp; CBSE</div>
           </div>
         </div>
@@ -153,60 +153,74 @@ function renderParentView(container) {
       <div class="main-wrapper">
         <!-- Topbar -->
         <header class="topbar">
-          <div class="topbar-left">
-            <button class="mobile-menu-btn" onclick="toggleMobileSidebar(true)" title="Open Menu">
-              ☰
-            </button>
-            <div class="topbar-heading-group">
-              <h2 class="page-heading">${getPageHeading(activeTab)}</h2>
-              ${currentFamily ? `
-                <div class="topbar-family-row">
-                  <span class="topbar-family-name">🏡 ${escapeHtml(currentFamily.name)}</span>
-                  <span class="family-code-badge">${currentFamily.code}</span>
-                  <span class="topbar-date-badge" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: var(--text-main); background: var(--bg-surface-alt); border: 1px solid var(--border-color); padding: 2px 10px; border-radius: 99px; font-size: 11.5px;" title="Today's Date">
-                    📅 ${getTodayFormattedLong()}
-                  </span>
-                  ${typeof CURRENT_ENV_CONFIG !== 'undefined' ? `
-                    <span class="topbar-env-badge" style="color: ${CURRENT_ENV_CONFIG.color}; background: ${CURRENT_ENV_CONFIG.bgColor}; border: 1px solid ${CURRENT_ENV_CONFIG.borderColor};" title="Connected to ${CURRENT_ENV_CONFIG.projectId}">
-                      ${CURRENT_ENV_CONFIG.badge}
+          <div class="topbar-upper">
+            <div class="topbar-left">
+              <button class="mobile-menu-btn" onclick="toggleMobileSidebar(true)" title="Open Menu">
+                ☰
+              </button>
+              <div class="topbar-heading-group">
+                <h2 class="page-heading">${getPageHeading(activeTab)}</h2>
+                ${currentFamily ? `
+                  <div class="topbar-meta-row">
+                    <span class="topbar-parent-greeting">👋 Hi, ${escapeHtml(currentUser ? currentUser.name : 'Parent')}!</span>
+                    <span class="topbar-family-name">🏡 ${escapeHtml(currentFamily.name)}</span>
+                    <span class="family-code-badge">${currentFamily.code}</span>
+                    <span class="topbar-date-badge" title="Today's Date">
+                      📅 ${getTodayFormattedLong()}
                     </span>
-                  ` : `
-                    <span class="topbar-env-badge">☁️ Cloud Synced</span>
-                  `}
-                </div>
-              ` : ''}
+                    ${typeof CURRENT_ENV_CONFIG !== 'undefined' ? `
+                      <span class="topbar-env-badge" style="color: ${CURRENT_ENV_CONFIG.color}; background: ${CURRENT_ENV_CONFIG.bgColor}; border: 1px solid ${CURRENT_ENV_CONFIG.borderColor};" title="Connected to ${CURRENT_ENV_CONFIG.projectId}">
+                        ${CURRENT_ENV_CONFIG.badge}
+                      </span>
+                    ` : `
+                      <span class="topbar-env-badge">☁️ Cloud Synced</span>
+                    `}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <div class="topbar-upper-actions">
+              <button class="btn-theme-pill" onclick="openThemeModal()" title="Switch Color Theme">
+                🎨 <span class="theme-btn-text">Theme</span>
+              </button>
+
+              <button class="btn-theme-pill ${activeTab === 'help' ? 'active' : ''}" onclick="switchTab('help')" title="Help &amp; User Guide">
+                ❓ <span class="theme-btn-text">Help</span>
+              </button>
+
+              <button class="btn-theme-pill ${activeTab === 'support' ? 'active' : ''}" onclick="switchTab('support')" title="Contact Support">
+                🎧 <span class="theme-btn-text">Support</span>
+              </button>
             </div>
           </div>
 
-          <div class="topbar-right">
-            <button class="btn-theme-pill" onclick="openThemeModal()" title="Switch Color Theme">
-              🎨 <span class="theme-btn-text">Theme</span>
-            </button>
+          <!-- Student Profile Switcher Strip (With Pinned Add Button) -->
+          <div class="topbar-students-container">
+            <div class="topbar-students-strip">
+              ${children.map(c => {
+                const isSelected = c.id === (currentChild ? currentChild.id : '');
+                return `
+                  <button type="button" class="student-chip ${isSelected ? 'active' : ''}" onclick="selectChild('${c.id}')" title="Switch to ${escapeHtml(c.name)}'s Dashboard">
+                    <span class="student-chip-avatar">${c.avatar || '🧒'}</span>
+                    <div class="student-chip-info">
+                      <span class="student-chip-name">
+                        ${escapeHtml(c.name)} <span class="student-chip-grade">(${getGradeLabel(c.grade)})</span>
+                      </span>
+                      ${isSelected ? `
+                        <span class="student-chip-active-dot">● Active</span>
+                      ` : ''}
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
 
-            <button class="btn-theme-pill ${activeTab === 'help' ? 'active' : ''}" onclick="switchTab('help')" title="Help &amp; User Guide">
-              ❓ <span class="theme-btn-text">Help</span>
-            </button>
-
-            <button class="btn-theme-pill ${activeTab === 'support' ? 'active' : ''}" onclick="switchTab('support')" title="Contact Support">
-              🎧 <span class="theme-btn-text">Support</span>
-            </button>
-
-            ${children.length > 0 ? `
-              <div class="topbar-child-select-box">
-                <span class="topbar-child-label">Child:</span>
-                <select class="topbar-child-select" onchange="selectChild(this.value)">
-                  ${children.map(c => `
-                    <option value="${c.id}" ${c.id === (currentChild ? currentChild.id : '') ? 'selected' : ''}>
-                      ${c.avatar || '🧒'} ${c.name} (${getGradeLabel(c.grade)})
-                    </option>
-                  `).join('')}
-                </select>
-              </div>
-            ` : ''}
-
-            <button class="btn btn-outline-primary btn-add-child-topbar" onclick="openAddChildModal()" title="Add a student profile">
-              ➕ Add Child
-            </button>
+            <div class="topbar-students-pinned-add">
+              <button type="button" class="btn-add-student-chip" onclick="openAddChildModal()" title="Add a student profile">
+                <span>➕</span> <span>Add Child</span>
+              </button>
+            </div>
           </div>
         </header>
 
@@ -217,15 +231,17 @@ function renderParentView(container) {
               <div class="child-overview-left">
                 <div class="child-avatar-big">${currentChild.avatar || '🧒'}</div>
                 <div class="child-overview-info">
-                  <div class="child-overview-name">${escapeHtml(currentChild.name)}</div>
+                  <div class="child-overview-name-row">
+                    <div class="child-overview-name">${escapeHtml(currentChild.name)}</div>
+                    <button type="button" class="btn-inline-edit" onclick="openEditChildModal('${currentChild.id}')" title="Edit ${escapeHtml(currentChild.name)}'s name, standard, PIN, avatar">
+                      ✏️ Edit
+                    </button>
+                  </div>
                   <div class="child-overview-meta">${getGradeLabel(currentChild.grade)} • ${currentChild.syllabus && currentChild.syllabus.includes('CBSE') ? '🏛️ CBSE' : '🌴 Kerala State Syllabus'}</div>
                 </div>
               </div>
               <div class="child-overview-actions">
-                <button class="btn btn-outline-primary" onclick="openEditChildModal('${currentChild.id}')" title="Edit child name, standard, PIN, avatar">
-                  ✏️ Edit Profile
-                </button>
-                <button class="btn btn-primary" onclick="switchTab('add')">
+                <button class="btn btn-primary btn-assign-task" onclick="switchTab('add')">
                   ➕ Assign Task
                 </button>
               </div>
@@ -318,94 +334,70 @@ function renderParentDashboardTab(child) {
   }).join('');
 
   return `
-    <!-- Executive Welcome & Date Bar -->
-    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); flex-wrap: wrap; gap: 10px;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 26px;">👋</span>
-        <div>
-          <div style="font-size: 15px; font-weight: 800; color: var(--text-main); line-height: 1.2;">
-            Welcome, ${escapeHtml(currentUser ? currentUser.name : 'Parent')}!
-          </div>
-          <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">
-            Study dashboard for <strong style="color: var(--primary);">${escapeHtml(child.name)}</strong> (${getGradeLabel(child.grade)})
-          </div>
-        </div>
-      </div>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <div style="display: inline-flex; align-items: center; gap: 6px; background: var(--primary-light); color: var(--primary); border: 1px solid var(--primary-glow); padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 800; box-shadow: var(--shadow-sm);">
-          <span>📅</span>
-          <span>Today: ${getTodayFormattedLong()}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Top KPI Executive Metrics Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px;">
+    <!-- Top KPI Executive Metrics Grid (Compact Zero-Redundancy Strip) -->
+    <div class="executive-kpi-grid">
       
       <!-- Metric 1: Weekly Study Completion Rate -->
-      <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 14px; border-radius: var(--radius-md);">
-        <div style="position: relative; width: 60px; height: 60px; flex-shrink: 0;">
-          <svg width="60" height="60" viewBox="0 0 60 60" style="transform: rotate(-90deg);">
+      <div class="card kpi-metric-card">
+        <div style="position: relative; width: 50px; height: 50px; flex-shrink: 0;">
+          <svg width="50" height="50" viewBox="0 0 60 60" style="transform: rotate(-90deg);">
             <circle cx="30" cy="30" r="24" fill="none" stroke="var(--border-color)" stroke-width="6"></circle>
             <circle cx="30" cy="30" r="24" fill="none" stroke="var(--primary)" stroke-width="6" stroke-dasharray="150.8" stroke-dashoffset="${150.8 * (1 - (completionPct / 100))}" stroke-linecap="round"></circle>
           </svg>
-          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--text-main);">
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--text-main);">
             ${completionPct}%
           </div>
         </div>
-        <div>
-          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Weekly Completion</div>
-          <div style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 2px 0;">${completedCount} of ${totalWeeklyTasks} Done</div>
-          <div style="font-size: 11.5px; color: var(--text-muted);">${currentWeek.displayLabel}</div>
+        <div style="min-width: 0; flex: 1;">
+          <div class="kpi-metric-label">Weekly Completion</div>
+          <div class="kpi-metric-val">${completedCount} of ${totalWeeklyTasks} Done</div>
+          <div class="kpi-metric-sub">${currentWeek.displayLabel}</div>
         </div>
       </div>
 
       <!-- Metric 2: Awaiting Parent Review & Approval -->
-      <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 14px; border-radius: var(--radius-md); border-left: 4px solid ${submittedTasks.length > 0 ? '#9333ea' : 'var(--border-color)'};">
-        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: ${submittedTasks.length > 0 ? '#faf5ff' : 'var(--bg-surface-alt)'}; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+      <div class="card kpi-metric-card" style="border-left: 3px solid ${submittedTasks.length > 0 ? '#9333ea' : 'var(--border-color)'};">
+        <div style="width: 42px; height: 42px; border-radius: var(--radius-sm); background: ${submittedTasks.length > 0 ? '#faf5ff' : 'var(--bg-surface-alt)'}; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
           🔔
         </div>
-        <div style="flex: 1; min-width: 0;">
-          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Needs Approval</div>
-          <div style="font-size: 16px; font-weight: 800; color: ${submittedTasks.length > 0 ? '#7e22ce' : 'var(--text-main)'}; margin: 2px 0;">
+        <div style="flex: 1; min-width: 0; overflow: hidden;">
+          <div class="kpi-metric-label">Needs Approval</div>
+          <div class="kpi-metric-val" style="color: ${submittedTasks.length > 0 ? '#7e22ce' : 'var(--text-main)'};">
             ${submittedTasks.length} ${submittedTasks.length === 1 ? 'Task' : 'Tasks'}
           </div>
-          <div style="font-size: 11.5px; color: var(--text-muted);">
-            ${submittedTasks.length > 0 ? 'Ready for your review' : 'No pending submissions'}
+          <div class="kpi-metric-sub">
+            ${submittedTasks.length > 0 ? 'Ready for review' : 'No pending reviews'}
           </div>
         </div>
       </div>
 
       <!-- Metric 3: Today's Tasks Focus -->
-      <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 14px; border-radius: var(--radius-md);">
-        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--bg-surface-alt); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+      <div class="card kpi-metric-card">
+        <div style="width: 42px; height: 42px; border-radius: var(--radius-sm); background: var(--bg-surface-alt); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
           📅
         </div>
-        <div style="flex: 1; min-width: 0;">
-          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center;">
-            <span>Today's Focus</span>
-            <span style="font-size: 10px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 1px 7px; border-radius: 99px;">${formatDisplayDate(TODAY_STR)}</span>
-          </div>
-          <div style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 2px 0;">
+        <div style="flex: 1; min-width: 0; overflow: hidden;">
+          <div class="kpi-metric-label">Today's Focus</div>
+          <div class="kpi-metric-val">
             ${todayPending.length} Pending
           </div>
-          <div style="font-size: 11.5px; color: #16a34a; font-weight: 600;">
+          <div class="kpi-metric-sub" style="color: #16a34a; font-weight: 600;">
             ✓ ${todayCompleted.length} Completed today
           </div>
         </div>
       </div>
 
       <!-- Metric 4: Weekend Goal Progress -->
-      <div class="card" style="padding: 16px; margin: 0; display: flex; align-items: center; gap: 14px; border-radius: var(--radius-md);">
-        <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: #fffbeb; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+      <div class="card kpi-metric-card">
+        <div style="width: 42px; height: 42px; border-radius: var(--radius-sm); background: #fffbeb; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
           🏆
         </div>
-        <div style="flex: 1; min-width: 0;">
-          <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Weekend Target</div>
-          <div style="font-size: 15px; font-weight: 800; color: var(--text-main); margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        <div style="flex: 1; min-width: 0; overflow: hidden;">
+          <div class="kpi-metric-label">Weekend Target</div>
+          <div class="kpi-metric-val" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${reward ? escapeHtml(reward.prizeName) : 'Weekend Treat'}">
             ${reward ? escapeHtml(reward.prizeName) : 'Weekend Treat'}
           </div>
-          <div style="font-size: 11.5px; color: #d97706; font-weight: 700;">
+          <div class="kpi-metric-sub" style="color: #d97706; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             ⭐ ${weeklyPts} / ${targetPts} pts (${progressPct}%)
           </div>
         </div>
@@ -435,25 +427,25 @@ function renderParentDashboardTab(child) {
 
         <div style="display: flex; flex-direction: column; gap: 8px;">
           ${submittedTasks.map(t => `
-            <div style="background: #ffffff; border: 1px solid #e9d5ff; border-radius: var(--radius-sm); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-              <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
-                <span style="font-size: 20px;">${t.subjectIcon || '📚'}</span>
-                <div>
-                  <div style="font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3;">
+            <div class="approval-task-card">
+              <div class="approval-task-left">
+                <span style="font-size: 22px; flex-shrink: 0;">${t.subjectIcon || '📚'}</span>
+                <div style="min-width: 0; flex: 1;">
+                  <div class="approval-task-title">
                     ${escapeHtml(t.title)}
                   </div>
-                  <div style="font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                    <span>${escapeHtml(t.subjectName)}</span>
+                  <div class="approval-task-meta">
+                    <span class="approval-subject-badge">${escapeHtml(t.subjectName)}</span>
                     <span>•</span>
                     <span>Assigned for: ${formatDisplayDate(t.date)}</span>
                   </div>
                 </div>
               </div>
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 12px; font-weight: 800; color: #d97706; background: #fffbeb; border: 1px solid #fde68a; padding: 3px 8px; border-radius: 99px;">
+              <div class="approval-task-actions">
+                <span class="approval-points-badge">
                   ⭐ +${t.points} pts
                 </span>
-                <button class="btn btn-primary" onclick="openParentApproveModal('${t.id}')" style="background: #16a34a; font-size: 12.5px; padding: 6px 14px; font-weight: 700;">
+                <button class="btn btn-primary btn-approval-action" onclick="openParentApproveModal('${t.id}')">
                   ✅ Review &amp; Approve
                 </button>
               </div>
@@ -2313,9 +2305,18 @@ function openParentApproveModal(taskId) {
             </div>
           </div>
 
-          <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button type="submit" class="btn btn-primary" style="flex: 1; padding: 10px 18px; font-size: 13.5px; font-weight: 700;">
+          ${task.revisionReason ? `
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px; font-size: 12px; color: #92400e;">
+              <strong>Previous Revision Note:</strong> "${escapeHtml(task.revisionReason)}"
+            </div>
+          ` : ''}
+
+          <div style="display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 160px; padding: 10px 18px; font-size: 13.5px; font-weight: 700;">
               ✨ Approve &amp; Award +${task.points} Pts
+            </button>
+            <button type="button" class="btn" onclick="closeModal('parent-approve-modal'); openParentRejectModal('${task.id}')" style="background: #fffbeb; color: #b45309; border: 1.5px solid #fde68a; font-weight: 700; padding: 10px 14px; font-size: 13px;">
+              🔄 Needs Revision
             </button>
             <button type="button" class="btn btn-outline-secondary" onclick="closeModal('parent-approve-modal')">
               Cancel
@@ -2375,19 +2376,123 @@ function handleSaveTaskApproval(e, taskId) {
   }
 }
 
-function handleParentRejectTask(taskId) {
-  showConfirmDialog({
-    title: 'Request Revision?',
-    message: 'Send this task back to the student as pending so they can complete or revise their work?',
-    icon: '↩️',
-    confirmText: 'Send for Revision',
-    isDanger: false,
-    onConfirm: () => {
-      store.rejectTask(taskId);
-      showToast('Task sent back to student for revision.', 'info');
-      renderApp();
+const REVISION_QUICK_SUGGESTIONS = [
+  'Handwriting needs to be neater ✍️',
+  'Incomplete homework - finish all questions 📖',
+  'Re-check calculations and corrections ➗',
+  'Please read the lesson once more 📚',
+  'Answer the questions in full sentences 📝'
+];
+
+function openParentRejectModal(taskId) {
+  const task = store.getTaskById(taskId);
+  if (!task) return;
+  const child = store.getUserById(task.childId) || { name: 'Student' };
+
+  const modalHtml = `
+    <div class="modal-overlay" id="parent-reject-modal" onclick="closeModalOnOutsideClick(event, 'parent-reject-modal')">
+      <div class="modal-card" style="max-width: 520px; width: 95%;">
+        <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 26px;">🔄</span>
+            <div>
+              <h3 class="modal-title" style="margin: 0; font-size: 17px; font-weight: 800; color: #b45309;">Request Task Revision</h3>
+              <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">For ${escapeHtml(child.name)} • ${task.subjectIcon || '📚'} ${escapeHtml(task.title)}</span>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeModal('parent-reject-modal')">✕</button>
+        </div>
+
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-sm); padding: 10px 14px; margin: 14px 0; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 20px;">ℹ️</span>
+          <span style="font-size: 12.5px; color: #92400e; font-weight: 600; line-height: 1.35;">
+            This homework will be sent back to <strong>${escapeHtml(child.name)}</strong>'s pending list with your revision instructions.
+          </span>
+        </div>
+
+        <form onsubmit="handleSaveTaskRevision(event, '${task.id}')">
+          <div class="form-group">
+            <label class="form-label" style="font-weight: 800; color: var(--text-main);">
+              Reason for Revision / Note for ${escapeHtml(child.name)} *
+            </label>
+            <textarea id="reject-reason-input" 
+                      name="reason" 
+                      class="form-input" 
+                      rows="3" 
+                      style="width: 100%; resize: vertical; min-height: 80px; font-size: 13.5px; line-height: 1.4; box-sizing: border-box;"
+                      placeholder="e.g. Please finish question 4 and 5, and write answers neatly..." 
+                      required></textarea>
+            
+            <!-- Quick Suggestion Chips -->
+            <div style="margin-top: 10px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                💡 Quick suggestions (Click to add):
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                ${REVISION_QUICK_SUGGESTIONS.map(tmpl => `
+                  <button type="button" 
+                          onclick="setRevisionReason('${escapeHtml(tmpl)}')" 
+                          style="background: var(--bg-surface-alt); border: 1px solid var(--border-color); border-radius: 99px; padding: 4px 10px; font-size: 11.5px; color: var(--text-main); font-weight: 600; cursor: pointer; transition: all 0.15s;"
+                          onmouseover="this.style.borderColor='#f59e0b'; this.style.color='#b45309'; this.style.background='#fffbeb';"
+                          onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-main)'; this.style.background='var(--bg-surface-alt)';">
+                    + ${tmpl}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="submit" class="btn" style="flex: 1; padding: 11px 18px; font-size: 13.5px; font-weight: 800; background: #f59e0b; color: #ffffff; border: none; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3); border-radius: var(--radius-sm);">
+              🔄 Send Back for Revision
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="closeModal('parent-reject-modal')">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  showModal(modalHtml);
+  setTimeout(() => {
+    const el = document.getElementById('reject-reason-input');
+    if (el) el.focus();
+  }, 100);
+}
+
+function setRevisionReason(text) {
+  const input = document.getElementById('reject-reason-input');
+  if (input) {
+    if (input.value.trim()) {
+      input.value = input.value.trim() + ', ' + text;
+    } else {
+      input.value = text;
     }
-  });
+    input.focus();
+  }
+}
+
+function handleSaveTaskRevision(e, taskId) {
+  e.preventDefault();
+  const form = e.target;
+  const reason = form.reason.value.trim();
+  if (!reason) {
+    showToast('Please enter a revision reason.', 'warning');
+    return;
+  }
+
+  const updated = store.rejectTask(taskId, reason);
+  closeModal('parent-reject-modal');
+  if (updated) {
+    showToast('Task sent back to student for revision with your instructions! 🔄', 'info');
+    renderApp();
+  }
+}
+
+function handleParentRejectTask(taskId) {
+  openParentRejectModal(taskId);
 }
 
 function handleSaveReward(e) {

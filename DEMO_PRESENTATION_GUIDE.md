@@ -1,6 +1,6 @@
-# 🎬 Kids Study & Rewards Tracker — Product Demo Presentation Guide
+# 🎬 Kids Study Tracker — Product Demo Presentation Guide
 
-A comprehensive guide for conducting an engaging, professional live demonstration of the **Kids Study & Rewards Tracker** for parents, educators, school administrators, or product stakeholders.
+A comprehensive guide for conducting an engaging, professional live demonstration of **Kids Study Tracker** for parents, educators, school administrators, or product stakeholders.
 
 ---
 
@@ -42,10 +42,10 @@ Before you begin the presentation, set up your browser with the following tabs r
 
 ## 🎙️ 2. Slide-by-Slide Script & Talking Points (10-12 Mins)
 
-### Slide 1: Title Slide — Kids Study & Rewards Tracker
+### Slide 1: Title Slide — Kids Study Tracker
 * **Headline:** Transforming Daily Study into a Positive, Habit-Building Adventure.
 * **Key Idea:** Study time shouldn't be an evening battle of wills between parents and kids. It should be an exciting journey where effort is visible, celebrated, and rewarded.
-* **Talking Point:** *"Good morning/evening everyone! Today, I am excited to present the Kids Study & Rewards Tracker—a digital companion built specifically for families to build lifelong study habits through positive reinforcement, gamification, and friction-free accountability."*
+* **Talking Point:** *"Good morning/evening everyone! Today, I am excited to present Kids Study Tracker—a digital companion built specifically for families to build lifelong study habits through positive reinforcement, gamification, and friction-free accountability."*
 
 ### Slide 2: The Problem — The Daily Homework Struggle
 * **Headline:** Why Traditional Reminders Fail.

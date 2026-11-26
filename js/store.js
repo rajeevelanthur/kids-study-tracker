@@ -900,7 +900,7 @@ class DataStore {
     return updatedTask;
   }
 
-  rejectTask(taskId) {
+  rejectTask(taskId, reason = '') {
     const tasks = this.getTasks();
     let updatedTask = null;
     const newTasks = tasks.map(t => {
@@ -908,7 +908,9 @@ class DataStore {
         updatedTask = {
           ...t,
           status: 'pending',
-          submittedAt: null
+          submittedAt: null,
+          revisionReason: (reason || '').trim(),
+          revisionRequestedAt: new Date().toISOString()
         };
         return updatedTask;
       }

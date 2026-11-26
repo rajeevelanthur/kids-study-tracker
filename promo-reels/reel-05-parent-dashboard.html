@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reel 05 – Parent Login, Dashboard & Tasks List (15s 9:16)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@500;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #0b0b1a; overflow: hidden; }
+  body { font-family: 'Poppins', 'Noto Sans Malayalam', 'Nirmala UI', system-ui, sans-serif; }
+  .ml { font-family: 'Noto Sans Malayalam', 'Nirmala UI', 'Poppins', sans-serif; }
+
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #stage {
+    width: 540px; height: 960px; position: relative; overflow: hidden; flex: none;
+    background: linear-gradient(160deg, #064e3b 0%, #047857 35%, #0f766e 70%, #1e1b4b 100%);
+    transform-origin: center center;
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: .4; }
+  .b1 { width: 320px; height: 320px; background: #34d399; top: -80px; left: -90px; animation: drift 6s ease-in-out infinite alternate; }
+  .b2 { width: 340px; height: 340px; background: #38bdf8; bottom: -110px; right: -120px; opacity: .3; animation: drift 7s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { to { transform: translate(40px, 30px) scale(1.1); } }
+
+  /* Workflow strip */
+  #flow { position: absolute; top: 24px; left: 16px; right: 16px; display: flex; align-items: flex-start; z-index: 10; }
+  .fs { flex: 1; text-align: center; color: #fff; opacity: 0; transform: translateY(-14px); transition: opacity .4s, transform .4s; }
+  #flow.show .fs { opacity: .55; transform: none; }
+  #flow.show .fs:nth-child(3) { transition-delay: .15s; }
+  #flow.show .fs:nth-child(5) { transition-delay: .3s; }
+  #flow.show .fs:nth-child(7) { transition-delay: .45s; }
+  .fs .dot { width: 44px; height: 44px; margin: 0 auto 5px; border-radius: 50%; background: rgba(255,255,255,.18);
+    border: 2px solid rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; font-size: 19px; transition: all .35s; }
+  .fs .lb { font-size: 10.5px; font-weight: 700; line-height: 1.25; }
+  #flow.show .fs.on { opacity: 1; }
+  .fs.on .dot { background: #fff; color: #064e3b; border-color: #fff; transform: scale(1.18); box-shadow: 0 0 0 6px rgba(255,255,255,.25), 0 0 24px rgba(255,255,255,.7); }
+  #flow.show .fs.done { opacity: .95; }
+  .fs.done .dot { background: #10b981; border-color: #a7f3d0; }
+  .ln { flex: 0 0 16px; height: 3px; margin-top: 21px; background: rgba(255,255,255,.25); border-radius: 3px; transition: background .4s; }
+  .ln.on { background: #fff; }
+
+  /* Phone */
+  #phone {
+    position: absolute; left: 50%; top: 122px; width: 320px; height: 626px; margin-left: -160px;
+    background: #0f0f17; border-radius: 46px; padding: 10px; z-index: 5;
+    box-shadow: 0 30px 60px rgba(0,0,0,.55), inset 0 0 0 2px #2a2a3a;
+    opacity: 0; transform: translateY(60px) scale(.92);
+    transition: opacity .5s, transform .6s cubic-bezier(.34,1.4,.64,1);
+  }
+  #phone.show { opacity: 1; transform: none; }
+  .notch { position: absolute; top: 18px; left: 50%; width: 92px; height: 24px; margin-left: -46px; background: #0f0f17; border-radius: 20px; z-index: 30; }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 36px; background: #f4f6fb; overflow: hidden; padding: 46px 12px 14px; }
+
+  .scr { position: absolute; inset: 0; padding: 46px 12px 14px; display: none; opacity: 0; transform: translateX(30px); transition: opacity .35s, transform .35s; overflow-y: hidden; }
+  .scr.active { display: block; opacity: 1; transform: none; }
+
+  /* Login / Switch Profile Screen */
+  .fam-tag { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .fam-tag small { font-size: 8px; color: #047857; font-weight: 800; display: block; }
+  .fam-tag b { font-size: 11px; color: #064e3b; }
+  .profiles-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+  .pf-box { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px 4px; text-align: center; transition: all .2s; }
+  .pf-box.selected { border-color: #047857; background: #ecfdf5; transform: scale(1.04); box-shadow: 0 0 0 3px rgba(4,120,87,.2); }
+  .pf-box .av { font-size: 28px; line-height: 1; }
+  .pf-box .nm { font-size: 11.5px; font-weight: 700; color: #0f172a; margin-top: 3px; }
+  .pf-box .sub { font-size: 8px; color: #64748b; }
+  .pin-row { display: flex; gap: 8px; justify-content: center; padding: 10px 0; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 10px; }
+  .pin-dot { width: 11px; height: 11px; border-radius: 50%; border: 2px solid #a7f3d0; }
+  .pin-dot.filled { background: #047857; border-color: #047857; }
+  .btn-sign { width: 100%; height: 36px; border-radius: 9px; background: #047857; color: #fff; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  /* Top bar */
+  .top-banner { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 12px; padding: 7px 10px; box-shadow: 0 2px 6px rgba(0,0,0,.04); margin-bottom: 8px; border: 1px solid #e2e8f0; }
+  .top-banner b { font-size: 11.5px; color: #064e3b; display: flex; align-items: center; gap: 5px; }
+  .top-banner .badge { font-size: 9px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 12px; padding: 2px 6px; font-weight: 700; }
+
+  /* Profile Card */
+  .profile-card { background: #fff; border-radius: 12px; padding: 9px 11px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.03); border: 1px solid #f1f5f9; }
+  .profile-info { display: flex; align-items: center; gap: 8px; }
+  .profile-info .av { font-size: 26px; }
+  .profile-info b { font-size: 12px; color: #0f172a; display: block; line-height: 1.2; }
+  .profile-info small { font-size: 8.5px; color: #64748b; }
+  .btn-assign-sm { background: #047857; color: #fff; font-size: 9.5px; font-weight: 700; border-radius: 6px; padding: 4px 8px; }
+
+  /* 4-KPI Grid */
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .kpi-card { background: #fff; border-radius: 10px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,.04); border-left: 3.5px solid #047857; position: relative; }
+  .kpi-card .v { font-size: 14px; font-weight: 800; color: #0f172a; line-height: 1.1; }
+  .kpi-card .k { font-size: 8px; font-weight: 600; color: #64748b; margin-top: 2px; }
+  .kpi-card .ring-badge { float: right; font-size: 12px; }
+
+  /* Subject Donut Section */
+  .donut-card { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,.03); margin-bottom: 8px; border: 1px solid #f1f5f9; }
+  .donut-card-h { font-size: 10.5px; font-weight: 800; color: #0f172a; margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .donut-card-h span { color: #047857; font-size: 9px; }
+  .donut-flex { display: flex; align-items: center; gap: 10px; }
+  .donut-sim { width: 54px; height: 54px; border-radius: 50%; background: conic-gradient(#3b82f6 0 90deg, #10b981 90deg 180deg, #f59e0b 180deg 270deg, #ec4899 270deg 360deg); display: flex; align-items: center; justify-content: center; position: relative; flex: none; }
+  .donut-sim::after { content: '4/4'; width: 34px; height: 34px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #0f172a; }
+  .donut-legend { font-size: 8px; color: #334155; line-height: 1.5; }
+  .donut-legend i { display: inline-block; width: 6px; height: 6px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+
+  /* Action Bar Button */
+  .btn-view-tasks { width: 100%; height: 36px; border-radius: 10px; background: #047857; color: #fff; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: transform .15s; }
+
+  /* Daily Tasks Screen */
+  .week-banner { background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 10px; padding: 7px 10px; font-size: 9.5px; color: #0369a1; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .pills-bar { display: flex; gap: 4px; margin-bottom: 8px; }
+  .pill-tab { flex: 1; text-align: center; font-size: 8.5px; font-weight: 700; padding: 5px 2px; border-radius: 6px; background: #e2e8f0; color: #475569; }
+  .pill-tab.active { background: #047857; color: #fff; }
+
+  .task-list { display: flex; flex-direction: column; gap: 6px; max-height: 380px; }
+  .task-item { background: #fff; border-radius: 10px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,.03); }
+  .task-item-left { display: flex; flex-direction: column; }
+  .task-tag { font-size: 7.5px; font-weight: 800; text-transform: uppercase; padding: 2px 5px; border-radius: 4px; width: fit-content; margin-bottom: 2px; }
+  .task-item-left b { font-size: 10.5px; color: #0f172a; }
+  .task-status { font-size: 9px; font-weight: 700; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 2px 6px; display: flex; align-items: center; gap: 2px; }
+
+  /* Weekend Prize Card */
+  .prize-card { background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 1.5px solid #fde68a; border-radius: 12px; padding: 10px; margin-top: 8px; text-align: center; transition: box-shadow .3s; }
+  .prize-card .em { font-size: 26px; }
+  .prize-card b { font-size: 11.5px; color: #92400e; display: block; margin: 2px 0; }
+  .prize-bar { height: 7px; background: #fde68a; border-radius: 4px; overflow: hidden; margin: 6px 12px 3px; }
+  .prize-fill { width: 79%; height: 100%; background: #d97706; border-radius: 4px; }
+  .prize-sub { font-size: 8px; color: #78350f; font-weight: 700; }
+
+  /* Finger tap */
+  #finger { position: absolute; left: 150px; top: 640px; width: 34px; height: 34px; margin: -17px 0 0 -17px; z-index: 60; opacity: 0; pointer-events: none;
+    transition: left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1), opacity .25s; }
+  #finger .core { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.8); border: 3px solid rgba(4,120,87,.95); box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: transform .12s; }
+  #finger .ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid #34d399; opacity: 0; }
+  #finger.tap .core { transform: scale(.75); }
+  #finger.tap .ring { animation: ripple .5s ease-out; }
+  @keyframes ripple { from { opacity: .9; transform: scale(.6); } to { opacity: 0; transform: scale(2.4); } }
+  .press { transform: scale(.94) !important; filter: brightness(1.15); }
+
+  /* Caption */
+  #caption { position: absolute; left: 22px; right: 22px; top: 766px; min-height: 140px; z-index: 10; text-align: center; transition: opacity .18s, transform .18s; }
+  #caption.swap { opacity: 0; transform: translateY(8px); }
+  .cap-step { display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: 2px; color: #064e3b; background: #6ee7b7; padding: 4px 12px; border-radius: 20px; margin-bottom: 7px; }
+  .cap-step:empty { display: none; }
+  .cap-text { color: #fff; font-size: 22px; font-weight: 800; line-height: 1.45; text-shadow: 0 3px 12px rgba(0,0,0,.4); }
+
+  /* Overlays */
+  .overlay { position: absolute; inset: 0; z-index: 12; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff;
+    opacity: 0; pointer-events: none; transition: opacity .45s; padding: 0 30px; }
+  .overlay.show { opacity: 1; }
+  #hook .em { font-size: 80px; animation: bounce 1s ease-in-out infinite; }
+  @keyframes bounce { 50% { transform: translateY(-12px); } }
+  #hook h1 { font-size: 38px; line-height: 1.35; font-weight: 800; margin-top: 10px; text-shadow: 0 4px 16px rgba(0,0,0,.35); transform: scale(.6); transition: transform .5s cubic-bezier(.34,1.7,.64,1); }
+  #hook.show h1 { transform: none; }
+  #hook h1 span { color: #6ee7b7; }
+  #hook .pill { margin-top: 16px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: 700; }
+
+  #outro { background: linear-gradient(160deg, rgba(6,78,59,.95), rgba(15,118,110,.95)); }
+  #outro .box { background: #fff; color: #064e3b; border-radius: 24px; padding: 24px 20px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,.35); transform: translateY(40px) scale(.9); transition: transform .55s cubic-bezier(.34,1.5,.64,1); }
+  #outro.show .box { transform: none; }
+  #outro .lg { font-size: 48px; }
+  #outro h2 { font-size: 21px; font-weight: 800; margin-top: 4px; }
+  #outro .tag { font-size: 12.5px; color: #64748b; margin-top: 3px; font-weight: 600; }
+  #outro .cta { font-size: 24px; font-weight: 800; color: #047857; margin: 14px 0 10px; }
+  #outro .url { display: inline-block; background: #047857; color: #fff; padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 700; }
+
+  #confetti { position: absolute; inset: 0; z-index: 15; pointer-events: none; }
+
+  /* Controls */
+  #controls { position: fixed; bottom: 10px; left: 10px; z-index: 100; display: flex; gap: 8px; align-items: center; font: 600 12px Poppins, sans-serif; color: #e2e8f0; }
+  #controls button { background: #047857; color: #fff; border: 0; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; }
+  #controls .k { opacity: .7; }
+  #clock { min-width: 52px; background: #064e3b; padding: 6px 10px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+  body.rec #controls { display: none; }
+</style>
+</head>
+<body>
+<div id="controls">
+  <button onclick="play()">▶ Play / Replay</button>
+  <span id="clock">0.0s</span>
+  <span class="k">R = replay · H = hide controls · L = loop</span>
+</div>
+
+<div id="wrap"><div id="stage"></div></div>
+
+<template id="tpl">
+  <div class="blob b1"></div><div class="blob b2"></div>
+
+  <div id="flow" class="ml">
+    <div class="fs" id="fs1"><div class="dot">👨‍👩‍👧</div><div class="lb">പാരന്റ്<br>ലോഗിൻ</div></div>
+    <div class="ln" id="ln1"></div>
+    <div class="fs" id="fs2"><div class="dot">📊</div><div class="lb">കമാൻഡ്<br>സെന്റർ</div></div>
+    <div class="ln" id="ln2"></div>
+    <div class="fs" id="fs3"><div class="dot">📋</div><div class="lb">ടാസ്ക്<br>ലിസ്റ്റ്</div></div>
+    <div class="ln" id="ln3"></div>
+    <div class="fs" id="fs4"><div class="dot">🏆</div><div class="lb">വീക്കെൻഡ്<br>ഗോൾ</div></div>
+  </div>
+
+  <div id="phone">
+    <div class="notch"></div>
+    <div id="screen">
+
+      <!-- 1. Parent Login Screen -->
+      <div class="scr" id="sLoginParent">
+        <div class="fam-tag">
+          <div><small>WORKSPACE</small><b>🏡 Rajeev's Family</b></div>
+          <span style="font-size:9.5px;color:#047857;font-weight:800;">KIDS-101</span>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#0f172a;margin-bottom:8px;">Select Profile to Sign In:</div>
+        <div class="profiles-row">
+          <div class="pf-box selected" id="pfParent">
+            <div class="av">👨‍👩‍👧</div>
+            <div class="nm">Rajeev</div>
+            <div class="sub">Parent Admin</div>
+          </div>
+          <div class="pf-box" id="pfArjun">
+            <div class="av">👦</div>
+            <div class="nm">Arjun</div>
+            <div class="sub">Class 7 · Kerala</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:#475569;margin-bottom:4px;">Parent PIN (9999):</div>
+        <div class="pin-row">
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+        </div>
+        <div class="btn-sign" id="btnSignParent">🚀 Sign In as Parent (Admin)</div>
+      </div>
+
+      <!-- 2. Executive Dashboard Screen -->
+      <div class="scr" id="sExecutive">
+        <div class="top-banner">
+          <b>🏡 Rajeev's Family <span class="badge">KIDS-101</span></b>
+          <span style="font-size:9.5px;color:#64748b;">Wed, 25 Nov</span>
+        </div>
+
+        <div class="profile-card">
+          <div class="profile-info">
+            <span class="av">👦</span>
+            <div>
+              <b>Arjun (Class 7)</b>
+              <small>🌴 Kerala State Syllabus</small>
+            </div>
+          </div>
+          <span class="btn-assign-sm">➕ Assign</span>
+        </div>
+
+        <!-- 4-KPIs -->
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi-card" style="border-color:#10b981;">
+            <span class="ring-badge">🟢</span>
+            <div class="v">100%</div>
+            <div class="k">Weekly (4/4 Done)</div>
+          </div>
+          <div class="kpi-card" style="border-color:#f59e0b;">
+            <span class="ring-badge">🔔</span>
+            <div class="v">0 Pending</div>
+            <div class="k">Needs Approval</div>
+          </div>
+          <div class="kpi-card" style="border-color:#3b82f6;">
+            <span class="ring-badge">📅</span>
+            <div class="v">0 Today</div>
+            <div class="k">Today's Focus</div>
+          </div>
+          <div class="kpi-card" style="border-color:#d97706;">
+            <span class="ring-badge">🏆</span>
+            <div class="v">79%</div>
+            <div class="k">Weekend Target</div>
+          </div>
+        </div>
+
+        <!-- Subject Donut Card -->
+        <div class="donut-card" id="donutCard">
+          <div class="donut-card-h">
+            <b>Subject Study Distribution</b>
+            <span>4 Total</span>
+          </div>
+          <div class="donut-flex">
+            <div class="donut-sim"></div>
+            <div class="donut-legend">
+              <div><i style="background:#3b82f6;"></i> Maths (25%)</div>
+              <div><i style="background:#10b981;"></i> English (25%)</div>
+              <div><i style="background:#f59e0b;"></i> Malayalam I (25%)</div>
+              <div><i style="background:#ec4899;"></i> Malayalam II (25%)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-view-tasks" id="btnViewTasks">
+          <span>📋 View Daily Tasks List</span> <span>➔</span>
+        </div>
+      </div>
+
+      <!-- 3. Daily Tasks List Screen -->
+      <div class="scr" id="sTasksList">
+        <div class="week-banner">
+          <span>📅 Current Study Week (Mon – Fri)</span>
+          <span style="background:#0284c7;color:#fff;padding:2px 6px;border-radius:6px;font-size:8px;">4 / 4 Done</span>
+        </div>
+
+        <div class="pills-bar">
+          <div class="pill-tab">⚡ Active (0)</div>
+          <div class="pill-tab active">✅ Completed (4)</div>
+          <div class="pill-tab">📋 All Tasks (4)</div>
+        </div>
+
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-item-left">
+              <span class="task-tag" style="background:#eff6ff;color:#1d4ed8;">Mathematics</span>
+              <b>Chapter 3 Exercise</b>
+            </div>
+            <span class="task-status">✅ +20 Pts</span>
+          </div>
+          <div class="task-item">
+            <div class="task-item-left">
+              <span class="task-tag" style="background:#ecfdf5;color:#047857;">English</span>
+              <b>Grammar Unit 4</b>
+            </div>
+            <span class="task-status">✅ +15 Pts</span>
+          </div>
+          <div class="task-item">
+            <div class="task-item-left">
+              <span class="task-tag" style="background:#fffbeb;color:#b45309;">Malayalam I</span>
+              <b>Adisthana Padavali Ch 2</b>
+            </div>
+            <span class="task-status">✅ +20 Pts</span>
+          </div>
+          <div class="task-item">
+            <div class="task-item-left">
+              <span class="task-tag" style="background:#fdf2f8;color:#be185d;">Basic Science</span>
+              <b>Light &amp; Reflection Work</b>
+            </div>
+            <span class="task-status">✅ +20 Pts</span>
+          </div>
+        </div>
+
+        <!-- Weekend Prize Card -->
+        <div class="prize-card" id="prizeCard">
+          <div class="em">🍦</div>
+          <b>Weekend Goal: Ice Cream Outing!</b>
+          <div class="prize-bar"><div class="prize-fill"></div></div>
+          <div class="prize-sub">⭐ 95 / 120 Stars (79%) · Almost Unlocked!</div>
+        </div>
+      </div>
+
+      <div id="finger"><div class="ring"></div><div class="core"></div></div>
+    </div>
+  </div>
+
+  <div id="caption" class="ml"><div class="cap-step" id="capStep"></div><div class="cap-text" id="capText"></div></div>
+
+  <div id="hook" class="overlay ml">
+    <div class="em">👨‍👩‍👧</div>
+    <h1>മക്കളുടെ പഠന പുരോഗതി<br><span>ഒരൊറ്റ സ്ക്രീനിൽ!</span></h1>
+    <div class="pill">⚡ 4-KPIs, സിലബസ് ചാർട്ട് &amp; ടാസ്ക് ലിസ്റ്റ്</div>
+  </div>
+
+  <div id="outro" class="overlay ml">
+    <div class="box">
+      <div class="lg">📊</div>
+      <h2>Parent Command Center</h2>
+      <div class="tag">Total Study Transparency &amp; Real Control</div>
+      <div class="cta">ഡെമോ ഇന്നുതന്നെ പരിശോധിക്കൂ! 📲</div>
+      <div class="url">🔗 kids-study-tracker-demo.web.app</div>
+    </div>
+  </div>
+
+  <canvas id="confetti" width="540" height="960"></canvas>
+</template>
+
+<script>
+  const W = 540, H = 960, DURATION = 15000;
+  const stage = document.getElementById('stage');
+  const $ = id => document.getElementById(id);
+  let scale = 1, timers = [], t0 = 0, loop = false, rafClock = 0, confettiRaf = 0;
+
+  function fit() {
+    scale = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = `scale(${scale})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  function reset() {
+    timers.forEach(clearTimeout); timers = [];
+    cancelAnimationFrame(confettiRaf);
+    stage.innerHTML = $('tpl').innerHTML;
+  }
+
+  function posIn(el, anc) {
+    let x = 0, y = 0, n = el;
+    while (n && n !== anc) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
+  }
+  function moveTo(id, dy = 0) {
+    const f = $('finger'), p = posIn($(id), $('screen'));
+    f.style.left = p.x + 'px'; f.style.top = (p.y + dy) + 'px'; f.style.opacity = 1;
+  }
+  function tap() {
+    const f = $('finger'); f.classList.remove('tap'); void f.offsetWidth; f.classList.add('tap');
+  }
+  function press(id) { const e = $(id); e.classList.add('press'); setTimeout(() => e.classList.remove('press'), 180); }
+  function hideFinger() { $('finger').style.opacity = 0; }
+
+  function showScreen(id) {
+    document.querySelectorAll('.scr').forEach(s => {
+      s.classList.toggle('active', s.id === id);
+    });
+  }
+  function flow(n) {
+    for (let i = 1; i <= 4; i++) {
+      $('fs' + i).classList.toggle('on', i === n);
+      $('fs' + i).classList.toggle('done', i < n);
+      if (i < 4) $('ln' + i).classList.toggle('on', i < n);
+    }
+  }
+  function setCap(step, text) {
+    const c = $('caption'); c.classList.add('swap');
+    setTimeout(() => { $('capStep').textContent = step; $('capText').textContent = text; c.classList.remove('swap'); }, 160);
+  }
+
+  function confetti() {
+    const cv = $('confetti'), ctx = cv.getContext('2d');
+    const colors = ['#34d399', '#38bdf8', '#f59e0b', '#ec4899', '#ffffff'];
+    const ps = Array.from({ length: 160 }, () => ({
+      x: W / 2 + (Math.random() - .5) * 80, y: 420,
+      vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 5,
+      s: Math.random() * 7 + 4, r: Math.random() * 6, vr: (Math.random() - .5) * .3,
+      c: colors[(Math.random() * colors.length) | 0]
+    }));
+    const start = performance.now();
+    (function frame(now) {
+      ctx.clearRect(0, 0, W, H);
+      ps.forEach(p => {
+        p.vy += .38; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore();
+      });
+      if (now - start < 3200) confettiRaf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    })(start);
+  }
+
+  function clock() {
+    const t = Math.min((performance.now() - t0) / 1000, DURATION / 1000);
+    const c = document.getElementById('clock'); if (c) c.textContent = t.toFixed(1) + 's';
+    if (t < DURATION / 1000) rafClock = requestAnimationFrame(clock);
+  }
+
+  function play() {
+    reset(); t0 = performance.now(); cancelAnimationFrame(rafClock); clock();
+
+    /* 0.0 – 2.0s : HOOK */
+    at(30, () => { $('hook').classList.add('show'); setCap('', 'മക്കളുടെ പഠന പുരോഗതി ഒരൊറ്റ സ്ക്രീനിൽ! 📊'); });
+    at(600, () => $('flow').classList.add('show'));
+
+    /* 2.0 – 4.5s : STEP 1 – Parent Login */
+    at(2000, () => {
+      $('hook').classList.remove('show'); $('phone').classList.add('show');
+      showScreen('sLoginParent'); flow(1);
+      setCap('STEP 1: PARENT LOGIN', 'പാരന്റ് പ്രൊഫൈൽ തിരഞ്ഞെടുത്ത് PIN 9999 നൽകി ലോഗിൻ ചെയ്യുന്നു 👨‍👩‍👧');
+    });
+    at(2400, () => moveTo('pfParent'));
+    at(2700, () => { tap(); });
+    at(3100, () => moveTo('btnSignParent'));
+    at(3500, () => { tap(); press('btnSignParent'); });
+
+    /* 4.5 – 7.5s : STEP 2 – Command Center (4-KPIs & Syllabus Donut) */
+    at(4300, () => {
+      showScreen('sExecutive'); flow(2); hideFinger();
+      setCap('COMMAND CENTER 📊', '4-KPI കാർഡുകളും കളർഫുൾ സിലബസ് ഡിസ്ട്രിബ്യൂഷൻ ചാർട്ടും 🎯');
+    });
+
+    /* 7.5 – 10.5s : STEP 3 – View Daily Tasks List */
+    at(7400, () => moveTo('btnViewTasks'));
+    at(7900, () => {
+      tap(); press('btnViewTasks');
+    });
+    at(8200, () => {
+      showScreen('sTasksList'); flow(3); hideFinger();
+      setCap('DAILY TASKS LIST 📋', 'ദിവസേനയുള്ള പഠനവും പൂർത്തിയായ വർക്കുകളും എളുപ്പത്തിൽ ട്രാക്ക് ചെയ്യാം ✅');
+    });
+
+    /* 10.5 – 13.0s : STEP 4 – Weekend Prize Target */
+    at(10500, () => {
+      flow(4);
+      setCap('WEEKEND GOAL 🏆', 'വാരാന്ത്യ സമ്മാനത്തിനായുള്ള പോയിന്റുകളും ഇവിടെ മോണിറ്റർ ചെയ്യാം 🍦');
+      $('prizeCard').style.boxShadow = '0 0 0 4px rgba(245, 158, 11, 0.3)';
+      confetti();
+    });
+
+    /* 13.0 – 15.0s : CTA */
+    at(13200, () => { $('outro').classList.add('show'); setCap('', ''); });
+    at(DURATION + 600, () => { if (loop) play(); });
+  }
+
+  addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if (k === 'r' || k === ' ') { e.preventDefault(); play(); }
+    if (k === 'h') document.body.classList.toggle('rec');
+    if (k === 'l') { loop = !loop; }
+  });
+
+  reset();
+  setTimeout(play, 600);
+</script>
+</body>
+</html>

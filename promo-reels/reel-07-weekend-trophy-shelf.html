@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reel 07 – Parent Grants Prize & Child Trophy Shelf (15s 9:16)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@500;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #0b0b1a; overflow: hidden; }
+  body { font-family: 'Poppins', 'Noto Sans Malayalam', 'Nirmala UI', system-ui, sans-serif; }
+  .ml { font-family: 'Noto Sans Malayalam', 'Nirmala UI', 'Poppins', sans-serif; }
+
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #stage {
+    width: 540px; height: 960px; position: relative; overflow: hidden; flex: none;
+    background: linear-gradient(160deg, #78350f 0%, #b45309 35%, #4f46e5 70%, #1e1b4b 100%);
+    transform-origin: center center;
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: .4; }
+  .b1 { width: 320px; height: 320px; background: #fbbf24; top: -80px; left: -90px; animation: drift 6s ease-in-out infinite alternate; }
+  .b2 { width: 340px; height: 340px; background: #ec4899; bottom: -110px; right: -120px; opacity: .3; animation: drift 7s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { to { transform: translate(40px, 30px) scale(1.1); } }
+
+  /* Workflow strip */
+  #flow { position: absolute; top: 24px; left: 16px; right: 16px; display: flex; align-items: flex-start; z-index: 10; }
+  .fs { flex: 1; text-align: center; color: #fff; opacity: 0; transform: translateY(-14px); transition: opacity .4s, transform .4s; }
+  #flow.show .fs { opacity: .55; transform: none; }
+  #flow.show .fs:nth-child(3) { transition-delay: .15s; }
+  #flow.show .fs:nth-child(5) { transition-delay: .3s; }
+  #flow.show .fs:nth-child(7) { transition-delay: .45s; }
+  .fs .dot { width: 44px; height: 44px; margin: 0 auto 5px; border-radius: 50%; background: rgba(255,255,255,.18);
+    border: 2px solid rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; font-size: 19px; transition: all .35s; }
+  .fs .lb { font-size: 11px; font-weight: 700; line-height: 1.25; }
+  #flow.show .fs.on { opacity: 1; }
+  .fs.on .dot { background: #fff; color: #78350f; border-color: #fff; transform: scale(1.18); box-shadow: 0 0 0 6px rgba(255,255,255,.25), 0 0 24px rgba(255,255,255,.7); }
+  #flow.show .fs.done { opacity: .95; }
+  .fs.done .dot { background: #f59e0b; border-color: #fde68a; }
+  .ln { flex: 0 0 16px; height: 3px; margin-top: 21px; background: rgba(255,255,255,.25); border-radius: 3px; transition: background .4s; }
+  .ln.on { background: #fff; }
+
+  /* Phone */
+  #phone {
+    position: absolute; left: 50%; top: 122px; width: 320px; height: 626px; margin-left: -160px;
+    background: #0f0f17; border-radius: 46px; padding: 10px; z-index: 5;
+    box-shadow: 0 30px 60px rgba(0,0,0,.55), inset 0 0 0 2px #2a2a3a;
+    opacity: 0; transform: translateY(60px) scale(.92);
+    transition: opacity .5s, transform .6s cubic-bezier(.34,1.4,.64,1);
+  }
+  #phone.show { opacity: 1; transform: none; }
+  .notch { position: absolute; top: 18px; left: 50%; width: 92px; height: 24px; margin-left: -46px; background: #0f0f17; border-radius: 20px; z-index: 30; }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 36px; background: #f4f6fb; overflow: hidden; padding: 46px 12px 14px; }
+
+  .scr { position: absolute; inset: 0; padding: 46px 12px 14px; display: none; opacity: 0; transform: translateX(30px); transition: opacity .35s, transform .35s; }
+  .scr.active { display: block; opacity: 1; transform: none; }
+
+  /* Profile Switch / Login Card */
+  .fam-tag { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .fam-tag small { font-size: 8px; color: #047857; font-weight: 800; display: block; }
+  .fam-tag b { font-size: 11.5px; color: #064e3b; }
+  .profiles-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+  .pf-box { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px 4px; text-align: center; transition: all .2s; }
+  .pf-box.selected { border-color: #4f46e5; background: #eef2ff; transform: scale(1.04); box-shadow: 0 0 0 3px rgba(79,70,229,.15); }
+  .pf-box .av { font-size: 28px; line-height: 1; }
+  .pf-box .nm { font-size: 11px; font-weight: 700; color: #0f172a; margin-top: 3px; }
+  .pf-box .sub { font-size: 8px; color: #64748b; }
+  .pin-row { display: flex; gap: 10px; justify-content: center; padding: 10px 0; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 10px; }
+  .pin-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #c7d2fe; }
+  .pin-dot.filled { background: #4f46e5; border-color: #4f46e5; }
+  .btn-sign { width: 100%; height: 36px; border-radius: 10px; background: #4f46e5; color: #fff; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+  /* Parent Prize Box */
+  .role-bar { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 10px; padding: 6px 10px; margin-bottom: 8px; font-size: 10px; font-weight: 700; color: #475569; border: 1px solid #e2e8f0; }
+  .parent-prize-box { background: #fff; border-radius: 14px; padding: 14px; border: 1.5px solid #fde68a; box-shadow: 0 3px 10px rgba(0,0,0,.04); }
+  .parent-prize-h { font-size: 11px; font-weight: 800; color: #92400e; margin-bottom: 6px; }
+  .parent-prize-name { font-size: 14px; font-weight: 800; color: #1e1b4b; margin-bottom: 8px; }
+  .btn-grant-prize {
+    width: 100%; height: 38px; border-radius: 10px; background: #d97706; color: #fff; font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: all .2s; border: 0;
+    box-shadow: 0 4px 12px rgba(217,119,6,.35);
+  }
+  .btn-grant-prize.granted { background: #059669; box-shadow: 0 4px 12px rgba(5,150,105,.35); }
+
+  /* Child Screen */
+  .goal-card {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-radius: 16px; padding: 14px; color: #fff;
+    box-shadow: 0 6px 18px rgba(5,150,105,.3); margin-bottom: 10px;
+  }
+  .goal-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .goal-card-top b { font-size: 13.5px; }
+  .goal-card-top .pts { background: rgba(255,255,255,.25); padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 800; }
+  .goal-title { font-size: 12.5px; font-weight: 800; margin-bottom: 6px; }
+  .goal-bar-wrap { height: 8px; background: rgba(0,0,0,.2); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
+  .goal-bar-fill { height: 100%; width: 100%; background: #facc15; border-radius: 5px; }
+  .goal-status { display: flex; justify-content: space-between; font-size: 9px; font-weight: 700; }
+  .unlocked-pill { background: #fef08a; color: #854d0e; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 10px; }
+
+  .gateway-card {
+    background: #fff; border-radius: 12px; padding: 10px 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,.03);
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+  }
+  .gateway-info b { font-size: 11.5px; color: #0f172a; display: block; }
+  .gateway-info small { font-size: 8.5px; color: #64748b; }
+  .btn-open-trophy { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; font-size: 10.5px; font-weight: 800; border-radius: 8px; padding: 6px 10px; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 3px 8px rgba(217,119,6,.3); }
+
+  /* Trophy Cabinet Modal */
+  .modal-overlay { position: absolute; inset: 0; background: rgba(15,23,42,.6); display: flex; align-items: flex-end; opacity: 0; transition: opacity .3s; z-index: 20; pointer-events: none; }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .sheet { width: 100%; background: #fff; border-radius: 20px 20px 0 0; padding: 14px 14px 16px; transform: translateY(100%); transition: transform .35s cubic-bezier(.2,.9,.3,1); max-height: 85%; }
+  .modal-overlay.open .sheet { transform: none; }
+  .modal-h { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+  .modal-h h4 { font-size: 13.5px; font-weight: 800; color: #1e1b4b; margin: 0; }
+  .modal-h small { font-size: 9px; color: #64748b; }
+
+  .trophy-shelf { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .trophy-item {
+    background: #fdf6b2; border: 1.5px solid #fde047; border-radius: 12px; padding: 9px 11px;
+    display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.04);
+  }
+  .trophy-left { display: flex; align-items: center; gap: 8px; }
+  .trophy-left .icon { font-size: 24px; }
+  .trophy-left b { font-size: 11px; color: #78350f; display: block; }
+  .trophy-left small { font-size: 8px; color: #92400e; }
+  .trophy-status { font-size: 8px; font-weight: 800; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 2px 6px; }
+
+  .stickers-shelf { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px; }
+  .stickers-shelf-title { font-size: 9px; font-weight: 800; color: #475569; margin-bottom: 5px; }
+  .stickers-row { display: flex; gap: 6px; }
+  .st-pill { flex: 1; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 1px; font-size: 8px; font-weight: 700; text-align: center; color: #334155; }
+
+  .toast { position: absolute; top: 46px; left: 12px; right: 12px; background: #059669; color: #fff; border-radius: 10px; padding: 9px 12px; font-size: 11.5px; font-weight: 700; transform: translateY(-160%); opacity: 0; transition: transform .4s cubic-bezier(.34,1.5,.64,1), opacity .3s; z-index: 25; text-align: center; box-shadow: 0 6px 16px rgba(0,0,0,.2); }
+  .toast.in { transform: none; opacity: 1; }
+
+  /* Finger tap */
+  #finger { position: absolute; left: 150px; top: 640px; width: 34px; height: 34px; margin: -17px 0 0 -17px; z-index: 60; opacity: 0; pointer-events: none;
+    transition: left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1), opacity .25s; }
+  #finger .core { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.8); border: 3px solid rgba(217,119,6,.95); box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: transform .12s; }
+  #finger .ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid #fbbf24; opacity: 0; }
+  #finger.tap .core { transform: scale(.75); }
+  #finger.tap .ring { animation: ripple .5s ease-out; }
+  @keyframes ripple { from { opacity: .9; transform: scale(.6); } to { opacity: 0; transform: scale(2.4); } }
+  .press { transform: scale(.94) !important; filter: brightness(1.15); }
+
+  /* Caption */
+  #caption { position: absolute; left: 22px; right: 22px; top: 766px; min-height: 140px; z-index: 10; text-align: center; transition: opacity .18s, transform .18s; }
+  #caption.swap { opacity: 0; transform: translateY(8px); }
+  .cap-step { display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: 2px; color: #78350f; background: #fde047; padding: 4px 12px; border-radius: 20px; margin-bottom: 7px; }
+  .cap-step:empty { display: none; }
+  .cap-text { color: #fff; font-size: 22px; font-weight: 800; line-height: 1.45; text-shadow: 0 3px 12px rgba(0,0,0,.4); }
+
+  /* Overlays */
+  .overlay { position: absolute; inset: 0; z-index: 12; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff;
+    opacity: 0; pointer-events: none; transition: opacity .45s; padding: 0 30px; }
+  .overlay.show { opacity: 1; }
+  #hook .em { font-size: 80px; animation: bounce 1s ease-in-out infinite; }
+  @keyframes bounce { 50% { transform: translateY(-12px); } }
+  #hook h1 { font-size: 38px; line-height: 1.35; font-weight: 800; margin-top: 10px; text-shadow: 0 4px 16px rgba(0,0,0,.35); transform: scale(.6); transition: transform .5s cubic-bezier(.34,1.7,.64,1); }
+  #hook.show h1 { transform: none; }
+  #hook h1 span { color: #fde047; }
+  #hook .pill { margin-top: 16px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: 700; }
+
+  #outro { background: linear-gradient(160deg, rgba(120,53,15,.95), rgba(79,70,229,.95)); }
+  #outro .box { background: #fff; color: #78350f; border-radius: 24px; padding: 24px 20px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,.35); transform: translateY(40px) scale(.9); transition: transform .55s cubic-bezier(.34,1.5,.64,1); }
+  #outro.show .box { transform: none; }
+  #outro .lg { font-size: 48px; }
+  #outro h2 { font-size: 21px; font-weight: 800; margin-top: 4px; }
+  #outro .tag { font-size: 12.5px; color: #64748b; margin-top: 3px; font-weight: 600; }
+  #outro .cta { font-size: 24px; font-weight: 800; color: #d97706; margin: 14px 0 10px; }
+  #outro .url { display: inline-block; background: #d97706; color: #fff; padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 700; }
+
+  #confetti { position: absolute; inset: 0; z-index: 15; pointer-events: none; }
+
+  /* Controls */
+  #controls { position: fixed; bottom: 10px; left: 10px; z-index: 100; display: flex; gap: 8px; align-items: center; font: 600 12px Poppins, sans-serif; color: #e2e8f0; }
+  #controls button { background: #d97706; color: #fff; border: 0; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; }
+  #controls .k { opacity: .7; }
+  #clock { min-width: 52px; background: #78350f; padding: 6px 10px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+  body.rec #controls { display: none; }
+</style>
+</head>
+<body>
+<div id="controls">
+  <button onclick="play()">▶ Play / Replay</button>
+  <span id="clock">0.0s</span>
+  <span class="k">R = replay · H = hide controls · L = loop</span>
+</div>
+
+<div id="wrap"><div id="stage"></div></div>
+
+<template id="tpl">
+  <div class="blob b1"></div><div class="blob b2"></div>
+
+  <div id="flow" class="ml">
+    <div class="fs" id="fs1"><div class="dot">👨‍👩‍👧</div><div class="lb">പാരന്റ്<br>ലോഗിൻ</div></div>
+    <div class="ln" id="ln1"></div>
+    <div class="fs" id="fs2"><div class="dot">🎁</div><div class="lb">സമ്മാനം<br>ഗ്രാൻഡ്</div></div>
+    <div class="ln" id="ln2"></div>
+    <div class="fs" id="fs3"><div class="dot">🧒</div><div class="lb">ചൈൽഡ്<br>ലോഗിൻ</div></div>
+    <div class="ln" id="ln3"></div>
+    <div class="fs" id="fs4"><div class="dot">🏆</div><div class="lb">ട്രോഫി<br>ഷെൽഫ്</div></div>
+  </div>
+
+  <div id="phone">
+    <div class="notch"></div>
+    <div id="screen">
+
+      <!-- 1. Profile Switch / Login Screen (Parent Select) -->
+      <div class="scr" id="sLoginParent">
+        <div class="fam-tag">
+          <div><small>WORKSPACE</small><b>🏡 Rajeev's Family</b></div>
+          <span style="font-size:9.5px;color:#047857;font-weight:800;">KIDS-101</span>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#0f172a;margin-bottom:8px;">Select Profile to Sign In:</div>
+        <div class="profiles-row">
+          <div class="pf-box" id="pfParent">
+            <div class="av">👨‍👩‍👧</div>
+            <div class="nm">Rajeev</div>
+            <div class="sub">Parent Admin</div>
+          </div>
+          <div class="pf-box" id="pfArjun">
+            <div class="av">👦</div>
+            <div class="nm">Arjun</div>
+            <div class="sub">Class 7 · Kerala</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:#475569;margin-bottom:4px;">Parent PIN (9999):</div>
+        <div class="pin-row">
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+        </div>
+        <div class="btn-sign" id="btnSignParent">🚀 Sign In as Rajeev (Parent)</div>
+      </div>
+
+      <!-- 2. Parent Grants Prize Screen -->
+      <div class="scr" id="sParentGrant">
+        <div class="role-bar" style="background:#fef3c7;color:#92400e;">
+          <span>👨‍👩‍👧 Rajeev (Parent) · Weekend Goals</span>
+          <span>KIDS-101</span>
+        </div>
+
+        <div class="parent-prize-box">
+          <div class="parent-prize-h">🎯 Arjun's Active Weekend Goal:</div>
+          <div class="parent-prize-name">Weekend Ice Cream &amp; Park Outing 🍦</div>
+          <div style="font-size:10px;color:#059669;font-weight:800;margin-bottom:12px;">
+            ✅ 120 / 120 Pts (100% Goal Completed by Arjun!)
+          </div>
+          <button class="btn-grant-prize" id="btnGrantAction">🎁 Grant &amp; Hand Over Prize</button>
+        </div>
+        <div class="toast" id="toastGranted">🎉 Ice Cream Outing handed over to Arjun!</div>
+      </div>
+
+      <!-- 3. Profile Switch / Login Screen (Child Select) -->
+      <div class="scr" id="sLoginChild">
+        <div class="fam-tag">
+          <div><small>WORKSPACE</small><b>🏡 Rajeev's Family</b></div>
+          <span style="font-size:9.5px;color:#047857;font-weight:800;">KIDS-101</span>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#0f172a;margin-bottom:8px;">Select Profile to Sign In:</div>
+        <div class="profiles-row">
+          <div class="pf-box">
+            <div class="av">👨‍👩‍👧</div>
+            <div class="nm">Rajeev</div>
+            <div class="sub">Parent Admin</div>
+          </div>
+          <div class="pf-box selected" id="pfArjunChild">
+            <div class="av">👦</div>
+            <div class="nm">Arjun</div>
+            <div class="sub">Class 7 · Kerala</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:#475569;margin-bottom:4px;">Student PIN (1234):</div>
+        <div class="pin-row">
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+          <div class="pin-dot filled"></div>
+        </div>
+        <div class="btn-sign" id="btnSignChild" style="background:#059669;">🚀 Sign In as Arjun</div>
+      </div>
+
+      <!-- 4. Child Screen & Trophy Case Button -->
+      <div class="scr" id="sChildScreen">
+        <div class="role-bar" style="background:#ecfdf5;color:#047857;">
+          <span>👦 Arjun's Dashboard</span>
+          <span>🔥 5-Day Streak</span>
+        </div>
+
+        <div class="goal-card">
+          <div class="goal-card-top">
+            <b>Weekend Prize Unlocked!</b>
+            <span class="pts">120 / 120 pts</span>
+          </div>
+          <div class="goal-title">🍦 Weekend Ice Cream &amp; Park Outing</div>
+          <div class="goal-bar-wrap">
+            <div class="goal-bar-fill"></div>
+          </div>
+          <div class="goal-status">
+            <span>100% Complete</span>
+            <span class="unlocked-pill">🎁 Granted by Parent!</span>
+          </div>
+        </div>
+
+        <div class="gateway-card">
+          <div class="gateway-info">
+            <b>🏆 Trophy Cabinet</b>
+            <small>New reward added to shelf!</small>
+          </div>
+          <span class="btn-open-trophy" id="btnOpenTrophy">Open Trophy Case 🏅</span>
+        </div>
+      </div>
+
+      <!-- Modal: Trophy Case -->
+      <div id="modalTrophy" class="modal-overlay">
+        <div class="sheet">
+          <div class="modal-h">
+            <span style="font-size:24px;">🏆</span>
+            <div>
+              <h4>My Trophy Case &amp; Won Rewards</h4>
+              <small>Arjun's Achievements (2 Total Won)</small>
+            </div>
+          </div>
+
+          <div class="trophy-shelf">
+            <div class="trophy-item" style="border-color:#10b981;background:#f0fdf4;">
+              <div class="trophy-left">
+                <span class="icon">🥇</span>
+                <div>
+                  <b>Weekend Ice Cream &amp; Park Outing 🍦</b>
+                  <small>Unlocked &amp; Handed Over by Parent!</small>
+                </div>
+              </div>
+              <span class="trophy-status">🎁 Won</span>
+            </div>
+
+            <div class="trophy-item">
+              <div class="trophy-left">
+                <span class="icon">🥈</span>
+                <div>
+                  <b>Lego Creator Mini Kit 🧩</b>
+                  <small>Unlocked Past Week</small>
+                </div>
+              </div>
+              <span class="trophy-status">🎁 Won</span>
+            </div>
+          </div>
+
+          <div class="stickers-shelf">
+            <div class="stickers-shelf-title">⭐ Parent Praise Stickers Shelf:</div>
+            <div class="stickers-row">
+              <div class="st-pill">⭐ Star Student</div>
+              <div class="st-pill">🚀 Super Fast</div>
+              <div class="st-pill">🏆 Champion!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="finger"><div class="ring"></div><div class="core"></div></div>
+    </div>
+  </div>
+
+  <div id="caption" class="ml"><div class="cap-step" id="capStep"></div><div class="cap-text" id="capText"></div></div>
+
+  <div id="hook" class="overlay ml">
+    <div class="em">🎁</div>
+    <h1>വാരാന്ത്യ സമ്മാനങ്ങളും<br><span>ട്രോഫി ഷെൽഫും!</span></h1>
+    <div class="pill">⚡ പാരന്റ് ഗ്രാൻഡ് &amp; ചൈൽഡ് ട്രോഫി കാബിനറ്റ്</div>
+  </div>
+
+  <div id="outro" class="overlay ml">
+    <div class="box">
+      <div class="lg">🏆</div>
+      <h2>Kids Study &amp; Rewards Tracker</h2>
+      <div class="tag">Weekly Rewards &amp; Digital Trophy Cabinet</div>
+      <div class="cta">ഇന്നുതന്നെ ട്രൈ ചെയ്യൂ! 📲</div>
+      <div class="url">🔗 kids-study-tracker-demo.web.app</div>
+    </div>
+  </div>
+
+  <canvas id="confetti" width="540" height="960"></canvas>
+</template>
+
+<script>
+  const W = 540, H = 960, DURATION = 15000;
+  const stage = document.getElementById('stage');
+  const $ = id => document.getElementById(id);
+  let scale = 1, timers = [], t0 = 0, loop = false, rafClock = 0, confettiRaf = 0;
+
+  function fit() {
+    scale = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = `scale(${scale})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  function reset() {
+    timers.forEach(clearTimeout); timers = [];
+    cancelAnimationFrame(confettiRaf);
+    stage.innerHTML = $('tpl').innerHTML;
+  }
+
+  function posIn(el, anc) {
+    let x = 0, y = 0, n = el;
+    while (n && n !== anc) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
+  }
+  function moveTo(id, dy = 0) {
+    const f = $('finger'), p = posIn($(id), $('screen'));
+    f.style.left = p.x + 'px'; f.style.top = (p.y + dy) + 'px'; f.style.opacity = 1;
+  }
+  function tap() {
+    const f = $('finger'); f.classList.remove('tap'); void f.offsetWidth; f.classList.add('tap');
+  }
+  function press(id) { const e = $(id); e.classList.add('press'); setTimeout(() => e.classList.remove('press'), 180); }
+  function hideFinger() { $('finger').style.opacity = 0; }
+
+  function showScreen(id) {
+    document.querySelectorAll('.scr').forEach(s => {
+      s.classList.toggle('active', s.id === id);
+    });
+  }
+  function flow(n) {
+    for (let i = 1; i <= 4; i++) {
+      $('fs' + i).classList.toggle('on', i === n);
+      $('fs' + i).classList.toggle('done', i < n);
+      if (i < 4) $('ln' + i).classList.toggle('on', i < n);
+    }
+  }
+  function setCap(step, text) {
+    const c = $('caption'); c.classList.add('swap');
+    setTimeout(() => { $('capStep').textContent = step; $('capText').textContent = text; c.classList.remove('swap'); }, 160);
+  }
+
+  function confetti() {
+    const cv = $('confetti'), ctx = cv.getContext('2d');
+    const colors = ['#f59e0b', '#facc15', '#10b981', '#38bdf8', '#ec4899', '#ffffff'];
+    const ps = Array.from({ length: 160 }, () => ({
+      x: W / 2 + (Math.random() - .5) * 80, y: 420,
+      vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 5,
+      s: Math.random() * 7 + 4, r: Math.random() * 6, vr: (Math.random() - .5) * .3,
+      c: colors[(Math.random() * colors.length) | 0]
+    }));
+    const start = performance.now();
+    (function frame(now) {
+      ctx.clearRect(0, 0, W, H);
+      ps.forEach(p => {
+        p.vy += .38; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore();
+      });
+      if (now - start < 3200) confettiRaf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    })(start);
+  }
+
+  function clock() {
+    const t = Math.min((performance.now() - t0) / 1000, DURATION / 1000);
+    const c = document.getElementById('clock'); if (c) c.textContent = t.toFixed(1) + 's';
+    if (t < DURATION / 1000) rafClock = requestAnimationFrame(clock);
+  }
+
+  function play() {
+    reset(); t0 = performance.now(); cancelAnimationFrame(rafClock); clock();
+
+    /* 0.0 – 2.0s : HOOK */
+    at(30, () => { $('hook').classList.add('show'); setCap('', 'വാരാന്ത്യ സമ്മാനങ്ങൾ കുട്ടികൾക്ക് എങ്ങനെ നൽകാം? 🎁'); });
+    at(600, () => $('flow').classList.add('show'));
+
+    /* 2.0 – 4.5s : STEP 1 – Parent Login */
+    at(2000, () => {
+      $('hook').classList.remove('show'); $('phone').classList.add('show');
+      showScreen('sLoginParent'); flow(1);
+      setCap('STEP 1: PARENT LOGIN', 'പാരന്റ് പ്രൊഫൈൽ തിരഞ്ഞെടുത്ത് പിൻ നൽകി ലോഗിൻ ചെയ്യുന്നു 👨‍👩‍👧');
+    });
+    at(2300, () => moveTo('pfParent'));
+    at(2600, () => { tap(); $('pfParent').classList.add('selected'); });
+    at(3000, () => moveTo('btnSignParent'));
+    at(3400, () => { tap(); press('btnSignParent'); });
+
+    /* 4.5 – 7.5s : STEP 2 – Parent Grants Prize */
+    at(4300, () => {
+      showScreen('sParentGrant'); flow(2);
+      setCap('STEP 2: GRANT PRIZE', 'കുട്ടി ലക്ഷ്യം തികച്ചാൽ പാരന്റ് വാരാന്ത്യ സമ്മാനം ഗ്രാൻഡ് ചെയ്യുന്നു 🎁');
+    });
+    at(4800, () => moveTo('btnGrantAction'));
+    at(5300, () => {
+      tap(); press('btnGrantAction');
+      $('btnGrantAction').classList.add('granted');
+      $('btnGrantAction').textContent = '✓ Prize Granted & Recorded! 🍦';
+    });
+    at(5600, () => {
+      $('toastGranted').classList.add('in'); hideFinger();
+    });
+
+    /* 7.5 – 10.0s : STEP 3 – Child Login */
+    at(7500, () => {
+      showScreen('sLoginChild'); flow(3);
+      setCap('STEP 3: CHILD LOGIN', 'ഇനി കുട്ടി സ്വന്തം പ്രൊഫൈലിലേക്ക് ലോഗിൻ ചെയ്യുന്നു 🧒');
+    });
+    at(8000, () => moveTo('pfArjunChild'));
+    at(8300, () => { tap(); });
+    at(8700, () => moveTo('btnSignChild'));
+    at(9100, () => { tap(); press('btnSignChild'); });
+
+    /* 10.0 – 13.0s : STEP 4 – Child opens Trophy Case */
+    at(9800, () => {
+      showScreen('sChildScreen'); flow(4);
+      setCap('STEP 4: MY TROPHY CASE 🏆', 'കുട്ടിയുടെ സ്വന്തം ട്രോഫി ഷെൽഫിൽ സമ്മാനം തിളങ്ങുന്നു! ✨');
+    });
+    at(10200, () => moveTo('btnOpenTrophy'));
+    at(10700, () => {
+      tap(); press('btnOpenTrophy');
+      $('modalTrophy').classList.add('open'); hideFinger();
+      confetti();
+    });
+
+    /* 13.0 – 15.0s : CTA */
+    at(13000, () => { $('outro').classList.add('show'); setCap('', ''); });
+    at(DURATION + 600, () => { if (loop) play(); });
+  }
+
+  addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if (k === 'r' || k === ' ') { e.preventDefault(); play(); }
+    if (k === 'h') document.body.classList.toggle('rec');
+    if (k === 'l') { loop = !loop; }
+  });
+
+  reset();
+  setTimeout(play, 600);
+</script>
+</body>
+</html>

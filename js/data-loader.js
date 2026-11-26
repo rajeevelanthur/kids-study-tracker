@@ -1,5 +1,5 @@
 /**
- * Kids Study & Rewards Tracker - Master Data Loader Service
+ * Kids Study Tracker - Master Data Loader Service
  * Asynchronously loads and caches JSON master datasets (Syllabus, Categories, Seed Data).
  * Provides instantaneous access for offline and online environments.
  */

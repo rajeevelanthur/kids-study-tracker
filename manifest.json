@@ -1,6 +1,6 @@
 {
-  "name": "Kids Study & Rewards Tracker",
-  "short_name": "Study Tracker",
+  "name": "Kids Study Tracker",
+  "short_name": "Kids Study Tracker",
   "description": "Daily study task tracker and reward system for kids - Kerala State & CBSE Syllabus",
   "start_url": "./index.html",
   "scope": "./",

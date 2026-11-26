@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reel 03 – Family Registration & Email Verification (15s 9:16)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam:wght@500;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #0b0b1a; overflow: hidden; }
+  body { font-family: 'Poppins', 'Noto Sans Malayalam', 'Nirmala UI', system-ui, sans-serif; }
+  .ml { font-family: 'Noto Sans Malayalam', 'Nirmala UI', 'Poppins', sans-serif; }
+
+  #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #stage {
+    width: 540px; height: 960px; position: relative; overflow: hidden; flex: none;
+    background: linear-gradient(160deg, #1e1b4b 0%, #4338ca 40%, #059669 100%);
+    transform-origin: center center;
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: .4; }
+  .b1 { width: 320px; height: 320px; background: #06b6d4; top: -80px; left: -90px; animation: drift 6s ease-in-out infinite alternate; }
+  .b2 { width: 340px; height: 340px; background: #10b981; bottom: -110px; right: -120px; opacity: .3; animation: drift 7s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { to { transform: translate(40px, 30px) scale(1.1); } }
+
+  /* Workflow strip */
+  #flow { position: absolute; top: 24px; left: 16px; right: 16px; display: flex; align-items: flex-start; z-index: 10; }
+  .fs { flex: 1; text-align: center; color: #fff; opacity: 0; transform: translateY(-14px); transition: opacity .4s, transform .4s; }
+  #flow.show .fs { opacity: .55; transform: none; }
+  #flow.show .fs:nth-child(3) { transition-delay: .15s; }
+  #flow.show .fs:nth-child(5) { transition-delay: .3s; }
+  #flow.show .fs:nth-child(7) { transition-delay: .45s; }
+  .fs .dot { width: 44px; height: 44px; margin: 0 auto 5px; border-radius: 50%; background: rgba(255,255,255,.18);
+    border: 2px solid rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center; font-size: 19px; transition: all .35s; }
+  .fs .lb { font-size: 11px; font-weight: 700; line-height: 1.25; }
+  #flow.show .fs.on { opacity: 1; }
+  .fs.on .dot { background: #fff; border-color: #fff; transform: scale(1.18); box-shadow: 0 0 0 6px rgba(255,255,255,.25), 0 0 24px rgba(255,255,255,.7); }
+  #flow.show .fs.done { opacity: .95; }
+  .fs.done .dot { background: #10b981; border-color: #a7f3d0; }
+  .ln { flex: 0 0 16px; height: 3px; margin-top: 21px; background: rgba(255,255,255,.25); border-radius: 3px; transition: background .4s; }
+  .ln.on { background: #fff; }
+
+  /* Phone */
+  #phone {
+    position: absolute; left: 50%; top: 124px; width: 320px; height: 624px; margin-left: -160px;
+    background: #0f0f17; border-radius: 46px; padding: 10px; z-index: 5;
+    box-shadow: 0 30px 60px rgba(0,0,0,.5), inset 0 0 0 2px #2a2a3a;
+    opacity: 0; transform: translateY(60px) scale(.92);
+    transition: opacity .5s, transform .6s cubic-bezier(.34,1.4,.64,1);
+  }
+  #phone.show { opacity: 1; transform: none; }
+  .notch { position: absolute; top: 18px; left: 50%; width: 92px; height: 24px; margin-left: -46px; background: #0f0f17; border-radius: 20px; z-index: 30; }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 36px; background: #f4f6fb; overflow: hidden; }
+
+  .scr { position: absolute; inset: 0; padding: 48px 14px 14px; opacity: 0; transform: translateX(40px); transition: opacity .35s, transform .35s; display: none; }
+  .scr.active { display: block; opacity: 1; transform: none; }
+  .scr.out { display: block; opacity: 0; transform: translateX(-40px); }
+
+  .app-h { text-align: center; margin-bottom: 8px; }
+  .logo { font-weight: 800; color: #3730a3; font-size: 15px; }
+  .sub { font-size: 9px; color: #64748b; margin-top: 1px; }
+
+  .tabs { display: flex; background: #e2e8f0; border-radius: 10px; padding: 3px; margin-bottom: 10px; }
+  .tab { flex: 1; text-align: center; padding: 6px 0; font-size: 11px; border-radius: 8px; color: #475569; font-weight: 600; }
+  .tab.on { background: #fff; color: #059669; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+
+  .card { background: #fff; border-radius: 16px; padding: 12px 14px; box-shadow: 0 4px 14px rgba(15,23,42,.07); }
+  .card-h { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .card-h h3 { font-size: 14px; font-weight: 800; color: #0f172a; margin: 0; }
+  .card-h p { font-size: 9.5px; color: #64748b; margin: 0; }
+
+  .fg { margin-bottom: 7px; }
+  .fl { font-size: 9.5px; font-weight: 700; color: #334155; margin-bottom: 3px; display: block; }
+  .fi { height: 32px; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0 9px; display: flex; align-items: center; font-size: 12px; font-weight: 600; color: #0f172a; background: #f8fafc; transition: all .2s; }
+  .fi.focus { border-color: #059669 !important; box-shadow: 0 0 0 3px rgba(5,150,105,.18); background: #fff; }
+  .ph { color: #94a3b8; font-weight: 400; font-size: 11px; }
+  .caret { display: none; width: 1.5px; height: 16px; background: #059669; margin-left: 2px; animation: blink 1s steps(1) infinite; }
+  .focus .caret { display: inline-block; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .btn { width: 100%; height: 38px; border-radius: 10px; background: #059669; color: #fff; font-weight: 700; font-size: 12.5px; display: flex; align-items: center; justify-content: center; margin-top: 10px; border: 0; cursor: pointer; transition: transform .15s; }
+  .press { transform: scale(.94) !important; filter: brightness(1.15); }
+
+  /* Push notification */
+  #pushNotif {
+    position: absolute; top: 12px; left: 8px; right: 8px; background: rgba(255,255,255,.98); backdrop-filter: blur(12px);
+    border-radius: 16px; padding: 10px 12px; box-shadow: 0 10px 30px rgba(0,0,0,.35); z-index: 50;
+    display: flex; gap: 10px; align-items: center; transform: translateY(-160%); transition: transform .45s cubic-bezier(.34,1.4,.64,1);
+    border: 1px solid rgba(0,0,0,.08);
+  }
+  #pushNotif.in { transform: none; }
+  #pushNotif .app-ic { width: 32px; height: 32px; border-radius: 8px; background: #ea4335; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; flex: none; }
+  #pushNotif .msg { flex: 1; }
+  #pushNotif .msg b { display: block; font-size: 11px; color: #0f172a; }
+  #pushNotif .msg small { font-size: 9.5px; color: #475569; line-height: 1.2; display: block; margin-top: 1px; }
+  #pushNotif .time { font-size: 8.5px; color: #94a3b8; align-self: flex-start; }
+
+  /* Verify email screen */
+  .v-center { text-align: center; padding: 24px 8px; }
+  .v-center .env { font-size: 46px; animation: pulseMail 1.2s infinite ease-in-out; }
+  @keyframes pulseMail { 50% { transform: scale(1.1); } }
+  .v-center h4 { font-size: 15px; font-weight: 800; color: #1e1b4b; margin: 8px 0 4px; }
+  .v-center p { font-size: 11px; color: #475569; line-height: 1.4; margin-bottom: 12px; }
+  .v-email-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 700; color: #1d4ed8; display: inline-block; }
+  .polling-badge { margin-top: 16px; font-size: 10px; color: #059669; font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 6px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; }
+  .spinner { width: 12px; height: 12px; border: 2px solid #a7f3d0; border-top-color: #059669; border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Parent command center screen */
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .topbar b { font-size: 12.5px; color: #1e1b4b; line-height: 1.2; }
+  .topbar small { display: block; font-size: 9px; color: #64748b; }
+  .fam-badge { background: #dcfce7; color: #15803d; border: 1px solid #86efac; border-radius: 8px; padding: 2px 7px; font-size: 9.5px; font-weight: 800; }
+  .addbtn { font-size: 10.5px; font-weight: 700; color: #059669; border: 1.5px solid #059669; border-radius: 8px; padding: 6px 8px; background: #fff; }
+
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 10px; }
+  .kpi { background: #fff; border-radius: 10px; padding: 8px 10px; box-shadow: 0 2px 6px rgba(15,23,42,.05); border-left: 3px solid #10b981; }
+  .kpi .v { font-size: 16px; font-weight: 800; color: #0f172a; }
+  .kpi .k { font-size: 8.5px; color: #64748b; font-weight: 600; }
+
+  /* Modal */
+  #modal { position: absolute; inset: 0; background: rgba(15,23,42,.5); display: flex; align-items: flex-end; opacity: 0; transition: opacity .3s; z-index: 20; pointer-events: none; }
+  #modal.open { opacity: 1; pointer-events: auto; }
+  .sheet { width: 100%; background: #fff; border-radius: 20px 20px 0 0; padding: 14px 14px 16px; transform: translateY(100%); transition: transform .35s cubic-bezier(.2,.9,.3,1); }
+  #modal.open .sheet { transform: none; }
+  .sheet h4 { font-size: 13px; color: #1e1b4b; margin-bottom: 8px; font-weight: 800; }
+  .chips { display: flex; gap: 6px; }
+  .chip { flex: 1; text-align: center; padding: 6px 2px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 10px; font-weight: 700; color: #334155; }
+  .chip.on { border-color: #059669; background: #ecfdf5; color: #065f46; box-shadow: 0 0 0 3px rgba(5,150,105,.15); }
+  .avs { display: flex; gap: 6px; }
+  .avo { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .avo.on { border-color: #059669; background: #ecfdf5; transform: scale(1.12); }
+
+  .toast { position: absolute; top: 46px; left: 12px; right: 12px; background: #059669; color: #fff; border-radius: 10px; padding: 9px 12px; font-size: 11.5px; font-weight: 700; transform: translateY(-160%); opacity: 0; transition: transform .4s cubic-bezier(.34,1.5,.64,1), opacity .3s; z-index: 25; box-shadow: 0 8px 18px rgba(5,150,105,.35); text-align: center; }
+  .toast.in { transform: none; opacity: 1; }
+
+  /* Profiles grid on final screen */
+  .profiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 14px; }
+  .pf { position: relative; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 10px 4px; text-align: center; }
+  .pf .av { font-size: 30px; line-height: 1.1; }
+  .pf .nm { font-size: 12px; font-weight: 700; color: #0f172a; margin-top: 2px; }
+  .pf .meta { font-size: 8.5px; color: #475569; background: #f1f5f9; border-radius: 8px; padding: 2px 6px; display: inline-block; margin-top: 2px; }
+  .pf.new { border-color: #10b981; background: #f0fdf4; animation: glow 1.1s ease-in-out infinite; }
+  .pf .rib { position: absolute; top: -8px; right: -6px; background: #10b981; color: #fff; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 8px; }
+  @keyframes glow { 50% { box-shadow: 0 0 0 5px rgba(16,185,129,.25), 0 0 20px rgba(16,185,129,.6); } }
+
+  /* Finger tap */
+  #finger { position: absolute; left: 150px; top: 640px; width: 34px; height: 34px; margin: -17px 0 0 -17px; z-index: 60; opacity: 0; pointer-events: none;
+    transition: left .32s cubic-bezier(.4,0,.2,1), top .32s cubic-bezier(.4,0,.2,1), opacity .25s; }
+  #finger .core { position: absolute; inset: 0; border-radius: 50%; background: rgba(255,255,255,.8); border: 3px solid rgba(5,150,105,.95); box-shadow: 0 4px 12px rgba(0,0,0,.3); transition: transform .12s; }
+  #finger .ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid #10b981; opacity: 0; }
+  #finger.tap .core { transform: scale(.75); }
+  #finger.tap .ring { animation: ripple .5s ease-out; }
+  @keyframes ripple { from { opacity: .9; transform: scale(.6); } to { opacity: 0; transform: scale(2.4); } }
+
+  /* Caption */
+  #caption { position: absolute; left: 22px; right: 22px; top: 766px; min-height: 140px; z-index: 10; text-align: center; transition: opacity .18s, transform .18s; }
+  #caption.swap { opacity: 0; transform: translateY(8px); }
+  .cap-step { display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: 2px; color: #064e3b; background: #34d399; padding: 4px 12px; border-radius: 20px; margin-bottom: 7px; }
+  .cap-step:empty { display: none; }
+  .cap-text { color: #fff; font-size: 22px; font-weight: 800; line-height: 1.45; text-shadow: 0 3px 12px rgba(0,0,0,.4); }
+
+  /* Overlays */
+  .overlay { position: absolute; inset: 0; z-index: 12; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff;
+    opacity: 0; pointer-events: none; transition: opacity .45s; padding: 0 30px; }
+  .overlay.show { opacity: 1; }
+  #hook .em { font-size: 84px; animation: bounce 1s ease-in-out infinite; }
+  @keyframes bounce { 50% { transform: translateY(-12px); } }
+  #hook h1 { font-size: 38px; line-height: 1.35; font-weight: 800; margin-top: 10px; text-shadow: 0 4px 16px rgba(0,0,0,.35); transform: scale(.6); transition: transform .5s cubic-bezier(.34,1.7,.64,1); }
+  #hook.show h1 { transform: none; }
+  #hook h1 span { color: #34d399; }
+  #hook .pill { margin-top: 16px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); padding: 8px 18px; border-radius: 30px; font-size: 14px; font-weight: 700; }
+
+  #outro { background: linear-gradient(160deg, rgba(30,27,75,.95), rgba(5,150,105,.95)); }
+  #outro .box { background: #fff; color: #1e1b4b; border-radius: 24px; padding: 24px 20px; width: 100%; box-shadow: 0 30px 60px rgba(0,0,0,.35); transform: translateY(40px) scale(.9); transition: transform .55s cubic-bezier(.34,1.5,.64,1); }
+  #outro.show .box { transform: none; }
+  #outro .lg { font-size: 48px; }
+  #outro h2 { font-size: 21px; font-weight: 800; margin-top: 4px; }
+  #outro .tag { font-size: 12.5px; color: #64748b; margin-top: 3px; font-weight: 600; }
+  #outro .cta { font-size: 24px; font-weight: 800; color: #059669; margin: 14px 0 10px; }
+  #outro .url { display: inline-block; background: #059669; color: #fff; padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 700; }
+  #outro .note { margin-top: 12px; font-size: 12px; color: #334155; font-weight: 600; }
+
+  #confetti { position: absolute; inset: 0; z-index: 15; pointer-events: none; }
+
+  /* Controls */
+  #controls { position: fixed; bottom: 10px; left: 10px; z-index: 100; display: flex; gap: 8px; align-items: center; font: 600 12px Poppins, sans-serif; color: #e2e8f0; }
+  #controls button { background: #059669; color: #fff; border: 0; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; }
+  #controls .k { opacity: .7; }
+  #clock { min-width: 52px; background: #064e3b; padding: 6px 10px; border-radius: 8px; font-variant-numeric: tabular-nums; }
+  body.rec #controls { display: none; }
+</style>
+</head>
+<body>
+<div id="controls">
+  <button onclick="play()">▶ Play / Replay</button>
+  <span id="clock">0.0s</span>
+  <span class="k">R = replay · H = hide controls · L = loop</span>
+</div>
+
+<div id="wrap"><div id="stage"></div></div>
+
+<template id="tpl">
+  <div class="blob b1"></div><div class="blob b2"></div>
+
+  <div id="flow" class="ml">
+    <div class="fs" id="fs1"><div class="dot">🏡</div><div class="lb">ഫാമിലി<br>രജിസ്ട്രേഷൻ</div></div>
+    <div class="ln" id="ln1"></div>
+    <div class="fs" id="fs2"><div class="dot">📩</div><div class="lb">ഇമെയിൽ<br>വെരിഫിക്കേഷൻ</div></div>
+    <div class="ln" id="ln2"></div>
+    <div class="fs" id="fs3"><div class="dot">➕</div><div class="lb">കുട്ടിയെ<br>ചേർക്കൽ</div></div>
+    <div class="ln" id="ln3"></div>
+    <div class="fs" id="fs4"><div class="dot">✅</div><div class="lb">റെഡി!</div></div>
+  </div>
+
+  <div id="phone">
+    <div class="notch"></div>
+    <div id="screen">
+
+      <!-- Push Notification -->
+      <div id="pushNotif">
+        <div class="app-ic">✉️</div>
+        <div class="msg">
+          <b>Gmail · Kids Study Tracker</b>
+          <small>Verify your parent email to activate Suresh's Family workspace</small>
+        </div>
+        <div class="time">now</div>
+      </div>
+
+      <!-- 1. Register Form -->
+      <div class="scr" id="sReg">
+        <div class="app-h"><div class="logo">📚 Kids Study Tracker</div><div class="sub">Study &amp; Rewards Portal</div></div>
+        <div class="tabs"><div class="tab">🔑 Sign In</div><div class="tab on">🏡 Register Family</div></div>
+        <div class="card">
+          <div class="card-h">
+            <span style="font-size:22px;">🏡</span>
+            <div><h3>Register Family</h3><p>Creates private workspace</p></div>
+          </div>
+          <div class="fg"><label class="fl">Family Name</label><div class="fi" id="fFam"><span id="tFam"><span class="ph">e.g. Suresh's Family</span></span><span class="caret"></span></div></div>
+          <div class="fg"><label class="fl">Parent Name</label><div class="fi" id="fParent"><span id="tParent"><span class="ph">e.g. Suresh Kumar</span></span><span class="caret"></span></div></div>
+          <div class="fg"><label class="fl">Parent Email</label><div class="fi" id="fEmail"><span id="tEmail"><span class="ph">e.g. parent@gmail.com</span></span><span class="caret"></span></div></div>
+          <div class="fg"><label class="fl">Parent 4-digit PIN</label><div class="fi" id="fPin"><span id="tPin"><span class="ph">••••</span></span><span class="caret"></span></div></div>
+          <div class="btn" id="btnVerify">✉️ Verify Email &amp; Create Family ➔</div>
+        </div>
+      </div>
+
+      <!-- 2. Email Verification Pending -->
+      <div class="scr" id="sVerify">
+        <div class="app-h"><div class="logo">📚 Kids Study Tracker</div></div>
+        <div class="card v-center">
+          <div class="env">📩</div>
+          <h4>Verify Your Parent Email</h4>
+          <p>We've sent a verification link to activate your family workspace:</p>
+          <div class="v-email-box">✉️ suresh@gmail.com</div>
+          <div><span class="polling-badge"><span class="spinner"></span> Waiting for verification click...</span></div>
+        </div>
+      </div>
+
+      <!-- 3. Parent Dashboard + Add Child -->
+      <div class="scr" id="sDash">
+        <div class="topbar">
+          <div><b>Suresh's Family <span class="fam-badge">KIDS-505</span></b><small>Parent Command Center</small></div>
+          <span class="addbtn" id="btnAddChild">➕ Add Child</span>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="v">0</div><div class="k">Tasks Today</div></div>
+          <div class="kpi" style="border-color:#3b82f6"><div class="v">1 👨‍👩‍👧</div><div class="k">Parent Admin</div></div>
+        </div>
+        <div style="background:#fff;border-radius:12px;padding:12px;font-size:11px;color:#475569;text-align:center;">
+          👋 Welcome, Suresh! Click <b>"➕ Add Child"</b> to set up your kid's study journey.
+        </div>
+
+        <div id="modal">
+          <div class="sheet">
+            <h4>➕ Add Student Profile</h4>
+            <div class="fg"><label class="fl">Student Full Name</label><div class="fi" id="fChildName"><span id="tChildName"><span class="ph">e.g. Ananya</span></span><span class="caret"></span></div></div>
+            <div class="fg"><label class="fl">Class / Standard</label><div class="fi" id="fClass"><span id="tClass">Class 5</span></div></div>
+            <div class="fg"><label class="fl">Curriculum / Board</label>
+              <div class="chips"><div class="chip on" id="cKerala">🌴 Kerala State</div><div class="chip">🏛️ CBSE</div></div>
+            </div>
+            <div class="fg"><label class="fl">Avatar</label>
+              <div class="avs"><div class="avo">👦</div><div class="avo on" id="avGirl">👧</div><div class="avo">⭐</div><div class="avo">🚀</div></div>
+            </div>
+            <div class="btn" id="btnSaveChild" style="margin-top:6px;height:34px;">💾 Save Student Profile</div>
+          </div>
+        </div>
+        <div class="toast" id="toast">✅ Ananya added to Suresh's Family!</div>
+      </div>
+
+      <!-- 4. Ready Profiles Screen -->
+      <div class="scr" id="sDone">
+        <div class="app-h"><div class="logo">📚 Suresh's Family</div><div class="sub">Workspace Code: <b style="color:#059669">KIDS-505</b></div></div>
+        <div style="font-size:11.5px;font-weight:700;color:#0f172a;margin-top:10px;">Select Profile to Sign In:</div>
+        <div class="profiles">
+          <div class="pf"><div class="av">👨</div><div class="nm">Suresh</div><div class="meta">Parent Admin</div></div>
+          <div class="pf new"><span class="rib">READY ✨</span><div class="av">👧</div><div class="nm">Ananya</div><div class="meta">Class 5 • Kerala</div></div>
+        </div>
+        <div class="btn" style="background:#10b981;margin-top:16px;">🎉 Family Workspace Ready!</div>
+      </div>
+
+      <div id="finger"><div class="ring"></div><div class="core"></div></div>
+    </div>
+  </div>
+
+  <div id="caption" class="ml"><div class="cap-step" id="capStep"></div><div class="cap-text" id="capText"></div></div>
+
+  <div id="hook" class="overlay ml">
+    <div class="em">🏡</div>
+    <h1>നിങ്ങളുടെ കുടുംബത്തിനായി<br><span>സ്വന്തം വർക്ക്‌സ്പേസ്!</span></h1>
+    <div class="pill">⚡ ഇമെയിൽ വെരിഫിക്കേഷൻ &amp; ഈസി സെറ്റപ്പ്</div>
+  </div>
+
+  <div id="outro" class="overlay ml">
+    <div class="box">
+      <div class="lg">🎉</div>
+      <h2>Kids Study &amp; Rewards Tracker</h2>
+      <div class="tag">Zero Password Hassle · Safe &amp; Private</div>
+      <div class="cta">ഇന്നുതന്നെ രജിസ്റ്റർ ചെയ്യൂ! 📲</div>
+      <div class="url">🔗 kids-study-tracker-demo.web.app</div>
+      <div class="note">Click "Register Family" &amp; Get Started in 2 Minutes!</div>
+    </div>
+  </div>
+
+  <canvas id="confetti" width="540" height="960"></canvas>
+</template>
+
+<script>
+  const W = 540, H = 960, DURATION = 15000;
+  const stage = document.getElementById('stage');
+  const $ = id => document.getElementById(id);
+  let scale = 1, timers = [], t0 = 0, loop = false, rafClock = 0, confettiRaf = 0;
+
+  function fit() {
+    scale = Math.min(innerWidth / W, innerHeight / H);
+    stage.style.transform = `scale(${scale})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  function reset() {
+    timers.forEach(clearTimeout); timers = [];
+    cancelAnimationFrame(confettiRaf);
+    stage.innerHTML = $('tpl').innerHTML;
+  }
+
+  function posIn(el, anc) {
+    let x = 0, y = 0, n = el;
+    while (n && n !== anc) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+    return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
+  }
+  function moveTo(id, dy = 0) {
+    const f = $('finger'), p = posIn($(id), $('screen'));
+    f.style.left = p.x + 'px'; f.style.top = (p.y + dy) + 'px'; f.style.opacity = 1;
+  }
+  function tap() {
+    const f = $('finger'); f.classList.remove('tap'); void f.offsetWidth; f.classList.add('tap');
+  }
+  function press(id) { const e = $(id); e.classList.add('press'); setTimeout(() => e.classList.remove('press'), 180); }
+  function hideFinger() { $('finger').style.opacity = 0; }
+
+  function showScreen(id) {
+    document.querySelectorAll('.scr').forEach(s => {
+      if (s.id === id) { s.classList.remove('out'); s.classList.add('active'); }
+      else if (s.classList.contains('active')) { s.classList.remove('active'); s.classList.add('out'); }
+    });
+  }
+  function flow(n) {
+    for (let i = 1; i <= 4; i++) {
+      $('fs' + i).classList.toggle('on', i === n);
+      $('fs' + i).classList.toggle('done', i < n);
+      if (i < 4) $('ln' + i).classList.toggle('on', i < n);
+    }
+  }
+  function setCap(step, text) {
+    const c = $('caption'); c.classList.add('swap');
+    setTimeout(() => { $('capStep').textContent = step; $('capText').textContent = text; c.classList.remove('swap'); }, 160);
+  }
+  function type(id, text, start, step) {
+    [...text].forEach((_, i) => at(start + i * step, () => { $(id).textContent = text.slice(0, i + 1); }));
+  }
+
+  function confetti() {
+    const cv = $('confetti'), ctx = cv.getContext('2d');
+    const colors = ['#10b981', '#34d399', '#38bdf8', '#facc15', '#f472b6', '#ffffff'];
+    const ps = Array.from({ length: 160 }, () => ({
+      x: W / 2 + (Math.random() - .5) * 80, y: 420,
+      vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 5,
+      s: Math.random() * 7 + 4, r: Math.random() * 6, vr: (Math.random() - .5) * .3,
+      c: colors[(Math.random() * colors.length) | 0]
+    }));
+    const start = performance.now();
+    (function frame(now) {
+      ctx.clearRect(0, 0, W, H);
+      ps.forEach(p => {
+        p.vy += .38; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore();
+      });
+      if (now - start < 3200) confettiRaf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, W, H);
+    })(start);
+  }
+
+  function clock() {
+    const t = Math.min((performance.now() - t0) / 1000, DURATION / 1000);
+    const c = document.getElementById('clock'); if (c) c.textContent = t.toFixed(1) + 's';
+    if (t < DURATION / 1000) rafClock = requestAnimationFrame(clock);
+  }
+
+  function play() {
+    reset(); t0 = performance.now(); cancelAnimationFrame(rafClock); clock();
+
+    /* 0.0 – 2.4s : HOOK */
+    at(30, () => { $('hook').classList.add('show'); setCap('', 'കുടുംബത്തിനായി സ്വന്തം സ്റ്റഡി ട്രാക്കർ എങ്ങനെ സെറ്റ് ചെയ്യാം? 🤔'); });
+    at(700, () => $('flow').classList.add('show'));
+
+    /* 2.4 – 6.0s : STEP 1 – Family Registration Form */
+    at(2400, () => {
+      $('hook').classList.remove('show'); $('phone').classList.add('show');
+      showScreen('sReg'); flow(1); setCap('STEP 1: REGISTRATION', 'ഫാമിലി പേരും, ഇമെയിലും, 4-ഡിജിറ്റ് പിന്നും നൽകുക ✍️');
+    });
+    at(2700, () => moveTo('fFam'));
+    at(2900, () => { tap(); $('fFam').classList.add('focus'); $('tFam').textContent = ''; });
+    type('tFam', "Suresh's Family", 2980, 50);
+
+    at(3800, () => { $('fFam').classList.remove('focus'); moveTo('fEmail'); });
+    at(4000, () => { tap(); $('fEmail').classList.add('focus'); $('tEmail').textContent = ''; });
+    type('tEmail', "suresh@gmail.com", 4080, 45);
+
+    at(4900, () => { $('fEmail').classList.remove('focus'); moveTo('fPin'); });
+    at(5100, () => { tap(); $('tPin').textContent = '••••'; });
+
+    at(5400, () => moveTo('btnVerify'));
+    at(5700, () => { tap(); press('btnVerify'); });
+
+    /* 6.0 – 9.0s : STEP 2 – Email Verification */
+    at(6000, () => {
+      showScreen('sVerify'); flow(2);
+      setCap('STEP 2: EMAIL VERIFICATION', 'ഇമെയിലിൽ വരുന്ന ലിങ്ക് ക്ലിക്ക് ചെയ്താൽ വെരിഫിക്കേഷൻ പൂർത്തിയായി! 📩');
+    });
+    at(6400, () => $('pushNotif').classList.add('in'));
+    at(7100, () => moveTo('pushNotif'));
+    at(7500, () => { tap(); $('pushNotif').classList.add('press'); });
+    at(7700, () => { $('pushNotif').classList.remove('press'); $('pushNotif').classList.remove('in'); });
+
+    /* 9.0 – 12.2s : STEP 3 – Parent Dashboard & Add Child */
+    at(8800, () => {
+      showScreen('sDash'); flow(3);
+      setCap('STEP 3: ADD CHILD', 'പാരന്റ് ഡാഷ്‌ബോർഡിൽ നിന്ന് കുട്ടിയെ ആഡ് ചെയ്യാം ➕');
+    });
+    at(9200, () => moveTo('btnAddChild'));
+    at(9500, () => { tap(); press('btnAddChild'); $('modal').classList.add('open'); });
+
+    at(9900, () => moveTo('fChildName'));
+    at(10100, () => { tap(); $('fChildName').classList.add('focus'); $('tChildName').textContent = ''; });
+    type('tChildName', "Ananya", 10180, 80);
+
+    at(10800, () => { $('fChildName').classList.remove('focus'); moveTo('cKerala'); });
+    at(11000, () => { tap(); });
+
+    at(11300, () => moveTo('btnSaveChild'));
+    at(11600, () => { tap(); press('btnSaveChild'); });
+    at(11800, () => { $('modal').classList.remove('open'); $('toast').classList.add('in'); hideFinger(); });
+
+    /* 12.2 – 13.8s : STEP 4 – Ready */
+    at(12200, () => {
+      showScreen('sDone'); flow(4);
+      setCap('READY ✅', 'ഫാമിലി സെറ്റപ്പ് റെഡി! ഇന്നുതന്നെ തുടങ്ങൂ 🎉');
+      confetti();
+    });
+
+    /* 13.8 – 15.0s : CTA */
+    at(13800, () => { $('outro').classList.add('show'); setCap('', ''); });
+    at(DURATION + 600, () => { if (loop) play(); });
+  }
+
+  addEventListener('keydown', e => {
+    const k = e.key.toLowerCase();
+    if (k === 'r' || k === ' ') { e.preventDefault(); play(); }
+    if (k === 'h') document.body.classList.toggle('rec');
+    if (k === 'l') { loop = !loop; }
+  });
+
+  reset();
+  setTimeout(play, 600);
+</script>
+</body>
+</html>

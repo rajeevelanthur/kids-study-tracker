@@ -1,6 +1,6 @@
 /**
  * Google Firebase Cloud Configuration & Multi-Environment Manager
- * Kids Study & Rewards Tracker - Phase 2 Cloud Firestore
+ * Kids Study Tracker - Phase 2 Cloud Firestore
  * Supports seamless switching between Production (Live) & Demo (Testing)
  */
 
