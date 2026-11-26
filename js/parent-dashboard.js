@@ -195,32 +195,30 @@ function renderParentView(container) {
             </div>
           </div>
 
-          <!-- Student Profile Switcher Strip (With Pinned Add Button) -->
-          <div class="topbar-students-container">
-            <div class="topbar-students-strip">
-              ${children.map(c => {
-                const isSelected = c.id === (currentChild ? currentChild.id : '');
-                return `
-                  <button type="button" class="student-chip ${isSelected ? 'active' : ''}" onclick="selectChild('${c.id}')" title="Switch to ${escapeHtml(c.name)}'s Dashboard">
-                    <span class="student-chip-avatar">${c.avatar || '🧒'}</span>
-                    <div class="student-chip-info">
-                      <span class="student-chip-name">
-                        ${escapeHtml(c.name)} <span class="student-chip-grade">(${getGradeLabel(c.grade)})</span>
-                      </span>
-                      ${isSelected ? `
-                        <span class="student-chip-active-dot">● Active</span>
-                      ` : ''}
+          <!-- Student Profile Switcher Header (Option 1: Modern Bottom Sheet Trigger) -->
+          <div class="topbar-child-switcher-container">
+            ${currentChild ? `
+              <button type="button" class="btn-child-switcher-pill" onclick="openChildSwitcherSheet()" title="Switch student profile">
+                <div class="child-switcher-pill-left">
+                  <span class="child-switcher-pill-avatar">${currentChild.avatar || '🧒'}</span>
+                  <div class="child-switcher-pill-info">
+                    <div class="child-switcher-pill-name">
+                      <span>${escapeHtml(currentChild.name)}</span>
+                      <span class="child-switcher-pill-grade">(${getGradeLabel(currentChild.grade)})</span>
+                      <span class="child-switcher-pill-dot" title="Active"></span>
                     </div>
-                  </button>
-                `;
-              }).join('')}
-            </div>
-
-            <div class="topbar-students-pinned-add">
-              <button type="button" class="btn-add-student-chip" onclick="openAddChildModal()" title="Add a student profile">
-                <span>➕</span> <span>Add Child</span>
+                    <div class="child-switcher-pill-sub">${children.length > 1 ? `Switch between ${children.length} children` : 'Active Student Profile'}</div>
+                  </div>
+                </div>
+                <span class="child-switcher-pill-arrow">Switch ▾</span>
               </button>
-            </div>
+            ` : `
+              <div class="child-switcher-none-msg">No student profiles yet</div>
+            `}
+
+            <button type="button" class="btn-add-child-header" onclick="openAddChildModal()" title="Add a student profile">
+              <span>➕</span> <span>Add Child</span>
+            </button>
           </div>
         </header>
 
@@ -918,6 +916,96 @@ function handleSaveEditedTask(e, taskId) {
   closeModal('edit-task-modal');
   showToast('Task updated successfully! ✅', 'success');
   renderApp();
+}
+
+// ==========================================
+// OPTION 1: BOTTOM SHEET CHILD PROFILE SWITCHER
+// ==========================================
+function openChildSwitcherSheet() {
+  const children = store.getChildren() || [];
+  const currentChild = children.find(c => c.id === activeChildId) || (children.length > 0 ? children[0] : null);
+  const todayStr = typeof getFormattedDate === 'function' ? getFormattedDate() : (typeof TODAY_STR !== 'undefined' ? TODAY_STR : new Date().toISOString().split('T')[0]);
+
+  const modalHtml = `
+    <div class="modal-overlay sheet-overlay" id="child-switcher-sheet-modal" onclick="closeModalOnOutsideClick(event, 'child-switcher-sheet-modal')">
+      <div class="bottom-sheet-card" onclick="event.stopPropagation()">
+        <div class="bottom-sheet-drag-handle"></div>
+        
+        <div class="bottom-sheet-header">
+          <div class="bottom-sheet-header-left">
+            <h3 class="bottom-sheet-title">Switch Student Profile</h3>
+            <p class="bottom-sheet-subtitle">Select a child to view daily tasks and progress</p>
+          </div>
+          <button type="button" class="bottom-sheet-close" onclick="closeModal('child-switcher-sheet-modal')" title="Close">✕</button>
+        </div>
+
+        <div class="bottom-sheet-students-list">
+          ${children.map(c => {
+            const isSelected = c.id === (currentChild ? currentChild.id : '');
+            let subtitleText = `⭐ ${c.totalPoints || c.weeklyPoints || 0} pts`;
+            
+            if (typeof getChildWeeklyTaskData === 'function') {
+              const tData = getChildWeeklyTaskData(c.id);
+              const submitted = tData.submittedTasks || [];
+              const allT = tData.allTasks || [];
+              const todayT = allT.filter(t => t.date === (typeof TODAY_STR !== 'undefined' ? TODAY_STR : (typeof getFormattedDate === 'function' ? getFormattedDate() : new Date().toISOString().split('T')[0])));
+              const todayPending = todayT.filter(t => t.status !== 'completed');
+              
+              if (submitted.length > 0) {
+                subtitleText = `🔔 ${submitted.length} task${submitted.length > 1 ? 's' : ''} needs review • ⭐ ${c.weeklyPoints || c.totalPoints || 0} pts`;
+              } else if (todayPending.length > 0) {
+                subtitleText = `⏳ ${todayPending.length} pending today • ⭐ ${c.weeklyPoints || c.totalPoints || 0} pts`;
+              } else if (todayT.length > 0) {
+                subtitleText = `✓ All ${todayT.length} tasks done today 🎉 • ⭐ ${c.weeklyPoints || c.totalPoints || 0} pts`;
+              } else {
+                subtitleText = `No tasks scheduled today • ⭐ ${c.weeklyPoints || c.totalPoints || 0} pts`;
+              }
+            }
+
+            return `
+              <div class="bottom-sheet-student-item ${isSelected ? 'active-item' : ''}" onclick="switchChildFromSheet('${c.id}')" role="button" tabindex="0">
+                <div class="bottom-sheet-student-left">
+                  <div class="bottom-sheet-student-avatar">${c.avatar || '🧒'}</div>
+                  <div class="bottom-sheet-student-info">
+                    <div class="bottom-sheet-student-name-row">
+                      <span class="bottom-sheet-student-name">${escapeHtml(c.name)}</span>
+                      <span class="bottom-sheet-grade-badge">${getGradeLabel(c.grade)}</span>
+                      <span class="bottom-sheet-board-badge">${c.syllabus && c.syllabus.includes('CBSE') ? 'CBSE' : 'Kerala'}</span>
+                    </div>
+                    <div class="bottom-sheet-student-meta">${subtitleText}</div>
+                  </div>
+                </div>
+                ${isSelected ? `
+                  <span class="bottom-sheet-active-badge">✓ Active</span>
+                ` : `
+                  <span class="bottom-sheet-select-btn">Select</span>
+                `}
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="bottom-sheet-footer">
+          <button type="button" class="btn-sheet-add-child" onclick="closeModal('child-switcher-sheet-modal'); openAddChildModal();">
+            <span>➕</span> <span>Add New Child Profile</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  let container = document.getElementById('modal-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'modal-container';
+    document.body.appendChild(container);
+  }
+  container.innerHTML = modalHtml;
+}
+
+function switchChildFromSheet(childId) {
+  closeModal('child-switcher-sheet-modal');
+  selectChild(childId);
 }
 
 // ==========================================
